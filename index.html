@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Novixa-Labs — Android Apps</title>
+  <meta name="description" content="Novixa-Labs builds playful, useful Android apps — emoji battery, TV remote, games, journals, and more." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1f2e;
+      --card-hover: #222838;
+      --text: #f4f6fb;
+      --muted: #9aa3b8;
+      --accent: #6c8cff;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "DM Sans", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .hero {
+      text-align: center;
+      padding: 56px 24px 40px;
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,140,255,.25), transparent),
+                  radial-gradient(ellipse 60% 40% at 80% 20%, rgba(255,159,67,.12), transparent);
+    }
+    .logo {
+      width: 72px; height: 72px; border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; margin-bottom: 16px;
+      box-shadow: 0 12px 40px rgba(108,140,255,.35);
+    }
+    h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -.02em; }
+    .tagline { color: var(--muted); margin-top: 8px; max-width: 520px; margin-inline: auto; font-size: 1.05rem; }
+    .stats {
+      display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .stat { background: rgba(255,255,255,.06); padding: 12px 20px; border-radius: 12px; }
+    .stat strong { display: block; font-size: 1.4rem; color: var(--accent); }
+    .stat span { font-size: .85rem; color: var(--muted); }
+    main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 64px; }
+    h2 { font-size: 1.25rem; margin-bottom: 20px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .app-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,.06);
+      transition: transform .2s, background .2s, border-color .2s;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .app-card:hover {
+      transform: translateY(-4px);
+      background: var(--card-hover);
+      border-color: rgba(108,140,255,.3);
+    }
+    .app-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: linear-gradient(135deg, #334155, #1e293b);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .app-card h3 { font-size: 1.15rem; font-weight: 700; }
+    .app-card p { color: var(--muted); font-size: .92rem; flex: 1; }
+    .app-card .pkg { font-size: .75rem; color: #64748b; font-family: ui-monospace, monospace; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: .9rem;
+      text-decoration: none; transition: opacity .2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: rgba(255,255,255,.08); color: var(--text); }
+    .btn:hover { opacity: .88; }
+    .footer {
+      text-align: center; padding: 40px 24px; border-top: 1px solid rgba(255,255,255,.06);
+      color: var(--muted); font-size: .9rem;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="logo" aria-hidden="true">N</div>
+    <h1>Novixa-Labs</h1>
+    <p class="tagline">Independent Android studio — utilities, games, and creative tools. Always improving on Google Play.</p>
+    <div class="stats">
+      <div class="stat"><strong>5</strong><span>Android apps</span></div>
+      <div class="stat"><strong>100%</strong><span>Independent</span></div>
+      <div class="stat"><strong>Free</strong><span>to try</span></div>
+    </div>
+  </header>
+
+  <main>
+    <h2>Our apps</h2>
+    <p style="color:var(--muted);margin:-8px 0 20px;font-size:.95rem;">
+      Tap any app to open its Google Play listing — availability updates automatically on Play Store.
+    </p>
+    <div class="grid">
+
+      <article class="app-card">
+        <div class="app-icon">🔋</div>
+        <h3>Emoji Battery Widget Bar</h3>
+        <p>Custom emoji battery &amp; status bar overlay — Wi‑Fi, signal, clock, stickers, and themes.</p>
+        <span class="pkg">com.cuteemojibattery.statusbar</span>
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.cuteemojibattery.statusbar">View on Google Play</a>
+      </article>
+
+      <article class="app-card">
+        <div class="app-icon">📺</div>
+        <h3>Smart TV Remote</h3>
+        <p>Control your Android TV from your phone — discovery, shortcuts, and a clean remote UI.</p>
+        <span class="pkg">com.novixalabs.smartatvremote</span>
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.novixalabs.smartatvremote">View on Google Play</a>
+      </article>
+
+      <article class="app-card">
+        <div class="app-icon">📿</div>
+        <h3>Bead 12</h3>
+        <p>Classic 12 Tehni / Guti board game — play offline with smooth animations and themes.</p>
+        <span class="pkg">com.novixalabs.beads12</span>
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.novixalabs.beads12">View on Google Play</a>
+      </article>
+
+      <article class="app-card">
+        <div class="app-icon">📔</div>
+        <h3>Junk Journal</h3>
+        <p>Digital junk journal — papers, ephemera, fonts, and export for print-ready pages.</p>
+        <span class="pkg">com.novixalabs.junkjournal</span>
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.novixalabs.junkjournal">View on Google Play</a>
+      </article>
+
+      <article class="app-card">
+        <div class="app-icon">😴</div>
+        <h3>Drowsy: Yawn Game &amp; Sleep</h3>
+        <p>Yawn challenge game with sleep-friendly vibes — compete with friends and track streaks.</p>
+        <span class="pkg">com.novixalabs.drowsy</span>
+        <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.novixalabs.drowsy">View on Google Play</a>
+      </article>
+
+    </div>
+
+    <p style="margin-top:32px;text-align:center;">
+      <a class="btn btn-secondary" href="https://play.google.com/store/apps/developer?id=Novixa-Labs">All Novixa-Labs apps on Google Play →</a>
+    </p>
+  </main>
+
+  <footer class="footer">
+    <p><strong>Novixa-Labs</strong> · Independent Android developer</p>
+    <p style="margin-top:8px;">
+      Support: <a href="mailto:bibi85259@gmail.com?subject=Novixa-Labs%20—%20Website">bibi85259@gmail.com</a>
+    </p>
+    <p style="margin-top:16px;font-size:.8rem;">© Novixa-Labs. Google Play and the Google Play logo are trademarks of Google LLC.</p>
+  </footer>
+</body>
+</html>
