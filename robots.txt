@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://novixa-labs.vercel.app/sitemap.xml

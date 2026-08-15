@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Legal — Novixa-Labs</title>
+  <meta name="description" content="Official privacy policies, terms, and support pages for Novixa-Labs Android apps. Use these URLs in Google Play Console." />
+  <link rel="canonical" href="https://novixa-labs.vercel.app/legal.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Legal — Novixa-Labs" />
+  <meta property="og:description" content="Privacy, terms, and support links for Novixa-Labs Android apps." />
+  <meta property="og:url" content="https://novixa-labs.vercel.app/legal.html" />
+  <meta property="og:site_name" content="Novixa-Labs" />
+  <meta name="theme-color" content="#0f1117" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="site.webmanifest" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
     :root { --bg:#0f1117; --card:#1a1f2e; --text:#f4f6fb; --muted:#9aa3b8; --accent:#6c8cff; }
@@ -11,21 +21,42 @@
     body { font-family:"DM Sans",system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding:32px 20px 64px; }
     .wrap { max-width:720px; margin:0 auto; }
     a { color:var(--accent); }
+    a:focus-visible { outline:3px solid #a5b8ff; outline-offset:3px; }
+    .skip-link {
+      position:absolute; left:-9999px; top:0; z-index:100;
+      background:var(--accent); color:#fff; padding:10px 14px; font-weight:600; text-decoration:none;
+    }
+    .skip-link:focus { left:0; top:0; }
     h1 { font-size:1.75rem; margin-bottom:8px; }
     .sub { color:var(--muted); margin-bottom:28px; }
     .app-block { background:var(--card); border-radius:14px; padding:20px; margin-bottom:16px; border:1px solid rgba(255,255,255,.06); }
     .app-block h2 { font-size:1.1rem; margin-bottom:12px; }
     .links a { display:inline-block; margin-right:16px; margin-bottom:8px; font-weight:600; text-decoration:none; }
     .links a:hover { text-decoration:underline; }
-    .soon { color:var(--muted); font-size:.9rem; }
+    .pkg { display:block; font-size:.75rem; color:#64748b; font-family:ui-monospace,monospace; margin:-4px 0 10px; }
     .back { display:inline-block; margin-bottom:24px; text-decoration:none; font-weight:600; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation:none !important; transition:none !important; }
+    }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <div class="wrap">
     <a class="back" href="index.html">← Novixa-Labs home</a>
+    <main id="main">
     <h1>Legal &amp; privacy</h1>
     <p class="sub">Official policies for Novixa-Labs Android apps. Use these URLs in Google Play Console.</p>
+
+    <div class="app-block">
+      <h2>MusePrompt: AI Photo Prompts</h2>
+      <span class="pkg">com.novixalabs.museprompt</span>
+      <div class="links">
+        <a href="museprompt/privacy.html">Privacy Policy</a>
+        <a href="museprompt/terms.html">Terms &amp; Conditions</a>
+        <a href="museprompt/support.html">Support</a>
+      </div>
+    </div>
 
     <div class="app-block">
       <h2>🔋 Emoji Battery: Status bar</h2>
@@ -70,6 +101,7 @@
     <p style="margin-top:24px;color:var(--muted);font-size:.9rem;">
       Support: <a href="mailto:bibi85259@gmail.com">bibi85259@gmail.com</a>
     </p>
+    </main>
   </div>
 </body>
 </html>

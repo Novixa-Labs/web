@@ -4,7 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Novixa-Labs — Android Apps</title>
-  <meta name="description" content="Novixa-Labs builds playful, useful Android apps — emoji battery, TV remote, games, journals, and more." />
+  <meta name="description" content="Novixa-Labs builds useful Android apps — MusePrompt AI photo prompts, emoji battery, TV remote, games, journals, and more." />
+  <link rel="canonical" href="https://novixa-labs.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Novixa-Labs — Android Apps" />
+  <meta property="og:description" content="Independent Android studio — MusePrompt, utilities, games, and creative tools on Google Play." />
+  <meta property="og:url" content="https://novixa-labs.vercel.app/" />
+  <meta property="og:site_name" content="Novixa-Labs" />
+  <meta name="theme-color" content="#0f1117" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="site.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet" />
@@ -25,6 +34,15 @@
       color: var(--text);
       line-height: 1.6;
       min-height: 100vh;
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: 0; z-index: 100;
+      background: var(--accent); color: #fff; padding: 10px 14px;
+      font-weight: 600; text-decoration: none; border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus { left: 0; top: 0; }
+    a:focus-visible, .btn:focus-visible {
+      outline: 3px solid #a5b8ff; outline-offset: 3px;
     }
     .hero {
       text-align: center;
@@ -74,9 +92,18 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 26px;
     }
+    .app-icon.muse {
+      background: linear-gradient(145deg, #F56216 0%, #c2410c 55%, #7c2d12 100%);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      box-shadow: 0 8px 24px rgba(245, 98, 22, .28);
+    }
     .app-card h3 { font-size: 1.15rem; font-weight: 700; }
     .app-card p { color: var(--muted); font-size: .92rem; flex: 1; }
     .app-card .pkg { font-size: .75rem; color: #64748b; font-family: ui-monospace, monospace; }
+    .app-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: .9rem;
@@ -91,26 +118,46 @@
     }
     .footer a { color: var(--accent); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+      .app-card:hover { transform: none; }
+    }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="hero">
     <div class="logo" aria-hidden="true">N</div>
     <h1>Novixa-Labs</h1>
     <p class="tagline">Independent Android studio — utilities, games, and creative tools. Always improving on Google Play.</p>
     <div class="stats">
-      <div class="stat"><strong>5</strong><span>Android apps</span></div>
+      <div class="stat"><strong>6</strong><span>Android apps</span></div>
       <div class="stat"><strong>100%</strong><span>Independent</span></div>
       <div class="stat"><strong>Free</strong><span>to try</span></div>
     </div>
   </header>
 
-  <main>
+  <main id="main">
     <h2>Our apps</h2>
     <p style="color:var(--muted);margin:-8px 0 20px;font-size:.95rem;">
       Tap any app to open its Google Play listing — availability updates automatically on Play Store.
     </p>
     <div class="grid">
+
+      <article class="app-card">
+        <div class="app-icon muse" aria-hidden="true">MP</div>
+        <h3>MusePrompt: AI Photo Prompts</h3>
+        <p>Offline visual AI photo prompt builder — browse categories, assemble prompts, save or copy, and open external AI tools. Does not generate images.</p>
+        <span class="pkg">com.novixalabs.museprompt</span>
+        <div class="app-actions">
+          <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.novixalabs.museprompt">View on Google Play</a>
+          <a class="btn btn-secondary" href="museprompt/support.html">Support &amp; legal</a>
+        </div>
+      </article>
 
       <article class="app-card">
         <div class="app-icon">🔋</div>
