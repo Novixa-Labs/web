@@ -26,6 +26,21 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://novixa-labs.vercel.app/fourcut/privacy.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://novixa-labs.vercel.app/fourcut/terms.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://novixa-labs.vercel.app/fourcut/support.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://novixa-labs.vercel.app/emoji-battery/privacy.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>

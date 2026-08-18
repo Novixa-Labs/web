@@ -12,6 +12,7 @@ Static publisher site for Novixa-Labs Android apps.
 | `index.html` | Homepage / app grid |
 | `legal.html` | Legal hub (Play Console policy URLs) |
 | `museprompt/` | MusePrompt privacy, terms, support |
+| `fourcut/` | 4CUT privacy, terms, support |
 | `emoji-battery/`, `smart-tv-remote/`, `bead-12/`, `junk-journal/`, `drowsy/` | Existing app policies |
 | `app-ads.txt` | AdMob authorized sellers |
 | `robots.txt` / `sitemap.xml` | Crawling |
@@ -32,11 +33,15 @@ Static publisher site for Novixa-Labs Android apps.
 
 ## Google Play Console URLs (MusePrompt)
 
-Use these public HTTPS links:
-
 - Privacy: `https://novixa-labs.vercel.app/museprompt/privacy.html`
 - Terms: `https://novixa-labs.vercel.app/museprompt/terms.html`
 - Support: `https://novixa-labs.vercel.app/museprompt/support.html`
+
+## Google Play Console URLs (4CUT)
+
+- Privacy: `https://novixa-labs.vercel.app/fourcut/privacy.html`
+- Terms: `https://novixa-labs.vercel.app/fourcut/terms.html`
+- Support: `https://novixa-labs.vercel.app/fourcut/support.html`
 
 ## Local preview
 
@@ -51,4 +56,4 @@ Or open `index.html` directly in a browser (relative links work for local file c
 ## Notes
 
 - Do not commit secrets. `app-ads.txt` only contains the public AdMob publisher authorization line.
-- Existing app policy pages are preserved; MusePrompt adds a sixth app to the homepage count and legal hub.
+- Existing app policy pages are preserved; 4CUT is the seventh app on the homepage and legal hub.
