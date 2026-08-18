@@ -43,6 +43,12 @@ Static publisher site for Novixa-Labs Android apps.
 - Terms: `https://novixa-labs.vercel.app/fourcut/terms.html`
 - Support: `https://novixa-labs.vercel.app/fourcut/support.html`
 
+## Google Play Console URLs (Android TV Remote: Google TV)
+
+- Privacy: `https://novixa-labs.vercel.app/smart-tv-remote/privacy.html`
+- Terms: `https://novixa-labs.vercel.app/smart-tv-remote/terms.html`
+- Support: `https://novixa-labs.vercel.app/smart-tv-remote/support.html`
+
 ## Local preview
 
 Serve the folder with any static server, for example:
