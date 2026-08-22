@@ -68,14 +68,15 @@
 
 <h2>1. Summary (Plain Language)</h2>
 <p>
-  Bead 12 is a <strong>traditional bead board game</strong> (also known as 12 Tehni, 12 Guti, and similar regional names).
+  12 Beads is a <strong>traditional bead board game</strong> (also known as 12 Tehni, 12 Guti, and similar regional names).
   You can play against the CPU or another person on the same device.
 </p>
 <ul>
   <li>We do <strong>not</strong> require you to create an account.</li>
   <li>We do <strong>not</strong> sell your personal information.</li>
   <li>Game settings (sound, haptics, theme) are stored <strong>on your device</strong>.</li>
-  <li>The free version may show <strong>ads</strong> (banner, native, interstitial). You can watch an optional <strong>rewarded</strong> video for 1 life or to unlock Vs Player for the session, or buy a one-time <strong>12 Beads Pro</strong> purchase for unlimited lives, Vs Player unlocked, and no ads.</li>
+  <li>The free version may show <strong>ads</strong> (banner, interstitial, and optional rewarded). You can watch an optional <strong>rewarded</strong> video for 1 life or to unlock Vs Player for the session, or buy a one-time <strong>12 Beads Pro</strong> purchase for unlimited lives, Vs Player unlocked, and no ads.</li>
+  <li>Optional <strong>local daily reminders</strong> (off by default) can notify you around 6 PM <strong>only if you have not opened the app that day</strong>. No reminder data is sent to our servers.</li>
   <li>Where required, we show a consent form (Google User Messaging Platform / UMP) before personalized ads.</li>
 </ul>
 
@@ -83,8 +84,8 @@
 <p>The app lets you:</p>
 <ul>
   <li>Play vs CPU (lives) or vs another player (hotseat, unlockable)</li>
-  <li>Adjust sound, haptics, reduced motion, and board themes</li>
-  <li>View in-app help; privacy and terms open on our website</li>
+  <li>Adjust sound, haptics, reduced motion, board themes, and optional daily play reminders</li>
+  <li>View in-app help; privacy opens on our website</li>
   <li>Optional advertising and a one-time Pro in-app purchase</li>
 </ul>
 
@@ -92,10 +93,11 @@
 
 <h3>A. Information stored on your device (local only)</h3>
 <ul>
-  <li>Preferences such as mute, haptics, reduced motion, board theme</li>
-  <li>Lives remaining and last regen time (local only)</li>
+  <li>Preferences such as mute, haptics, reduced motion, board theme, and daily reminder on/off</li>
+  <li>Lives remaining and last regen time (local only). Lives regen: 1 life after 30 minutes at zero, or all 5 lives after 150 minutes at zero</li>
   <li>Pro / remove-ads status if you purchased 12 Beads Pro</li>
-  <li>Whether Vs Player was unlocked with a rewarded ad for this session (memory only)</li>
+  <li>Whether Vs Player was unlocked with a rewarded ad for this session (memory only; resets when the app is closed)</li>
+  <li>Last app-open date (local only) used to avoid sending a daily reminder on days you already opened the app</li>
 </ul>
 <p>This data stays on your device unless you clear app data or uninstall. We do not operate a cloud account or sync service.</p>
 
@@ -122,11 +124,20 @@
   (GAID) as permitted by Google Play, together with Google AdMob and related partners, to deliver and measure ads.
 </p>
 
+<h3>E. Local notifications (optional)</h3>
+<p>
+  If you turn on <strong>Daily play reminder</strong> in Settings, the app schedules a <strong>local</strong> notification
+  on your device (around 6 PM in your local time zone). It is sent <strong>only if you have not opened the app that day</strong>.
+  Opening the app cancels that day&apos;s reminder. This feature is <strong>off by default</strong>, requires your permission on
+  Android 13+, and is disabled for Pro users. We do not use push notifications from a server and we do not collect
+  notification content on our servers.
+</p>
+
 <h2>4. Advertising, Consent &amp; Advertising ID</h2>
 <p>
   If you have not purchased 12 Beads Pro, the app may display advertisements through
   <strong>Google AdMob</strong> and, as a no-fill fallback, <strong>Unity Ads</strong> for full-screen
-  interstitial and rewarded videos. Banners appear on menu screens (not over the live board).
+  interstitial and rewarded videos. Banners appear on menu, mode select, and gameplay (top of screen, away from board taps).
   Interstitials may appear after a match when you continue (natural break). Rewarded videos play only if you choose Watch ad.
 </p>
 <p>These services may collect or receive advertising ID, IP address, device type, OS version, and ad interaction data, and approximate location from IP (not GPS from us).</p>
@@ -155,7 +166,7 @@
   to understand anonymous usage and diagnose crashes. Collection is disabled in debug developer builds. We do not sell this data.
 </p>
 
-<h2>4. Information We Do Not Collect</h2>
+<h2>7. Information We Do Not Collect</h2>
 <ul>
   <li>Name, email, or phone number (unless you email us for support voluntarily)</li>
   <li>Precise GPS location</li>
@@ -164,7 +175,7 @@
   <li>Passwords or account credentials (there is no app login)</li>
 </ul>
 
-<h2>5. Third-Party Services</h2>
+<h2>8. Third-Party Services</h2>
 <ul>
   <li><strong>Google Play</strong> — app distribution and billing</li>
   <li><strong>Google AdMob</strong> and <strong>Unity Ads</strong> — advertising</li>
@@ -172,41 +183,37 @@
   <li><strong>Google Fonts</strong> — typography</li>
 </ul>
 
-<h2>6. Children&apos;s Privacy</h2>
+<h2>9. Children&apos;s Privacy</h2>
 <p>
   The app is a casual board game suitable for general audiences. We do not knowingly collect
   personal information from children. If you believe a child has provided us information, contact us and we will delete it.
 </p>
 
-<h2>7. Data Retention and Deletion</h2>
+<h2>10. Data Retention and Deletion</h2>
 <ul>
   <li>Local settings remain until you clear app data or uninstall.</li>
   <li>Support emails are kept only as long as needed to respond.</li>
 </ul>
 <p>
-  <strong>To remove all app data:</strong> Android Settings → Apps → Bead 12 → Storage → Clear data,
+  <strong>To remove all app data:</strong> Android Settings → Apps → 12 Beads → Storage → Clear data,
   or uninstall the app.
 </p>
 
-<h2>8. Security</h2>
-<p>
-  We use reasonable measures such as HTTPS for network requests. No method of transmission or storage is 100% secure.
-</p>
-
-<h2>9. Your Rights and Choices</h2>
+<h2>11. Your Rights and Choices</h2>
 <ul>
-  <li>Turn off haptics or reduced motion in Settings</li>
+  <li>Turn off haptics, reduced motion, or daily reminders in Settings</li>
+  <li>Deny notification permission when enabling daily reminders</li>
   <li>Clear app data or uninstall at any time</li>
   <li>Contact us with privacy questions</li>
 </ul>
 
-<h2>10. Changes to This Policy</h2>
+<h2>12. Changes to This Policy</h2>
 <p>
   We may update this Privacy Policy from time to time. We will post the new version and update the
   &quot;Last updated&quot; date. Continued use after changes means you accept the updated policy.
 </p>
 
-<h2>11. Contact Us</h2>
+<h2>13. Contact Us</h2>
 <div class="contact-box">
   <p><strong>Developer / Store:</strong> Novixa-Labs</p>
   <p><strong>App:</strong> 12 Beads - Offline Board Game</p>
@@ -215,7 +222,7 @@
 </div>
 <p>
   For privacy questions or requests, email <strong>bibi85259@gmail.com</strong> with the subject
-  <strong>&quot;Novixa-Labs — Privacy — Bead 12&quot;</strong>.
+  <strong>&quot;Novixa-Labs — Privacy — 12 Beads&quot;</strong>.
 </p>
 
 </body>
