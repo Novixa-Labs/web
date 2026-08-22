@@ -54,12 +54,12 @@
 <body>
 
 <h1>Privacy Policy</h1>
-<p class="subtitle">Bead 12</p>
-<p class="meta"><strong>Last updated:</strong> August 6, 2026</p>
+<p class="subtitle">12 Beads - Offline Board Game</p>
+<p class="meta"><strong>Last updated:</strong> August 22, 2026</p>
 
 <p>
   <strong>Novixa-Labs</strong> (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates the mobile application
-  <strong>Bead 12</strong> (package name: <strong>com.novixalabs.beads12</strong>).
+  <strong>12 Beads - Offline Board Game</strong> (package name: <strong>com.novixalabs.beads12</strong>).
   This Privacy Policy explains what information the app accesses, how it is used, and your choices.
 </p>
 <p>
@@ -75,24 +75,27 @@
   <li>We do <strong>not</strong> require you to create an account.</li>
   <li>We do <strong>not</strong> sell your personal information.</li>
   <li>Game settings (sound, haptics, theme) are stored <strong>on your device</strong>.</li>
-  <li><strong>Current version (v1.0.0):</strong> no ads and no in-app purchases. If we enable them later, we will update this policy and Play Store disclosures first.</li>
+  <li>The free version may show <strong>ads</strong> (banner, native, interstitial). You can watch an optional <strong>rewarded</strong> video for 1 life or to unlock Vs Player for the session, or buy a one-time <strong>12 Beads Pro</strong> purchase for unlimited lives, Vs Player unlocked, and no ads.</li>
+  <li>Where required, we show a consent form (Google User Messaging Platform / UMP) before personalized ads.</li>
 </ul>
 
 <h2>2. What the App Does</h2>
 <p>The app lets you:</p>
 <ul>
-  <li>Play the classic 12-bead board game vs CPU or vs another player (hotseat)</li>
+  <li>Play vs CPU (lives) or vs another player (hotseat, unlockable)</li>
   <li>Adjust sound, haptics, reduced motion, and board themes</li>
-  <li>View in-app help and legal information</li>
-  <li>Optionally remove ads with a one-time Pro purchase (when enabled in a future update)</li>
+  <li>View in-app help; privacy and terms open on our website</li>
+  <li>Optional advertising and a one-time Pro in-app purchase</li>
 </ul>
 
 <h2>3. Information We Access</h2>
 
 <h3>A. Information stored on your device (local only)</h3>
 <ul>
-  <li>Preferences such as mute, haptics, reduced motion, and board theme</li>
-  <li>Pro / remove-ads status (when in-app purchases are enabled)</li>
+  <li>Preferences such as mute, haptics, reduced motion, board theme</li>
+  <li>Lives remaining and last regen time (local only)</li>
+  <li>Pro / remove-ads status if you purchased 12 Beads Pro</li>
+  <li>Whether Vs Player was unlocked with a rewarded ad for this session (memory only)</li>
 </ul>
 <p>This data stays on your device unless you clear app data or uninstall. We do not operate a cloud account or sync service.</p>
 
@@ -105,24 +108,51 @@
 <h3>C. Internet access</h3>
 <p>The app may use the internet to:</p>
 <ul>
-  <li>Download typography (Google Fonts) for on-screen text</li>
+  <li>Load and display advertisements (AdMob and Unity Ads fallback)</li>
+  <li>Process in-app purchases through Google Play</li>
+  <li>Show consent / privacy messaging (UMP) where required</li>
+  <li>Send anonymous analytics events and crash reports to Firebase (Google) in release builds</li>
+  <li>Download typography (Google Fonts)</li>
 </ul>
+<p>Core gameplay works offline after fonts are cached. Ads, purchases, and analytics need a network connection.</p>
+
+<h3>D. Advertising ID (AD_ID)</h3>
 <p>
-  <strong>Current version (v1.0.0):</strong> we do not show advertisements and we do not offer in-app purchases.
-  The game works fully offline after fonts are cached.
+  When ads are enabled and you have not purchased Pro, the app may use the Android Advertising ID
+  (GAID) as permitted by Google Play, together with Google AdMob and related partners, to deliver and measure ads.
 </p>
 
-<h3>D. Advertising (AdMob) — not active in v1.0.0</h3>
+<h2>4. Advertising, Consent &amp; Advertising ID</h2>
 <p>
-  AdMob is <strong>not enabled</strong> in the current release. If we turn ads on later, AdMob may use
-  advertising identifiers according to Google&apos;s policies, and we will update this Privacy Policy
-  and the Play Store Ads / Data safety forms before that release.
+  If you have not purchased 12 Beads Pro, the app may display advertisements through
+  <strong>Google AdMob</strong> and, as a no-fill fallback, <strong>Unity Ads</strong> for full-screen
+  interstitial and rewarded videos. Banners appear on menu screens (not over the live board).
+  Interstitials may appear after a match when you continue (natural break). Rewarded videos play only if you choose Watch ad.
+</p>
+<p>These services may collect or receive advertising ID, IP address, device type, OS version, and ad interaction data, and approximate location from IP (not GPS from us).</p>
+<p>
+  Where required (for example EEA/UK), the app uses <strong>Google User Messaging Platform (UMP)</strong>.
+  You can also limit ad personalization in Android Settings → Google → Ads, or purchase Pro to stop ads.
+</p>
+<p>
+  See Google&apos;s ads policy:
+  <a href="https://policies.google.com/technologies/ads">https://policies.google.com/technologies/ads</a>
 </p>
 
-<h3>E. In-app purchases — not active in v1.0.0</h3>
+<h2>5. In-App Purchases (12 Beads Pro)</h2>
 <p>
-  In-app purchases are <strong>not enabled</strong> in the current release. If we offer a Pro / remove-ads
-  purchase later, transactions will be processed by <strong>Google Play Billing</strong>. Payment details are handled by Google, not by us.
+  We offer a one-time in-app product (<strong>12 Beads Pro</strong>, product ID <strong>beads12_pro</strong>)
+  processed by <strong>Google Play Billing</strong>. Google processes payment; we do not store your card details.
+  Pro removes ads, grants unlimited lives, and unlocks Vs Player.
+</p>
+<p>
+  Purchase history is managed by Google Play. Use Restore purchases in the app if you reinstall on the same Google account.
+</p>
+
+<h2>6. Analytics &amp; Crash Reporting</h2>
+<p>
+  The app uses <strong>Google Firebase Analytics</strong> and <strong>Firebase Crashlytics</strong> in release builds
+  to understand anonymous usage and diagnose crashes. Collection is disabled in debug developer builds. We do not sell this data.
 </p>
 
 <h2>4. Information We Do Not Collect</h2>
@@ -136,13 +166,11 @@
 
 <h2>5. Third-Party Services</h2>
 <ul>
-  <li><strong>Google Play</strong> — app distribution</li>
-  <li><strong>Google Fonts</strong> — typography (may download over HTTPS)</li>
+  <li><strong>Google Play</strong> — app distribution and billing</li>
+  <li><strong>Google AdMob</strong> and <strong>Unity Ads</strong> — advertising</li>
+  <li><strong>Google Firebase</strong> — Analytics and Crashlytics (release)</li>
+  <li><strong>Google Fonts</strong> — typography</li>
 </ul>
-<p>
-  <strong>Not active in v1.0.0:</strong> Google AdMob advertising and Google Play Billing purchases.
-  If we enable them later, this section and Play Store forms will be updated first.
-</p>
 
 <h2>6. Children&apos;s Privacy</h2>
 <p>
@@ -181,7 +209,7 @@
 <h2>11. Contact Us</h2>
 <div class="contact-box">
   <p><strong>Developer / Store:</strong> Novixa-Labs</p>
-  <p><strong>App:</strong> Bead 12</p>
+  <p><strong>App:</strong> 12 Beads - Offline Board Game</p>
   <p><strong>Package:</strong> com.novixalabs.beads12</p>
   <p><strong>Email:</strong> bibi85259@gmail.com</p>
 </div>
