@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Novixa-Labs — Android Apps</title>
-  <meta name="description" content="Novixa-Labs builds useful Android apps — MusePrompt AI photo prompts, emoji battery, TV remote, games, journals, and more." />
+  <meta name="description" content="Novixa-Labs builds useful Android apps — junk journal scrapbooks, emoji battery, TV remote, AI photo prompts, games, and more." />
   <link rel="canonical" href="https://novixa-labs.vercel.app/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Novixa-Labs — Android Apps" />
@@ -30,6 +30,12 @@
       --accent: #6c8cff;
       --accent-soft: rgba(108,140,255,.12);
       --accent-glow: rgba(108,140,255,.4);
+      --live: #34d399;
+      --live-bg: rgba(52,211,153,.12);
+      --beta: #fbbf24;
+      --beta-bg: rgba(251,191,36,.12);
+      --soon: #a78bfa;
+      --soon-bg: rgba(167,139,250,.12);
       --radius: 20px;
       --radius-sm: 12px;
       --font-display: "Outfit", system-ui, sans-serif;
@@ -37,7 +43,6 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -49,17 +54,14 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient background */
     body::before {
       content: "";
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background:
-        radial-gradient(ellipse 70% 50% at 50% -20%, rgba(108,140,255,.18), transparent 60%),
-        radial-gradient(ellipse 40% 30% at 90% 10%, rgba(167,139,250,.1), transparent),
-        radial-gradient(ellipse 35% 25% at 5% 60%, rgba(56,189,248,.06), transparent);
-      pointer-events: none;
-      z-index: 0;
+        radial-gradient(ellipse 70% 50% at 50% -20%, rgba(108,140,255,.16), transparent 60%),
+        radial-gradient(ellipse 40% 30% at 90% 10%, rgba(244,114,182,.08), transparent),
+        radial-gradient(ellipse 35% 25% at 5% 60%, rgba(56,189,248,.05), transparent);
+      pointer-events: none; z-index: 0;
     }
 
     .skip-link {
@@ -68,27 +70,24 @@
       font-weight: 600; text-decoration: none; border-radius: 0 0 8px 0;
     }
     .skip-link:focus { left: 0; top: 0; }
-
-    a:focus-visible, .btn:focus-visible {
-      outline: 2px solid #a5b8ff; outline-offset: 3px;
-    }
+    a:focus-visible, .btn:focus-visible { outline: 2px solid #a5b8ff; outline-offset: 3px; }
 
     /* ── Navigation ── */
     .nav {
       position: sticky; top: 0; z-index: 100;
       backdrop-filter: blur(16px) saturate(1.4);
       -webkit-backdrop-filter: blur(16px) saturate(1.4);
-      background: rgba(8,9,13,.75);
+      background: rgba(8,9,13,.82);
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
       max-width: 1160px; margin: 0 auto;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 24px;
+      padding: 14px 24px; gap: 16px;
     }
     .nav-brand {
       display: flex; align-items: center; gap: 12px;
-      text-decoration: none; color: var(--text);
+      text-decoration: none; color: var(--text); flex-shrink: 0;
     }
     .nav-logo {
       width: 36px; height: 36px; border-radius: 10px;
@@ -101,165 +100,207 @@
       font-family: var(--font-display); font-weight: 700; font-size: 1.05rem;
       letter-spacing: -.02em;
     }
-    .nav-links { display: flex; align-items: center; gap: 8px; }
-    .nav-links a {
+    .nav-links { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+    .nav-link {
       color: var(--muted); text-decoration: none; font-size: .875rem; font-weight: 500;
       padding: 8px 14px; border-radius: 8px; transition: color .2s, background .2s;
     }
-    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,.05); }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,.05); }
+    .btn-nav {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 16px; border-radius: 10px;
+      font-weight: 600; font-size: .8125rem;
+      text-decoration: none; white-space: nowrap;
+      background: #5b7cfa; color: #ffffff;
+      border: 1px solid rgba(255,255,255,.12);
+      text-shadow: 0 1px 2px rgba(0,0,0,.25);
+      box-shadow: 0 2px 12px rgba(108,140,255,.4), inset 0 1px 0 rgba(255,255,255,.15);
+      transition: background .2s, box-shadow .2s, transform .2s;
+      margin-left: 4px;
+    }
+    .btn-nav:hover {
+      background: #6d8cff; color: #ffffff;
+      box-shadow: 0 4px 20px rgba(108,140,255,.5), inset 0 1px 0 rgba(255,255,255,.2);
+      transform: translateY(-1px);
+    }
+    .btn-nav svg { width: 15px; height: 15px; flex-shrink: 0; }
 
     /* ── Hero ── */
     .hero {
       position: relative; z-index: 1;
       text-align: center;
-      padding: 80px 24px 64px;
-      max-width: 800px; margin: 0 auto;
+      padding: 72px 24px 56px;
+      max-width: 760px; margin: 0 auto;
     }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 14px 6px 10px;
-      background: var(--accent-soft);
-      border: 1px solid rgba(108,140,255,.2);
-      border-radius: 100px;
-      font-size: .8rem; font-weight: 600; color: #a5b8ff;
-      margin-bottom: 28px;
+    .hero-eyebrow {
+      font-size: .75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .14em;
+      color: var(--muted); margin-bottom: 20px;
     }
-    .hero-badge svg { width: 16px; height: 16px; }
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(2.25rem, 5.5vw, 3.5rem);
-      font-weight: 800;
-      letter-spacing: -.03em;
-      line-height: 1.1;
-      background: linear-gradient(180deg, #fff 30%, #a5b0c8);
+      font-size: clamp(2.1rem, 5vw, 3.25rem);
+      font-weight: 800; letter-spacing: -.03em; line-height: 1.12;
+      background: linear-gradient(180deg, #fff 20%, #b8c0d4);
       -webkit-background-clip: text; background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero .tagline {
-      color: var(--muted);
-      margin-top: 20px;
-      font-size: 1.125rem;
-      line-height: 1.7;
-      max-width: 540px;
-      margin-inline: auto;
+      color: var(--muted); margin-top: 18px;
+      font-size: 1.0625rem; line-height: 1.75;
+      max-width: 520px; margin-inline: auto;
     }
     .hero-cta {
       display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-      margin-top: 36px;
+      margin-top: 32px;
     }
 
-    /* ── Stats strip ── */
+    /* ── Stats ── */
     .stats-strip {
       position: relative; z-index: 1;
-      max-width: 680px; margin: 0 auto 16px;
+      max-width: 720px; margin: 0 auto 8px;
       display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
+      gap: 1px; background: var(--border);
+      border-radius: var(--radius); overflow: hidden;
       border: 1px solid var(--border);
     }
     .stat-item {
-      background: var(--surface);
-      padding: 24px 16px;
-      text-align: center;
+      background: var(--surface); padding: 22px 16px; text-align: center;
     }
     .stat-item strong {
-      display: block;
-      font-family: var(--font-display);
-      font-size: 1.75rem; font-weight: 700;
-      color: var(--text);
-      letter-spacing: -.02em;
+      display: block; font-family: var(--font-display);
+      font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em;
     }
+    .stat-item strong.live { color: var(--live); }
+    .stat-item strong.beta { color: var(--beta); }
+    .stat-item strong.soon { color: var(--soon); }
     .stat-item span {
-      display: block;
-      font-size: .8rem; color: var(--muted);
+      display: block; font-size: .75rem; color: var(--muted);
       margin-top: 4px; font-weight: 500;
       text-transform: uppercase; letter-spacing: .06em;
     }
 
-    /* ── Main content ── */
+    /* ── Status legend ── */
+    .status-legend {
+      position: relative; z-index: 1;
+      max-width: 720px; margin: 20px auto 0;
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 16px 24px;
+      padding: 0 24px;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .8rem; color: var(--muted); font-weight: 500;
+    }
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .legend-dot.live { background: var(--live); box-shadow: 0 0 8px var(--live); }
+    .legend-dot.beta { background: var(--beta); }
+    .legend-dot.soon { background: var(--soon); }
+
+    /* ── Main ── */
     main {
       position: relative; z-index: 1;
       max-width: 1160px; margin: 0 auto;
-      padding: 48px 24px 80px;
+      padding: 56px 24px 80px;
     }
-
-    .section-header {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      flex-wrap: wrap; gap: 12px;
-      margin-bottom: 32px;
-    }
+    .section-header { margin-bottom: 28px; }
     .section-header h2 {
       font-family: var(--font-display);
-      font-size: 1.5rem; font-weight: 700;
-      letter-spacing: -.02em;
+      font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em;
     }
     .section-header p {
-      color: var(--muted); font-size: .925rem;
-      max-width: 420px;
+      color: var(--muted); font-size: .9rem; margin-top: 6px;
+      max-width: 520px;
     }
 
-    /* ── Featured app ── */
+    /* ── Status badges ── */
+    .status {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .07em;
+      padding: 4px 10px; border-radius: 100px;
+      width: fit-content;
+    }
+    .status::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+    }
+    .status-live { background: var(--live-bg); color: var(--live); border: 1px solid rgba(52,211,153,.25); }
+    .status-live::before { background: var(--live); box-shadow: 0 0 6px var(--live); }
+    .status-beta { background: var(--beta-bg); color: var(--beta); border: 1px solid rgba(251,191,36,.25); }
+    .status-beta::before { background: var(--beta); }
+    .status-soon { background: var(--soon-bg); color: var(--soon); border: 1px solid rgba(167,139,250,.25); }
+    .status-soon::before { background: var(--soon); }
+
+    /* ── Featured ── */
     .featured {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 0;
+      display: grid; grid-template-columns: 1fr 1.25fr;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: calc(var(--radius) + 4px);
-      overflow: hidden;
-      margin-bottom: 48px;
-      transition: border-color .3s;
+      overflow: hidden; margin-bottom: 52px;
+      transition: border-color .3s, box-shadow .3s;
     }
-    .featured:hover { border-color: var(--border-hover); }
+    .featured:hover {
+      border-color: rgba(244,114,182,.35);
+      box-shadow: 0 24px 64px rgba(0,0,0,.35), 0 0 0 1px rgba(244,114,182,.08);
+    }
     .featured-visual {
       position: relative;
-      background: linear-gradient(145deg, #1a0f08 0%, #2d1810 40%, #1a1e2a 100%);
+      background: linear-gradient(155deg, #1a0a14 0%, #2d1020 35%, #1a1028 100%);
       display: flex; align-items: center; justify-content: center;
-      padding: 48px 32px;
-      min-height: 280px;
+      padding: 48px 32px; min-height: 300px;
     }
     .featured-visual::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at 45% 55%, rgba(244,114,182,.22), transparent 60%);
+    }
+    .featured-visual::after {
       content: "";
       position: absolute; inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(245,98,22,.25), transparent 65%);
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
     }
     .featured-icon {
-      position: relative;
-      width: 96px; height: 96px; border-radius: 24px;
-      background: linear-gradient(145deg, #F56216 0%, #c2410c 55%, #7c2d12 100%);
+      position: relative; z-index: 1;
+      width: 100px; height: 100px; border-radius: 26px;
+      background: linear-gradient(145deg, #f472b6 0%, #db2777 50%, #9d174d 100%);
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 20px 60px rgba(245,98,22,.35), 0 0 0 1px rgba(255,255,255,.1);
+      font-size: 48px;
+      box-shadow: 0 24px 64px rgba(219,39,119,.4), 0 0 0 1px rgba(255,255,255,.12);
     }
-    .featured-icon svg { width: 48px; height: 48px; }
     .featured-content {
-      padding: 40px 40px 40px 32px;
+      padding: 40px 40px 40px 36px;
       display: flex; flex-direction: column; justify-content: center;
     }
-    .badge {
-      display: inline-block;
-      font-size: .7rem; font-weight: 600;
+    .featured-badges {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;
+    }
+    .badge-type {
+      font-size: .68rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: .08em;
       padding: 4px 10px; border-radius: 6px;
-      background: rgba(245,98,22,.15); color: #fb923c;
-      margin-bottom: 14px; width: fit-content;
+      background: rgba(244,114,182,.12); color: #f9a8d4;
+      border: 1px solid rgba(244,114,182,.2);
     }
     .featured-content h3 {
       font-family: var(--font-display);
-      font-size: 1.6rem; font-weight: 700;
-      letter-spacing: -.02em; margin-bottom: 12px;
+      font-size: 1.65rem; font-weight: 700;
+      letter-spacing: -.02em; margin-bottom: 12px; line-height: 1.25;
     }
     .featured-content p {
-      color: var(--muted); font-size: .95rem; line-height: 1.7;
-      margin-bottom: 24px;
+      color: var(--muted); font-size: .9375rem; line-height: 1.75;
+      margin-bottom: 28px;
     }
     .featured-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-    /* ── Category sections ── */
-    .category { margin-bottom: 48px; }
+    /* ── Categories ── */
+    .category { margin-bottom: 44px; }
     .category-label {
-      font-size: .75rem; font-weight: 600;
+      font-size: .72rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: .1em;
       color: var(--muted); margin-bottom: 16px;
       display: flex; align-items: center; gap: 12px;
@@ -268,13 +309,12 @@
       content: ""; flex: 1; height: 1px; background: var(--border);
     }
 
-    /* ── App grid ── */
+    /* ── App cards ── */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
     }
-
     .app-card {
       position: relative;
       background: var(--surface);
@@ -284,24 +324,37 @@
       transition: transform .25s ease, border-color .25s, box-shadow .25s;
       display: flex; flex-direction: column;
     }
+    .app-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--card-accent, var(--accent)), transparent);
+      opacity: 0; transition: opacity .25s;
+    }
     .app-card:hover {
       transform: translateY(-3px);
       border-color: var(--border-hover);
-      box-shadow: 0 16px 48px rgba(0,0,0,.3), 0 0 0 1px rgba(108,140,255,.08);
+      box-shadow: 0 16px 48px rgba(0,0,0,.28);
     }
+    .app-card:hover::before { opacity: 1; }
+    .app-card[data-accent="pink"] { --card-accent: #f472b6; }
+    .app-card[data-accent="orange"] { --card-accent: #fb923c; }
+    .app-card[data-accent="green"] { --card-accent: #34d399; }
+    .app-card[data-accent="blue"] { --card-accent: #60a5fa; }
+    .app-card[data-accent="yellow"] { --card-accent: #fbbf24; }
+    .app-card[data-accent="purple"] { --card-accent: #c084fc; }
+    .app-card[data-accent="indigo"] { --card-accent: #818cf8; }
+
     .app-card-top {
-      padding: 24px 24px 0;
-      display: flex; align-items: flex-start; gap: 16px;
+      padding: 22px 22px 0;
+      display: flex; align-items: flex-start; gap: 14px;
     }
     .app-icon {
       flex-shrink: 0;
-      width: 60px; height: 60px; border-radius: 16px;
+      width: 56px; height: 56px; border-radius: 15px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 28px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      font-size: 26px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.22);
     }
-    .app-icon svg { width: 30px; height: 30px; }
-    .app-icon.muse { background: linear-gradient(145deg, #F56216, #c2410c); color: #fff; }
+    .app-icon.muse { background: linear-gradient(145deg, #F56216, #c2410c); }
     .app-icon.photo { background: linear-gradient(145deg, #34d399, #059669); }
     .app-icon.battery { background: linear-gradient(145deg, #fbbf24, #d97706); }
     .app-icon.tv { background: linear-gradient(145deg, #60a5fa, #2563eb); }
@@ -309,38 +362,43 @@
     .app-icon.journal { background: linear-gradient(145deg, #f472b6, #db2777); }
     .app-icon.sleep { background: linear-gradient(145deg, #818cf8, #4f46e5); }
 
-    .app-meta { flex: 1; min-width: 0; padding-top: 2px; }
-    .app-meta .cat {
-      font-size: .7rem; font-weight: 600;
+    .app-meta { flex: 1; min-width: 0; }
+    .app-meta-top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; margin-bottom: 6px;
+    }
+    .app-meta .type {
+      font-size: .68rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: .06em;
-      color: var(--muted); margin-bottom: 4px;
+      color: var(--muted);
     }
     .app-card h3 {
       font-family: var(--font-display);
-      font-size: 1.05rem; font-weight: 700;
-      letter-spacing: -.01em; line-height: 1.3;
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: -.01em; line-height: 1.35;
     }
-    .app-card-body { padding: 16px 24px 24px; flex: 1; display: flex; flex-direction: column; }
+    .app-card-body {
+      padding: 14px 22px 22px;
+      flex: 1; display: flex; flex-direction: column;
+    }
     .app-card p {
-      color: var(--muted); font-size: .875rem; line-height: 1.65;
-      flex: 1; margin-bottom: 20px;
+      color: var(--muted); font-size: .85rem; line-height: 1.65;
+      flex: 1; margin-bottom: 18px;
     }
     .app-card-footer {
       display: flex; align-items: center; justify-content: space-between;
-      gap: 8px; padding-top: 16px;
+      gap: 8px; padding-top: 14px;
       border-top: 1px solid var(--border);
     }
-
     .card-support {
-      position: absolute; top: 16px; right: 16px;
-      width: 32px; height: 32px; border-radius: 8px;
+      position: absolute; top: 14px; right: 14px;
+      width: 30px; height: 30px; border-radius: 8px;
       display: inline-flex; align-items: center; justify-content: center;
       background: rgba(255,255,255,.06); color: var(--muted);
-      text-decoration: none; transition: background .2s, color .2s;
-      z-index: 2;
+      text-decoration: none; transition: background .2s, color .2s; z-index: 2;
     }
     .card-support:hover { background: rgba(255,255,255,.12); color: var(--text); }
-    .card-support svg { width: 16px; height: 16px; }
+    .card-support svg { width: 15px; height: 15px; }
 
     /* ── Buttons ── */
     .btn {
@@ -351,88 +409,79 @@
       border: none; cursor: pointer; font-family: inherit;
     }
     .btn-primary {
-      background: var(--accent); color: #fff;
-      box-shadow: 0 4px 16px var(--accent-glow);
+      background: #5b7cfa; color: #fff;
+      border: 1px solid rgba(255,255,255,.1);
+      text-shadow: 0 1px 2px rgba(0,0,0,.2);
+      box-shadow: 0 4px 16px rgba(108,140,255,.35);
     }
     .btn-primary:hover {
-      background: #7d9aff;
-      box-shadow: 0 6px 24px var(--accent-glow);
+      background: #6d8cff;
+      box-shadow: 0 6px 24px rgba(108,140,255,.45);
       transform: translateY(-1px);
     }
     .btn-ghost {
-      background: rgba(255,255,255,.06); color: var(--text);
+      background: rgba(255,255,255,.05); color: var(--text);
       border: 1px solid var(--border);
     }
-    .btn-ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.12); }
+    .btn-ghost:hover { background: rgba(255,255,255,.09); }
     .btn-play {
       background: transparent; color: var(--accent);
-      padding: 8px 0; font-size: .85rem;
+      padding: 6px 0; font-size: .82rem; font-weight: 600;
     }
     .btn-play:hover { color: #a5b8ff; }
-    .btn-play svg { width: 18px; height: 18px; flex-shrink: 0; }
-
-    .play-all {
-      text-align: center; margin-top: 56px;
+    .btn-play svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .btn-muted {
+      background: transparent; color: var(--muted);
+      padding: 6px 0; font-size: .82rem; font-weight: 500;
+      cursor: default; pointer-events: none;
     }
-    .play-all .btn { padding: 14px 28px; font-size: .925rem; }
+
+    .play-all { text-align: center; margin-top: 48px; }
+    .play-all .btn { padding: 13px 26px; }
 
     /* ── Footer ── */
     .footer {
       position: relative; z-index: 1;
       border-top: 1px solid var(--border);
       background: var(--bg-elevated);
-      padding: 48px 24px;
+      padding: 44px 24px;
     }
     .footer-inner {
       max-width: 1160px; margin: 0 auto;
       display: flex; flex-wrap: wrap; align-items: center;
       justify-content: space-between; gap: 24px;
     }
-    .footer-brand {
-      display: flex; align-items: center; gap: 12px;
-    }
+    .footer-brand { display: flex; align-items: center; gap: 12px; }
     .footer-brand .nav-logo { width: 32px; height: 32px; font-size: 14px; }
-    .footer-brand span {
-      font-family: var(--font-display); font-weight: 700; font-size: .95rem;
-    }
-    .footer-links {
-      display: flex; flex-wrap: wrap; gap: 20px;
-      font-size: .875rem;
-    }
-    .footer-links a {
-      color: var(--muted); text-decoration: none; transition: color .2s;
-    }
+    .footer-brand span { font-family: var(--font-display); font-weight: 700; font-size: .95rem; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: .875rem; }
+    .footer-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
     .footer-links a:hover { color: var(--text); }
     .footer-copy {
-      width: 100%;
-      padding-top: 24px; margin-top: 8px;
+      width: 100%; padding-top: 22px; margin-top: 4px;
       border-top: 1px solid var(--border);
-      font-size: .8rem; color: #5c6478;
-      text-align: center;
+      font-size: .78rem; color: #5c6478; text-align: center;
     }
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .featured { grid-template-columns: 1fr; }
-      .featured-visual { min-height: 200px; padding: 40px 24px; }
+      .featured-visual { min-height: 200px; padding: 36px 24px; }
       .featured-content { padding: 28px 24px 32px; }
       .stats-strip { grid-template-columns: 1fr; }
-      .stat-item { padding: 18px; }
-      .nav-links a:not(.btn) { display: none; }
-      .hero { padding: 56px 20px 40px; }
+      .nav-link { display: none; }
+      .hero { padding: 48px 20px 40px; }
       .grid { grid-template-columns: 1fr; }
       .footer-inner { flex-direction: column; text-align: center; }
-      .footer-brand { justify-content: center; }
-      .footer-links { justify-content: center; }
+      .footer-brand, .footer-links { justify-content: center; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
+        animation: none !important; transition: none !important;
         scroll-behavior: auto !important;
       }
-      .app-card:hover, .btn-primary:hover { transform: none; }
+      .app-card:hover, .btn-primary:hover, .btn-nav:hover { transform: none; }
     }
   </style>
 </head>
@@ -446,83 +495,113 @@
         <span class="nav-name">Novixa-Labs</span>
       </a>
       <div class="nav-links">
-        <a href="#apps">Apps</a>
-        <a href="legal.html">Legal</a>
-        <a class="btn btn-primary" href="https://play.google.com/store/apps/developer?id=Novixa-Labs" style="padding:8px 16px;font-size:.8rem;">Google Play</a>
+        <a class="nav-link" href="#apps">Apps</a>
+        <a class="nav-link" href="legal.html">Legal</a>
+        <a class="btn-nav" href="https://play.google.com/store/apps/developer?id=Novixa-Labs">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+          Google Play
+        </a>
       </div>
     </div>
   </nav>
 
   <header class="hero">
-    <div class="hero-badge">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
-      Available on Google Play
-    </div>
-    <h1>Apps crafted for everyday creativity</h1>
-    <p class="tagline">From AI-powered photo tools to games and utilities — we build polished Android experiences that are intuitive, beautiful, and built to last.</p>
+    <p class="hero-eyebrow">Novixa-Labs</p>
+    <h1>Polished Android apps for creativity &amp; everyday life</h1>
+    <p class="tagline">We design and ship Android experiences across creative tools, utilities, and games — built with care, privacy in mind, and optimized for modern devices.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="#apps">Explore our apps</a>
-      <a class="btn btn-ghost" href="mailto:bibi85259@gmail.com?subject=Novixa-Labs%20—%20Contact">Get in touch</a>
+      <a class="btn btn-primary" href="#apps">Browse our apps</a>
+      <a class="btn btn-ghost" href="mailto:bibi85259@gmail.com?subject=Novixa-Labs%20—%20Contact">Contact us</a>
     </div>
   </header>
 
-  <div class="stats-strip" aria-label="Highlights">
-    <div class="stat-item"><strong>7</strong><span>Published apps</span></div>
-    <div class="stat-item"><strong>AI</strong><span>Creative tools</span></div>
-    <div class="stat-item"><strong>Global</strong><span>Play Store reach</span></div>
+  <div class="stats-strip" aria-label="App status overview">
+    <div class="stat-item"><strong class="live">3</strong><span>Live on Play Store</span></div>
+    <div class="stat-item"><strong class="beta">3</strong><span>In beta testing</span></div>
+    <div class="stat-item"><strong class="soon">1</strong><span>Launching soon</span></div>
+  </div>
+
+  <div class="status-legend" aria-hidden="true">
+    <span class="legend-item"><span class="legend-dot live"></span> Live — available now</span>
+    <span class="legend-item"><span class="legend-dot beta"></span> Beta — testing phase</span>
+    <span class="legend-item"><span class="legend-dot soon"></span> Soon — almost ready</span>
   </div>
 
   <main id="main">
     <section id="apps" aria-labelledby="apps-heading">
       <div class="section-header">
-        <h2 id="apps-heading">Our portfolio</h2>
-        <p>Every app is designed, built, and maintained with attention to detail — privacy-conscious and optimized for modern Android devices.</p>
+        <h2 id="apps-heading">Our apps</h2>
+        <p>Tools, creative apps, and games — each built for a specific purpose with a focus on quality and ease of use.</p>
       </div>
 
-      <!-- Featured -->
+      <!-- Featured: Junk Journal -->
       <article class="featured">
         <div class="featured-visual">
-          <div class="featured-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5 10.1 7.6 12 3z" fill="#fff" stroke="none"/>
-              <path d="M18.5 15l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8.8-1.9z" fill="#fff" stroke="none"/>
-            </svg>
-          </div>
+          <div class="featured-icon" aria-hidden="true">📔</div>
         </div>
         <div class="featured-content">
-          <span class="badge">Featured app</span>
-          <h3>MusePrompt: AI Photo Prompts</h3>
-          <p>Your offline visual prompt studio — browse curated categories, assemble stunning AI photo prompts, save favorites, and launch external AI tools. Built for creators who want control without the cloud.</p>
+          <div class="featured-badges">
+            <span class="status status-live">Live</span>
+            <span class="badge-type">Creative tool</span>
+          </div>
+          <h3>Junk Journal: Scrapbook Art</h3>
+          <p>Our flagship creative app — design beautiful digital junk journals with curated papers, ephemera, custom fonts, and export options for print-ready pages. Loved by scrapbookers and journal enthusiasts worldwide.</p>
           <div class="featured-actions">
-            <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.novixalabs.museprompt">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+            <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.novixalabs.junkjournal">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
               Get on Google Play
             </a>
-            <a class="btn btn-ghost" href="museprompt/support.html">Support &amp; legal</a>
+            <a class="btn btn-ghost" href="junk-journal/privacy.html">Privacy policy</a>
           </div>
         </div>
       </article>
 
-      <!-- Creative & Photo -->
+      <!-- Creative & AI Tools -->
       <div class="category">
-        <div class="category-label">Creative &amp; Photo</div>
+        <div class="category-label">Creative &amp; AI tools</div>
         <div class="grid">
 
-          <article class="app-card">
+          <article class="app-card" data-accent="orange">
+            <a class="card-support" href="museprompt/support.html" aria-label="MusePrompt support &amp; legal" title="Support &amp; legal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            </a>
+            <div class="app-card-top">
+              <div class="app-icon muse" aria-hidden="true">✨</div>
+              <div class="app-meta">
+                <div class="app-meta-top">
+                  <span class="type">AI tool</span>
+                  <span class="status status-beta">Beta</span>
+                </div>
+                <h3>MusePrompt: AI Photo Prompts</h3>
+              </div>
+            </div>
+            <div class="app-card-body">
+              <p>Offline visual prompt builder for AI photo generation — browse categories, assemble prompts, save favorites, and open external AI tools. Does not generate images itself.</p>
+              <div class="app-card-footer">
+                <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.novixalabs.museprompt">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+                  View on Play Store
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <article class="app-card" data-accent="green">
             <a class="card-support" href="fourcut/support.html" aria-label="4CUT support &amp; legal" title="Support &amp; legal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/>
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon photo" aria-hidden="true">📷</div>
               <div class="app-meta">
-                <div class="cat">Photo booth</div>
+                <div class="app-meta-top">
+                  <span class="type">Photo booth</span>
+                  <span class="status status-beta">Beta</span>
+                </div>
                 <h3>4CUT: Photo Booth Strips</h3>
               </div>
             </div>
             <div class="app-card-body">
-              <p>Capture four shots in a classic photo booth style — add cute frames, stickers, then save or share your strip. Free with optional Pro upgrade.</p>
+              <p>On-device photo booth — capture four shots, add cute frames and stickers, then save or share your strip. Free with optional Pro upgrade.</p>
               <div class="app-card-footer">
                 <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.novixalabs.fourcut">
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
@@ -532,43 +611,27 @@
             </div>
           </article>
 
-          <article class="app-card">
-            <div class="app-card-top">
-              <div class="app-icon journal" aria-hidden="true">📔</div>
-              <div class="app-meta">
-                <div class="cat">Scrapbook</div>
-                <h3>Junk Journal: Scrapbook Art</h3>
-              </div>
-            </div>
-            <div class="app-card-body">
-              <p>Design beautiful digital junk journals with papers, ephemera, custom fonts, and export options for print-ready pages.</p>
-              <div class="app-card-footer">
-                <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.novixalabs.junkjournal">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
-                  View on Play Store
-                </a>
-              </div>
-            </div>
-          </article>
-
         </div>
       </div>
 
-      <!-- Utilities -->
+      <!-- Utilities / Tools -->
       <div class="category">
-        <div class="category-label">Utilities</div>
+        <div class="category-label">Utilities &amp; tools</div>
         <div class="grid">
 
-          <article class="app-card">
+          <article class="app-card" data-accent="yellow">
             <div class="app-card-top">
               <div class="app-icon battery" aria-hidden="true">🔋</div>
               <div class="app-meta">
-                <div class="cat">Customization</div>
+                <div class="app-meta-top">
+                  <span class="type">Customization</span>
+                  <span class="status status-live">Live</span>
+                </div>
                 <h3>Emoji Battery: Status bar</h3>
               </div>
             </div>
             <div class="app-card-body">
-              <p>Personalize your status bar with custom emoji battery indicators, Wi‑Fi, signal, clock overlays, stickers, and themes.</p>
+              <p>Beautify your phone's status bar — custom emoji battery indicators, Wi‑Fi, signal, clock overlays, stickers, and themes to personalize your device.</p>
               <div class="app-card-footer">
                 <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.cuteemojibattery.statusbar">
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
@@ -578,16 +641,22 @@
             </div>
           </article>
 
-          <article class="app-card">
+          <article class="app-card" data-accent="blue">
+            <a class="card-support" href="smart-tv-remote/support.html" aria-label="TV Remote support" title="Support">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            </a>
             <div class="app-card-top">
               <div class="app-icon tv" aria-hidden="true">📺</div>
               <div class="app-meta">
-                <div class="cat">Smart home</div>
+                <div class="app-meta-top">
+                  <span class="type">TV remote</span>
+                  <span class="status status-live">Live</span>
+                </div>
                 <h3>Android TV Remote: Google TV</h3>
               </div>
             </div>
             <div class="app-card-body">
-              <p>Turn your phone into a full-featured TV remote — device discovery, voice search, shortcuts, and a clean, responsive interface.</p>
+              <p>Control your Android TV from your phone — device discovery, voice search, shortcuts, and a clean remote interface. Free with optional ad removal.</p>
               <div class="app-card-footer">
                 <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.novixalabs.smartatvremote">
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
@@ -605,35 +674,41 @@
         <div class="category-label">Games</div>
         <div class="grid">
 
-          <article class="app-card">
+          <article class="app-card" data-accent="purple">
             <div class="app-card-top">
               <div class="app-icon game" aria-hidden="true">📿</div>
               <div class="app-meta">
-                <div class="cat">Board game</div>
+                <div class="app-meta-top">
+                  <span class="type">Board game</span>
+                  <span class="status status-soon">Soon</span>
+                </div>
                 <h3>12 Beads — Offline Board Game</h3>
               </div>
             </div>
             <div class="app-card-body">
-              <p>Play the classic 12 Tehni / Guti board game offline with smooth animations, multiple themes, and intuitive touch controls.</p>
+              <p>Classic 12 Tehni / Guti board game — play offline with smooth animations, multiple themes, and intuitive touch controls. Almost ready for launch.</p>
               <div class="app-card-footer">
-                <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.novixalabs.beads12">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
-                  View on Play Store
+                <span class="btn btn-muted">Launching soon</span>
+                <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.novixalabs.beads12" style="font-size:.78rem;">
+                  Early access
                 </a>
               </div>
             </div>
           </article>
 
-          <article class="app-card">
+          <article class="app-card" data-accent="indigo">
             <div class="app-card-top">
               <div class="app-icon sleep" aria-hidden="true">😴</div>
               <div class="app-meta">
-                <div class="cat">Casual</div>
+                <div class="app-meta-top">
+                  <span class="type">Fun challenge</span>
+                  <span class="status status-beta">Beta</span>
+                </div>
                 <h3>Drowsy: Yawn Game &amp; Sleep</h3>
               </div>
             </div>
             <div class="app-card-body">
-              <p>A relaxing yawn challenge game with sleep-friendly vibes — compete with friends, build streaks, and wind down your day.</p>
+              <p>A lighthearted yawn challenge game — compete with friends, build streaks, and enjoy sleep-friendly vibes. Built for fun and relaxation.</p>
               <div class="app-card-footer">
                 <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.novixalabs.drowsy">
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
@@ -648,8 +723,8 @@
 
       <div class="play-all">
         <a class="btn btn-ghost" href="https://play.google.com/store/apps/developer?id=Novixa-Labs">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
-          View all apps on Google Play
+          <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+          All Novixa-Labs apps on Google Play
         </a>
       </div>
     </section>
