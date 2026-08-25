@@ -78,7 +78,7 @@
   <li>We do <strong>not</strong> require you to create an account or sign in.</li>
   <li>We do <strong>not</strong> sell your personal information.</li>
   <li>Photos and strips stay <strong>locally on your device</strong> unless you share them yourself.</li>
-  <li>The free version may show <strong>ads</strong>. You can buy a one-time <strong>Pro / Remove Ads</strong> purchase to disable ads and the strip watermark.</li>
+  <li>The free version may show <strong>ads</strong> (banner, interstitial after save/share, optional rewarded video). You can watch a video to unlock one premium frame for 24 hours, or buy a one-time <strong>Pro</strong> purchase to disable ads, unlock all frames, and remove the strip watermark.</li>
   <li>Where required, we show a consent form (Google User Messaging Platform / UMP) before personalized ads.</li>
 </ul>
 
@@ -89,7 +89,7 @@
   <li>Creating a strip from photos you choose in the gallery</li>
   <li>Frames, layouts, stickers, and text styles</li>
   <li>Saving PNG strips to your gallery and sharing via other apps</li>
-  <li>Optional advertising and a one-time in-app purchase to remove ads and the watermark</li>
+  <li>Optional advertising (banner, interstitial, rewarded) and a one-time Pro purchase to remove ads, unlock frames, and remove the watermark</li>
 </ul>
 
 <h2>3. Information We Access</h2>
@@ -118,6 +118,7 @@
   <li>Load and display advertisements (Google AdMob; Unity Ads only as a no-fill fallback)</li>
   <li>Process in-app purchases through Google Play</li>
   <li>Show consent / privacy messaging (UMP) where required</li>
+  <li>Send anonymous analytics and crash reports (Firebase Analytics and Crashlytics)</li>
   <li>Open the Play Store listing or our website when you choose those actions</li>
 </ul>
 
@@ -162,7 +163,7 @@
 </p>
 <p>Google may share with us:</p>
 <ul>
-  <li>Purchase confirmation and product ID (to unlock ad-free / watermark-free mode on your device)</li>
+  <li>Purchase confirmation and product ID (to unlock ads-off, all frames, and watermark-free mode on your device)</li>
   <li>Anonymous transaction tokens required to restore purchases</li>
 </ul>
 <p>
@@ -171,9 +172,9 @@
 
 <h2>6. Analytics &amp; Crash Reporting</h2>
 <p>
-  4CUT does not include a separate developer analytics or crash-reporting service in this release.
-  Google Play and AdMob may provide aggregated technical, purchase, and advertising reports as part of
-  their platform services.
+  4CUT uses <strong>Firebase Analytics</strong> and <strong>Firebase Crashlytics</strong> (Google) for
+  anonymous app events and crash stacks so we can improve stability. These services do not receive your photos.
+  Google Play and AdMob may also provide aggregated technical, purchase, and advertising reports.
 </p>
 
 <h2>7. Sharing</h2>
@@ -218,7 +219,7 @@
 <h2>12. Your Rights and Choices</h2>
 <p>You can:</p>
 <ul>
-  <li>Purchase Pro / Remove Ads to disable advertising and the watermark</li>
+  <li>Purchase Pro to disable advertising, unlock all frames, and remove the watermark</li>
   <li>Use the UMP consent form (where shown) and Android ad settings to manage personalization</li>
   <li>Deny camera or gallery permission (some features will not work)</li>
   <li>Clear app data or uninstall at any time</li>
