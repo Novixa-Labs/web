@@ -38,7 +38,7 @@
 
 <h1>Privacy Policy</h1>
 <p class="subtitle">Android TV Remote: Google TV</p>
-<p class="meta"><strong>Last updated:</strong> August 19, 2026</p>
+<p class="meta"><strong>Last updated:</strong> September 2, 2026</p>
 
 <p>
   <strong>Novixa-Labs</strong> (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates the mobile application
@@ -59,8 +59,8 @@
   <li>We do <strong>not</strong> sell your personal information.</li>
   <li>We do <strong>not</strong> collect your messages, contacts, photos, or browsing history.</li>
   <li>TV pairing details and preferences are stored <strong>on your device</strong>.</li>
-  <li>The free version may show <strong>ads</strong> (banner, native, and interstitial). You can buy a one-time
-    <strong>Remove Ads</strong> purchase to disable ads permanently.</li>
+  <li>The free version may show <strong>ads</strong> (banner, native, and interstitial) from Google AdMob and partners such as
+    InMobi and Unity. You can buy a one-time <strong>Remove Ads</strong> purchase to disable ads permanently.</li>
   <li>Voice search uses your device&apos;s microphone <strong>only when you tap the voice button</strong>.</li>
   <li>We use <strong>Google Firebase</strong> for anonymous usage analytics and crash reporting to improve the app.
     This is separate from advertising and we do not sell this data.</li>
@@ -135,18 +135,25 @@
 <p>
   If you have not purchased Remove Ads, the app may display advertisements through
   <strong>Google AdMob</strong> and <strong>AdMob Mediation</strong> partners. Mediation may include certified
-  networks such as <strong>Meta Audience Network</strong>, <strong>AppLovin</strong>, <strong>Unity Ads</strong>,
-  and <strong>Liftoff (Vungle)</strong>, depending on availability in your region.
+  networks such as <strong>InMobi</strong>, <strong>Unity Ads</strong>, <strong>Meta Audience Network</strong>,
+  <strong>AppLovin</strong>, and <strong>Liftoff (Vungle)</strong>, depending on availability in your region.
 </p>
-<p>These services may collect or receive:</p>
+<p>These services may collect, receive, or share with their partners:</p>
 <ul>
-  <li><strong>Advertising ID</strong> (Android Advertising ID / GAID) and device identifiers permitted by Google Play</li>
-  <li>IP address, device type, OS version, and ad interaction data</li>
-  <li>Approximate location derived from IP (not precise GPS from us)</li>
+  <li><strong>Advertising ID</strong> (Android Advertising ID / GAID) and other device identifiers permitted by Google Play</li>
+  <li>IP address, device type, OS version, language, and ad interaction data (views, clicks, impressions)</li>
+  <li><strong>Approximate location</strong> derived from IP address for ad targeting and measurement</li>
+  <li>Diagnostic and performance data related to ad delivery</li>
 </ul>
 <p>
-  This data is used to deliver, measure, and limit ads, and to prevent fraud. We do not receive your name, email,
-  or contacts from ad networks for advertising purposes.
+  This data is used to deliver, measure, personalize (where allowed), and limit ads, and to prevent fraud.
+  We do not receive your name, email, or contacts from ad networks for advertising purposes.
+</p>
+<p>
+  <strong>Location:</strong> We do <strong>not</strong> access your device&apos;s GPS or precise location.
+  Some ad SDKs (for example InMobi) may declare a location permission in their library manifest; we remove that
+  permission from the published app because we do not use precise location. Ad partners may still infer
+  <strong>approximate</strong> location from your IP address.
 </p>
 <p>
   The app may also use <strong>Unity Ads</strong> as a client-side fallback when mediation returns no ad for certain
@@ -181,11 +188,14 @@
 <p>We do not collect or require:</p>
 <ul>
   <li>Name, email, or phone number (unless you email us for support voluntarily)</li>
-  <li>Precise location (GPS)</li>
+  <li>Precise location (GPS) — we do not request or use device GPS</li>
   <li>Contact list, SMS, call logs, or calendar</li>
   <li>Photos, files, or media from your gallery</li>
 </ul>
-<p>We do not operate user accounts or social login in this app.</p>
+<p>
+  We do not operate user accounts or social login in this app. Approximate location may still be processed by
+  advertising partners from your IP address when ads are shown (see Section 4).
+</p>
 
 <h2>7. Third-Party Services</h2>
 <p>This app uses the following third-party services:</p>
@@ -193,8 +203,9 @@
   <li><strong>Google Firebase Analytics</strong> — app usage and screen analytics (<a href="https://firebase.google.com/support/privacy">Firebase Privacy</a>)</li>
   <li><strong>Firebase Crashlytics</strong> — crash and error reporting (<a href="https://firebase.google.com/support/privacy">Firebase Privacy</a>)</li>
   <li><strong>Google AdMob</strong> — advertising (<a href="https://policies.google.com/privacy">Google Privacy Policy</a>)</li>
-  <li><strong>AdMob Mediation partners</strong> — Meta, AppLovin, Unity, Liftoff (each has its own privacy policy)</li>
-  <li><strong>Unity Ads</strong> — mediation partner and optional client fallback for full-screen ads</li>
+  <li><strong>InMobi</strong> — AdMob mediation partner (<a href="https://www.inmobi.com/privacy-policy/">InMobi Privacy Policy</a>)</li>
+  <li><strong>Unity Ads</strong> — mediation partner and optional client fallback for full-screen ads (<a href="https://unity.com/legal/privacy-policy">Unity Privacy Policy</a>)</li>
+  <li><strong>Other AdMob Mediation partners</strong> — Meta, AppLovin, Liftoff (each has its own privacy policy)</li>
   <li><strong>Google Play Billing</strong> — in-app purchases</li>
 </ul>
 
