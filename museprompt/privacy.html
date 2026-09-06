@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy — MusePrompt: AI Photo Prompts</title>
-  <meta name="description" content="Privacy Policy for MusePrompt: AI Photo Prompts by Novixa-Labs. Local storage, advertising, rewarded unlocks, and billing disclosures." />
+  <meta name="description" content="Privacy Policy for MusePrompt: AI Photo Prompts by Novixa-Labs. Local storage, advertising, consent, notifications, and billing disclosures." />
   <link rel="canonical" href="https://novixa-labs.vercel.app/museprompt/privacy.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Privacy Policy — MusePrompt: AI Photo Prompts" />
-  <meta property="og:description" content="How MusePrompt handles local data, advertising, consent, and billing." />
+  <meta property="og:description" content="How MusePrompt handles local data, advertising, consent, notifications, and billing." />
   <meta property="og:url" content="https://novixa-labs.vercel.app/museprompt/privacy.html" />
   <meta property="og:site_name" content="Novixa-Labs" />
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
@@ -58,7 +58,7 @@
 
 <h1>Privacy Policy</h1>
 <p class="subtitle">MusePrompt: AI Photo Prompts</p>
-<p class="meta"><strong>Last updated:</strong> August 21, 2026</p>
+<p class="meta"><strong>Last updated:</strong> September 6, 2026</p>
 
 <p>
   <strong>Novixa-Labs</strong> (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) operates the mobile application
@@ -79,9 +79,16 @@
   <li>The app does <strong>not</strong> generate images.</li>
   <li>We do <strong>not</strong> require you to create an account or sign in.</li>
   <li>We do <strong>not</strong> sell your personal information.</li>
-  <li>Saved prompts, history, and preferences are stored <strong>locally on your device</strong> (SQLite and preferences).</li>
-  <li>The free version may show <strong>ads</strong> (banner and interstitial). You can watch an optional <strong>rewarded</strong> video to unlock a single Pro prompt style, or buy a one-time <strong>MusePrompt Pro</strong> purchase to remove all ads and unlock every Pro style.</li>
-  <li>Where required, we show a consent form (Google User Messaging Platform / UMP) before personalized ads.</li>
+  <li>Saved prompts, folders, history, and preferences are stored <strong>locally on your device</strong> (SQLite and preferences).</li>
+  <li>The free version may show <strong>ads</strong> (banner, native, and interstitial) from Google AdMob and partners such as
+    InMobi and Unity. You can watch an optional <strong>rewarded</strong> video to unlock a single Pro prompt style, or buy a one-time
+    <strong>MusePrompt Pro</strong> purchase to remove all ads and unlock every Pro style.</li>
+  <li>Where required by law, we show a consent form (<strong>Google User Messaging Platform / UMP</strong>) before personalized ads.
+    In supported regions you can reopen ad privacy choices from the Me screen.</li>
+  <li>We use <strong>Google Firebase</strong> for anonymous usage analytics and crash reporting to improve the app.
+    This is separate from advertising and we do not sell this data.</li>
+  <li>The app may schedule a <strong>local reminder notification</strong> if you have used the app and then stay away for a while.
+    You can disable notifications in Android system settings.</li>
 </ul>
 
 <h2>2. What the App Does</h2>
@@ -91,7 +98,9 @@
   <li>Assembling prompts from visual options and text choices</li>
   <li>Saving, organizing, copying, and reviewing prompts on your device</li>
   <li>Opening external sites or apps (for example Gemini, ChatGPT, Midjourney, Flux, or Stable Diffusion) so you can paste a prompt there</li>
-  <li>Optional advertising (banner, interstitial, and optional rewarded videos to unlock individual Pro styles) and a one-time in-app purchase for Pro</li>
+  <li>Optional advertising (banner, native, interstitial, and optional rewarded videos to unlock individual Pro styles) and a one-time in-app purchase for Pro</li>
+  <li>Anonymous usage analytics and crash reporting (Firebase) to improve stability and features</li>
+  <li>Optional local idle reminders via Android notifications</li>
 </ul>
 <p>
   MusePrompt is <strong>not</strong> an image generator and is <strong>not affiliated with</strong> Google, OpenAI,
@@ -104,9 +113,10 @@
 <p>The app saves data on your phone using local storage, including:</p>
 <ul>
   <li><strong>SQLite database</strong> — catalogue seed data, saved prompts, folders, history, and related builder selections</li>
-  <li><strong>Shared preferences / settings</strong> — theme, onboarding state, haptics, and similar preferences you choose</li>
+  <li><strong>Shared preferences / settings</strong> — theme, language, onboarding state, haptics, default AI target, and similar preferences you choose</li>
   <li>Whether you purchased MusePrompt Pro (premium entitlement flag on device)</li>
   <li>Which individual Pro prompt styles you unlocked by watching a rewarded ad</li>
+  <li>Retention timestamps used only to decide whether to schedule an optional idle reminder</li>
 </ul>
 <p>
   This data stays on your device unless you clear app data or uninstall the app. We do not operate a cloud account
@@ -120,34 +130,73 @@
   <li>Process in-app purchases through Google Play</li>
   <li>Show consent / privacy messaging (UMP) where required</li>
   <li>Send anonymous analytics events and crash reports to Firebase (Google) in release builds</li>
+  <li>Open external websites or apps when you choose to launch an AI tool</li>
 </ul>
 <p>
   Core prompt browsing and assembly are designed to work offline using the on-device library. Opening external tools
   requires network access and is subject to those third parties&apos; own terms and privacy policies.
 </p>
 
-<h3>C. Advertising ID (AD_ID)</h3>
+<h3>C. Notifications (optional)</h3>
 <p>
-  When ads are enabled and you have not purchased Pro / Remove Ads, the app may use the Android Advertising ID
-  (GAID) as permitted by Google Play, together with Google AdMob and related partners, to deliver and measure ads.
+  If you have engaged with the app and later stay away, MusePrompt may schedule a <strong>single local reminder</strong>
+  notification (for example after one day) encouraging you to return. Notifications are delivered by Android on your
+  device; we do not receive the text of your prompts through this feature. You can turn off notifications at any time in
+  <strong>Android Settings → Apps → MusePrompt → Notifications</strong>.
 </p>
 
-<h2>4. Advertising, Consent &amp; Advertising ID</h2>
+<h3>D. Analytics and crash reporting (Firebase)</h3>
+<p>
+  We use <strong>Google Firebase Analytics</strong> and <strong>Firebase Crashlytics</strong> to understand
+  how the app is used and to diagnose crashes. These services are provided by Google and are
+  <strong>not used to sell your personal information</strong>.
+</p>
+<p>Firebase may collect or receive:</p>
+<ul>
+  <li>App version, device model, and Android OS version</li>
+  <li>Screen views, session duration, and general usage events (for example: Pro unlocked, category opened)</li>
+  <li>Crash logs, error messages, and stack traces when the app fails</li>
+  <li>An app instance identifier (we do not receive your name, email, or contacts from Firebase for this purpose)</li>
+</ul>
+<p>
+  We use this information only to measure performance, understand which features are used, and fix bugs.
+  Firebase may process data on servers operated by Google. See
+  <a href="https://firebase.google.com/support/privacy">Firebase Privacy</a> and
+  <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.
+  Analytics and Crashlytics collection are disabled in debug developer builds.
+</p>
+
+<h2>4. Advertising &amp; Advertising ID</h2>
 <p>
   If you have not purchased MusePrompt Pro, the app may display advertisements through
-  <strong>Google AdMob</strong> and, as a no-fill fallback, <strong>Unity Ads</strong> for full-screen
-  interstitial and rewarded videos. Google, Unity, and authorized partners may process ad data
-  according to their policies and your consent choices.
+  <strong>Google AdMob</strong> and <strong>AdMob Mediation</strong> partners. Mediation may include certified
+  networks such as <strong>InMobi</strong>, <strong>Unity Ads</strong>, <strong>Meta Audience Network</strong>,
+  <strong>AppLovin</strong>, and <strong>Liftoff (Vungle)</strong>, depending on availability in your region.
 </p>
-<p>These services may collect or receive:</p>
+<p>Ad formats may include banner ads, native ads, interstitial ads, and optional rewarded videos (to unlock individual Pro styles).</p>
+<p>These services may collect, receive, or share with their partners:</p>
 <ul>
-  <li><strong>Advertising ID</strong> and device identifiers permitted by Google Play</li>
-  <li>IP address, device type, OS version, and ad interaction data</li>
-  <li>Approximate location derived from IP (not precise GPS from us)</li>
+  <li><strong>Advertising ID</strong> (Android Advertising ID / GAID) and other device identifiers permitted by Google Play</li>
+  <li>IP address, device type, OS version, language, and ad interaction data (views, clicks, impressions)</li>
+  <li><strong>Approximate location</strong> derived from IP address for ad targeting and measurement</li>
+  <li>Diagnostic and performance data related to ad delivery</li>
 </ul>
+<p>
+  This data is used to deliver, measure, personalize (where allowed), and limit ads, and to prevent fraud.
+  We do not receive your name, email, or contacts from ad networks for advertising purposes.
+</p>
+<p>
+  <strong>Location:</strong> We do <strong>not</strong> access your device&apos;s GPS or precise location.
+  Ad partners may still infer <strong>approximate</strong> location from your IP address.
+</p>
+<p>
+  The app may also use <strong>Unity Ads</strong> as a client-side fallback when mediation returns no ad for certain
+  full-screen placements.
+</p>
 <p>
   Where required by law or Google policy (for example EEA/UK), the app uses
   <strong>Google User Messaging Platform (UMP)</strong> so you can manage consent for personalized ads and related vendors.
+  When UMP requires it, an <strong>Ad privacy choices</strong> entry appears in the Me screen.
 </p>
 <p>
   You can also limit ad personalization in <strong>Android Settings → Google → Ads</strong>, watch an
@@ -172,37 +221,42 @@
   <li>Anonymous transaction tokens required to restore purchases</li>
 </ul>
 <p>
-  Purchase history is managed by Google Play. Use restore purchases in the app if you reinstall on the same Google account.
+  Purchase history is managed by Google Play. The app automatically checks for an existing Pro purchase on launch.
+  You can also tap <strong>Restore purchases</strong> inside the Go Pro sheet if you reinstall on the same Google account.
 </p>
 
-<h2>6. Analytics &amp; Crash Reporting</h2>
+<h2>6. Information We Do Not Collect</h2>
+<p>We do not collect or require:</p>
+<ul>
+  <li>Name, email, or phone number for an account (unless you email us for support voluntarily)</li>
+  <li>Precise location (GPS) — we do not request or use device GPS</li>
+  <li>Contact list, SMS, call logs, or calendar</li>
+  <li>Your photo gallery as a required permission for core features</li>
+</ul>
 <p>
-  MusePrompt uses <strong>Google Firebase Analytics</strong> and <strong>Firebase Crashlytics</strong> to understand
-  anonymous usage (for example screen views and whether Pro was unlocked) and to diagnose crashes.
-  Collection is used to improve stability and features. We do not sell this data. Crashlytics and Analytics
-  collection are disabled in debug developer builds.
-</p>
-<p>
-  Google Play and AdMob may also provide aggregated technical, purchase, and advertising reports as part of
-  their platform services.
+  We do not operate user accounts, social login, or cloud sync for prompts in this app. Approximate location may still
+  be processed by advertising partners from your IP address when ads are shown (see Section 4).
 </p>
 
-<h2>7. External Links &amp; Third-Party Tools</h2>
+<h2>7. Third-Party Services</h2>
+<p>This app uses the following third-party services:</p>
+<ul>
+  <li><strong>Google Firebase Analytics</strong> — app usage and screen analytics (<a href="https://firebase.google.com/support/privacy">Firebase Privacy</a>)</li>
+  <li><strong>Firebase Crashlytics</strong> — crash and error reporting (<a href="https://firebase.google.com/support/privacy">Firebase Privacy</a>)</li>
+  <li><strong>Google AdMob</strong> — advertising (<a href="https://policies.google.com/privacy">Google Privacy Policy</a>)</li>
+  <li><strong>InMobi</strong> — AdMob mediation partner (<a href="https://www.inmobi.com/privacy-policy/">InMobi Privacy Policy</a>)</li>
+  <li><strong>Unity Ads</strong> — mediation partner and optional client fallback for full-screen ads (<a href="https://unity.com/legal/privacy-policy">Unity Privacy Policy</a>)</li>
+  <li><strong>Other AdMob Mediation partners</strong> — Meta, AppLovin, Liftoff (each has its own privacy policy)</li>
+  <li><strong>Google Play Billing</strong> — in-app purchases</li>
+  <li><strong>External AI tools</strong> — only when you choose to open them; governed by their own policies</li>
+</ul>
+
+<h2>8. External Links &amp; Third-Party Tools</h2>
 <p>
   When you choose to open an external AI tool, the app may copy your prompt to the clipboard and launch a website or
   application you select. Those destinations are outside our control. Their privacy practices are governed by their
   own policies. Do not paste sensitive personal information into prompts you send to third-party services.
 </p>
-
-<h2>8. Information We Do Not Collect</h2>
-<p>We do not collect or require:</p>
-<ul>
-  <li>Name, email, or phone number for an account (unless you email us for support voluntarily)</li>
-  <li>Precise location (GPS)</li>
-  <li>Contact list, SMS, call logs, or calendar</li>
-  <li>Your photo gallery as a required permission for core features</li>
-</ul>
-<p>We do not operate user accounts, social login, or cloud sync for prompts in this app.</p>
 
 <h2>9. Children&apos;s Privacy</h2>
 <p>
@@ -215,7 +269,8 @@
   <li>Local prompts, history, and preferences remain on your device until you clear app data or uninstall.</li>
   <li>Because there is <strong>no account</strong>, there is no separate &quot;delete my account&quot; page or online account wipe.</li>
   <li>Support emails are kept only as long as needed to respond to your request.</li>
-  <li>Ad and billing providers retain data according to their own policies and your device settings.</li>
+  <li>Ad partners retain data according to their own policies and your device settings.</li>
+  <li>Analytics and crash data in Firebase is retained according to Google&apos;s default retention periods and is not linked to your identity by us.</li>
 </ul>
 <p>
   <strong>To remove all app data from your device:</strong> Android Settings → Apps → MusePrompt → Storage → Clear data,
@@ -231,8 +286,10 @@
 <h2>12. Your Rights and Choices</h2>
 <p>You can:</p>
 <ul>
-  <li>Purchase Pro / Remove Ads to disable advertising</li>
-  <li>Use the UMP consent form (where shown) and Android ad settings to manage personalization</li>
+  <li>Purchase MusePrompt Pro to disable advertising</li>
+  <li>Use the UMP consent form and, where shown, <strong>Ad privacy choices</strong> in the Me screen to manage personalization</li>
+  <li>Reset or opt out of personalized ads in Android ad settings</li>
+  <li>Disable notifications in Android system settings</li>
   <li>Clear app data or uninstall at any time</li>
   <li>Contact us to ask questions about this policy</li>
 </ul>
@@ -240,7 +297,7 @@
 <h2>13. International Users</h2>
 <p>
   The app is offered globally. Data processed on your device is controlled by you on your device.
-  Ad and payment providers may process data in various countries according to their policies.
+  Ad and payment partners may process data in various countries according to their policies.
 </p>
 
 <h2>14. Changes to This Policy</h2>
@@ -261,6 +318,10 @@
 <p>
   For privacy questions or requests, email <strong>bibi85259@gmail.com</strong> with the subject
   <strong>&quot;Novixa-Labs — Privacy — MusePrompt: AI Photo Prompts&quot;</strong>.
+</p>
+<p>
+  <strong>Disclaimer:</strong> MusePrompt is an independent app and is not affiliated with, endorsed by, or sponsored by
+  Google LLC, OpenAI, Midjourney, Black Forest Labs, Stability AI, or other third-party AI services referenced in the app.
 </p>
 
 </main>
