@@ -76,6 +76,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://novixa-labs.vercel.app/bead-12/support.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://novixa-labs.vercel.app/junk-journal/privacy.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
