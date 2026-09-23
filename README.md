@@ -13,7 +13,7 @@ Static publisher site for Novixa-Labs Android apps.
 | `legal.html` | Legal hub (Play Console policy URLs) |
 | `museprompt/` | MusePrompt privacy, terms, support |
 | `fourcut/` | 4CUT privacy, terms, support |
-| `emoji-battery/`, `smart-tv-remote/`, `bead-12/`, `junk-journal/`, `drowsy/` | Existing app policies |
+| `emoji-battery/`, `smart-tv-remote/`, `bead-12/`, `junk-journal/`, `drowsy/`, `unsent-journal/` | App policies (8 apps on home page) |
 | `app-ads.txt` | AdMob authorized sellers |
 | `robots.txt` / `sitemap.xml` | Crawling |
 | `favicon.svg` / `site.webmanifest` | Branding |
