@@ -56,14 +56,11 @@ let rtcFrameCount = 0; // frames decoded since the current ICE connection came u
 let rtcStartupTimer = null;
 const rtcPending = [];
 
-// SECURE: Netlify Function that returns metered.ca ephemeral iceServers JSON (see
-// netlify/functions/turn.js). Same-origin path. Until METERED_APP/METERED_API_KEY env vars are
-// set on Netlify, it returns nothing and we gracefully fall back to the static creds below.
+// Vercel route /api/tapdesk-turn. Cloudflare TURN when those env vars are set, otherwise
+// the static relay below.
 const TURN_ENDPOINT = "/api/tapdesk-turn";
 
 // Fallback static ICE (used only if TURN_ENDPOINT is empty or unreachable).
-// TapDesk's own metered.ca (novixa-labs) account. Once the Worker is live, you can blank these
-// so the page ships with zero credentials.
 const RTC_TURN_USER = "246e7ed24965223aed07607b";
 const RTC_TURN_PASS = "SunvaF+ENb/YXCp7";
 const RTC_ICE = {
@@ -78,8 +75,7 @@ const RTC_ICE = {
 let cachedIce = null;
 async function getIceConfig() {
   if (cachedIce) return cachedIce;
-  // Always keep the known-good static TURN creds, and ADD any ephemeral ones from the function.
-  // This way the Netlify function can never be a single point of failure for cross-network video.
+  // Keep the static relay, and add any servers the Vercel route returns.
   let servers = RTC_ICE.iceServers.slice();
   if (TURN_ENDPOINT) {
     try {
