@@ -44,7 +44,18 @@
   <li><strong>Another network (Secure Link)</strong> — the phone and browser exchange the session, including the screen for that session, through a connection service. When a direct path is possible, video prefers a peer-to-peer WebRTC link. A TURN relay is used only when a direct path is not possible. Novixa-Labs does not keep a recording of your screen.</li>
 </ul>
 
-<h2>3. Ads and one-time purchases</h2>
+<h2>3. Network &amp; Tools</h2>
+<p>TapDesk includes a Network &amp; Tools screen with utilities that work on the device itself. These help you set up and troubleshoot a connection.</p>
+<ul>
+  <li><strong>Local network details</strong> — your local IP, gateway, subnet, DNS, and (on Wi-Fi) band, frequency, link speed, and signal strength are read from the device using standard Android network APIs. TapDesk does <strong>not</strong> request location permission, and it does not read your Wi-Fi network name (SSID).</li>
+  <li><strong>Public IP</strong> — when you open the screen, TapDesk asks a public endpoint (<code>api.ipify.org</code>) to report the IP your network presents to the internet. Only your existing IP address is involved in that request.</li>
+  <li><strong>Speed test</strong> — when you tap Run, TapDesk measures download, upload, ping, and jitter by transferring test data to and from Cloudflare’s open speed-test endpoints (<code>speed.cloudflare.com</code>). This uses mobile or Wi-Fi data. No personal data is sent.</li>
+  <li><strong>Reachability</strong> — when you enter a host and port and tap Check, TapDesk opens a test connection to that address you typed to see whether it responds. No data is sent to it.</li>
+  <li><strong>Device details</strong> — model, Android version, screen, memory, storage, and uptime are read on the device and shown to you. They are not uploaded.</li>
+  <li><strong>Received files</strong> — files a browser session sends you are saved to your Downloads. TapDesk keeps a short on-device list of their names and times so you can find them. That list stays on the phone.</li>
+</ul>
+
+<h2>4. Ads and one-time purchases</h2>
 <p>Same Wi-Fi connects the browser directly on your network. Starting that session can use an optional video you choose to watch, or Remove Ads / Premium. It does not require a Google account. Ads, when shown, appear on Home and Settings while the app is open, including during a session. A full-screen ad is not shown when the app opens or resumes. It can appear after you tap Back or Stop, once a browser has connected, and not in the same moment as a rewarded video.</p>
 <p>Secure Link is the path for a computer that is not on the same Wi-Fi. The first successful Secure Link session is free on the Google account you sign in with. After that, you can watch an optional video for one more session, a few times a day. Watching is your choice. A failed connection does not use up the free session.</p>
 <p>These are one-time Google Play products, not subscriptions, and they stay on your Google account:</p>
@@ -55,17 +66,17 @@
 </ul>
 <p>Purchases are processed by Google. Where required, we show Google’s consent form before requesting personalized ads. Ads are served through Google AdMob. Unity Ads and InMobi may compete in that auction, and Unity Ads is also used if AdMob has no ad to show. TapDesk may use the Android advertising ID for that advertising. You can reset or delete the advertising ID in your device settings.</p>
 
-<h2>4. Analytics and crashes</h2>
+<h2>5. Analytics and crashes</h2>
 <p>We use Google Firebase Analytics and Crashlytics to understand feature use and fix crashes. This is separate from advertising. We do not sell this data. You can limit ad personalization in your device settings and, where offered, in Ad privacy inside the app.</p>
 
-<h2>5. What we do not do</h2>
+<h2>6. What we do not do</h2>
 <ul>
   <li>We do not sell personal information.</li>
   <li>We do not use the app to secretly watch another person.</li>
   <li>We do not direct TapDesk at children under 13.</li>
 </ul>
 
-<h2>6. Contact</h2>
+<h2>7. Contact</h2>
 <p>Novixa-Labs · <a href="mailto:bibi85259@gmail.com">bibi85259@gmail.com</a><br>
 Website: <a href="https://novixa-labs.vercel.app/tapdesk/">novixa-labs.vercel.app/tapdesk</a></p>
 </body>
