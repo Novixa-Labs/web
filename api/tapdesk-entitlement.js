@@ -9,6 +9,9 @@
  * The phone sends a Google ID token once, then a session token.
  * Same Wi-Fi never calls this route.
  */
+const GOOGLE_WEB_CLIENT_ID =
+  process.env.GOOGLE_WEB_CLIENT_ID ||
+  "155454034563-3fbonqhlcskh6n2oke10n7cc18ake8q8.apps.googleusercontent.com";
 const REWARDED_PER_DAY = 2;
 const SESSION_TTL_SEC = 60 * 60 * 24 * 30;
 
@@ -27,7 +30,7 @@ module.exports = async function handler(req, res) {
   }
 
   const configured = Boolean(
-    process.env.GOOGLE_WEB_CLIENT_ID &&
+    GOOGLE_WEB_CLIENT_ID &&
       process.env.UPSTASH_REDIS_REST_URL &&
       process.env.UPSTASH_REDIS_REST_TOKEN
   );
@@ -134,7 +137,7 @@ function payload(session, state, error) {
 }
 
 async function googleSub(idToken) {
-  const clientId = process.env.GOOGLE_WEB_CLIENT_ID;
+  const clientId = GOOGLE_WEB_CLIENT_ID;
   const response = await fetch(
     "https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(idToken)
   );

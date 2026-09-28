@@ -1,5 +1,5 @@
 /* TapDesk Connect — LAN-parity console over Secure Link (MQTT) */
-const BROKER = "wss://broker.emqx.io:8084/mqtt";
+const BROKER = "wss://ffcc655fc92742cc88ae9b659f0bef6c.s1.eu.hivemq.cloud:8884/mqtt";
 
 const roomGate = document.getElementById("roomGate");
 const loginGate = document.getElementById("loginGate");
