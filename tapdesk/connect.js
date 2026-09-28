@@ -720,6 +720,8 @@ function joinRoom(opts) {
   try {
     mqttClient = mqtt.connect(BROKER, {
       clientId,
+      username: "tapdesk-remote-device",
+      password: "tapDesk##@@",
       clean: true,
       reconnectPeriod: 2000,
       connectTimeout: 10000,
