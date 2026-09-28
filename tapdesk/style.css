@@ -1,15 +1,19 @@
 :root {
-  --bg: #0b1210;
-  --bg-2: #12201a;
-  --panel-2: #1a2b24;
-  --text: #eef6f1;
-  --muted: #8fa399;
-  --accent: #19a56f;
-  --accent-2: #12835a;
-  --danger: #c2413a;
-  --line: #24362e;
+  /* Unified with the TapDesk app palette (Obsidian + ice cyan). */
+  --bg: #070B12;
+  --bg-2: #121826;
+  --panel-2: #141B27;
+  --text: #E8EEF8;
+  --muted: #8B98AD;
+  --accent: #2EE6C7;
+  --accent-2: #14B8A6;
+  --danger: #F87171;
+  --line: #2A384C;
   --screen: #000;
   --header-h: 48px;
+  --radius: 14px;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  --shadow-accent: 0 8px 24px rgba(46, 230, 199, 0.22);
   font-family: "Outfit", "Segoe UI", sans-serif;
 }
 
@@ -411,6 +415,52 @@ h2 {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ---------- Premium polish ---------- */
+.brand-mark {
+  color: #04221C;
+  border-radius: 16px;
+  box-shadow: var(--shadow-accent);
+}
+.login-card,
+.room-card {
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+input {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(46, 230, 199, 0.18);
+}
+button {
+  transition: transform 0.1s ease, background 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+button:active { transform: scale(0.98); }
+.room-card button,
+.login-card button[type="submit"],
+button.accent,
+button.btn-open,
+.btn-open {
+  color: #04221C;
+  box-shadow: var(--shadow-accent);
+}
+.room-card button:hover,
+.login-card button[type="submit"]:hover,
+button.accent:hover,
+button.btn-open:hover {
+  filter: brightness(1.06);
+}
+.console-header {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.panel::-webkit-scrollbar { width: 8px; }
+.panel::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+.panel::-webkit-scrollbar-track { background: transparent; }
 
 @media (max-width: 900px) {
   html, body { overflow: auto; height: auto; }
