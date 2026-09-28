@@ -98,7 +98,7 @@ async function getIceConfig() {
    creating a second session. Stored: { room, token, ts }. */
 const SESSION_KEY = "tapdesk_connect_session";
 const SESSION_TTL_MS = 20 * 60 * 60 * 1000; // stay under the phone's 24h session TTL
-let resumeToken = "";
+let joinAlerted = false;
 let resuming = false;
 
 function saveSession(roomCode, token) {
@@ -144,6 +144,14 @@ function setRoomStatus(t, kind) {
   roomStatus.classList.remove("is-error", "is-ok");
   if (kind === "error") roomStatus.classList.add("is-error");
   if (kind === "ok") roomStatus.classList.add("is-ok");
+}
+function hardFail(message) {
+  setRoomStatus(message, "error");
+  setJoinBusy(false);
+  if (!joinAlerted) {
+    joinAlerted = true;
+    window.alert(message);
+  }
 }
 function setStatus(t) {
   statusLine.textContent = t;
@@ -687,13 +695,14 @@ function joinRoom(opts) {
     return;
   }
   if (typeof mqtt === "undefined" || !mqtt.connect) {
-    setRoomStatus("Connect page failed to load. Hard-refresh (Ctrl+F5) and try again.", "error");
+    hardFail("Connect page failed to load. Hard-refresh (Ctrl+F5) and try again.");
     return;
   }
 
   // Only a page-load resume uses the saved token; a manual "Continue" always asks for the PIN.
   resuming = !!(opts && opts.resume && resumeToken);
   if (!resuming) resumeToken = "";
+  joinAlerted = false;
 
   authed = false;
   phoneReady = false;
@@ -720,8 +729,7 @@ function joinRoom(opts) {
     });
   } catch (err) {
     clearTimeout(connectWatch);
-    setJoinBusy(false);
-    setRoomStatus("Couldn’t start connection. Hard-refresh and try again.", "error");
+    hardFail("Couldn’t start the connection. Hard-refresh and try again.");
     return;
   }
 
@@ -749,13 +757,11 @@ function joinRoom(opts) {
         if (tries >= 25) {
           clearInterval(waitTimer);
           waitTimer = null;
-          setRoomStatus(
+          hardFail(
             "Phone not found for " +
               room +
-              ". On phone: Other network → Start room (status should say waiting), then try again.",
-            "error"
+              ". On the phone, open Secure Link and tap Start room. The status should say it is waiting. Then try this room code again."
           );
-          setJoinBusy(false);
         }
       }, 1000);
     };
@@ -776,13 +782,11 @@ function joinRoom(opts) {
 
   mqttClient.on("error", (err) => {
     clearTimeout(connectWatch);
-    setRoomStatus(
-      "Couldn’t reach the link service. Check internet" +
+    hardFail(
+      "Couldn’t reach the connection service. Check the computer’s internet" +
         (err && err.message ? " (" + err.message + ")" : "") +
-        ".",
-      "error"
+        ". Same Wi-Fi control does not use this page."
     );
-    setJoinBusy(false);
   });
 
   mqttClient.on("close", () => {

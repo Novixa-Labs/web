@@ -31,7 +31,8 @@
   <li>The launcher icon stays visible. TapDesk does not hide itself.</li>
   <li>A remote session starts only after you open it in the app and enter the pairing PIN on the computer.</li>
   <li>You can stop a session in the app, turn off Accessibility, stop screen capture, or uninstall at any time.</li>
-  <li>We do not require a TapDesk account.</li>
+  <li>Same Wi-Fi does not ask you to sign in.</li>
+  <li>Secure Link’s one free session is remembered on the Google account you choose, so reinstalling the app does not grant that free session again. We store an account id for that purpose. We do not fingerprint the phone.</li>
 </ul>
 
 <h2>2. Information used to run a session</h2>
@@ -40,11 +41,19 @@
   <li><strong>Accessibility</strong> — not an accessibility tool for disabilities. Before you can turn it on, TapDesk shows a disclosure. You then enable the service yourself in Android settings. It performs taps, swipes, navigation, and text input requested from a browser session you paired. It does not decide or act on its own, and it does not bypass Android security screens on its own.</li>
   <li><strong>Pairing PIN and room code</strong> — generated on the phone so the computer can join. Treat them as secrets.</li>
   <li><strong>Same Wi-Fi</strong> — traffic stays between the phone and the computer on your local network. The desk page is loaded from our website and then served by the phone so the browser can reach it.</li>
-  <li><strong>Another network</strong> — the phone and browser meet through an encrypted WebRTC connection. A public MQTT broker carries signaling only (not a stored screen recording). A TURN relay may be used when a direct path is impossible.</li>
+  <li><strong>Another network (Secure Link)</strong> — the phone and browser exchange the session, including the screen for that session, through a connection service. When a direct path is possible, video prefers a peer-to-peer WebRTC link. A TURN relay is used only when a direct path is not possible. Novixa-Labs does not keep a recording of your screen.</li>
 </ul>
 
-<h2>3. Ads and TapDesk Pro</h2>
-<p>Same Wi-Fi remote control is free. The free app may show a banner at the top of the screen and a limited number of full-screen ads after you take an action (at most a few per visit, with a pause between them). Secure Link, for a computer that is not on the same Wi-Fi, can be opened for one session by watching an optional rewarded video. <strong>TapDesk Pro</strong> (product id <code>tapdesk_pro</code>) is a one-time Google Play purchase on your Google account. It removes ads and includes Secure Link without a video each time. Same Wi-Fi stays free either way. Purchases are processed by Google. Where required, we show Google’s consent form before requesting personalized ads. Advertising partners may include Google AdMob and, as a fallback, Unity Ads.</p>
+<h2>3. Ads and one-time purchases</h2>
+<p>Same Wi-Fi remote control is free and does not require an account. Ads, when shown, appear on Home and Settings only. They are not shown over the phone screen, while you are connecting, or while a remote session is active. A full-screen ad may appear after you stop a session, with a pause between ads and a limit per visit.</p>
+<p>Secure Link is the path for a computer that is not on the same Wi-Fi. The first successful Secure Link session is free on the Google account you sign in with. After that, you can watch an optional video for one more session, a few times a day. Watching is your choice. A failed connection does not use up the free session.</p>
+<p>These are one-time Google Play products, not subscriptions, and they stay on your Google account:</p>
+<ul>
+  <li><strong>Remove Ads</strong> (<code>tapdesk_remove_ads</code>, $2.99) — removes banners and full-screen ads. It does not include Secure Link.</li>
+  <li><strong>Secure Link</strong> (<code>tapdesk_secure_link</code>, $4.99) — unlimited Secure Link. It does not remove ads.</li>
+  <li><strong>TapDesk Premium</strong> (<code>tapdesk_premium</code>, $6.99) — Secure Link and Remove Ads together.</li>
+</ul>
+<p>Purchases are processed by Google. Where required, we show Google’s consent form before requesting personalized ads. Advertising partners may include Google AdMob and, as a fallback, Unity Ads.</p>
 
 <h2>4. Analytics and crashes</h2>
 <p>We use Google Firebase Analytics and Crashlytics to understand feature use and fix crashes. This is separate from advertising. We do not sell this data. You can limit ad personalization in your device settings and, where offered, in Ad privacy inside the app.</p>

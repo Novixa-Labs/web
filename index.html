@@ -235,6 +235,7 @@
 
     /* ── Featured ── */
     .featured {
+      position: relative;
       display: grid; grid-template-columns: 1fr 1.25fr;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -279,7 +280,7 @@
       object-fit: cover; display: block;
     }
     .featured-content {
-      padding: 40px 40px 40px 36px;
+      padding: 40px 48px 40px 36px;
       display: flex; flex-direction: column; justify-content: center;
     }
     .featured-badges {
@@ -370,7 +371,7 @@
     .app-card[data-accent="indigo"] { --card-accent: #818cf8; }
 
     .app-card-top {
-      padding: 22px 22px 0;
+      padding: 22px 40px 0 22px;
       display: flex; align-items: flex-start; gap: 14px;
     }
     .app-icon {
@@ -396,9 +397,12 @@
 
     .app-meta { flex: 1; min-width: 0; }
     .app-meta-top {
-      display: flex; align-items: center; justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
       gap: 8px; margin-bottom: 6px;
     }
+    .app-meta-top .status { justify-self: end; }
     .app-meta .type {
       font-size: .68rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: .06em;
@@ -418,19 +422,20 @@
       flex: 1; margin-bottom: 18px;
     }
     .app-card-footer {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center;
+      min-height: 32px;
       gap: 8px; padding-top: 14px;
       border-top: 1px solid var(--border);
     }
-    .card-support {
+    .card-privacy {
       position: absolute; top: 14px; right: 14px;
-      width: 30px; height: 30px; border-radius: 8px;
+      width: 32px; height: 32px; border-radius: 8px;
       display: inline-flex; align-items: center; justify-content: center;
       background: rgba(255,255,255,.06); color: var(--muted);
       text-decoration: none; transition: background .2s, color .2s; z-index: 2;
     }
-    .card-support:hover { background: rgba(255,255,255,.12); color: var(--text); }
-    .card-support svg { width: 15px; height: 15px; }
+    .card-privacy:hover { background: rgba(255,255,255,.12); color: var(--text); }
+    .card-privacy svg { width: 16px; height: 16px; }
 
     /* ── Buttons ── */
     .btn {
@@ -566,20 +571,21 @@
 
       <!-- Featured: TapDesk -->
       <article class="featured tapdesk">
+        <a class="card-privacy" href="tapdesk/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="TapDesk privacy policy" title="Privacy policy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </a>
         <div class="featured-visual">
           <div class="featured-icon" aria-hidden="true">TD</div>
         </div>
         <div class="featured-content">
           <div class="featured-badges">
             <span class="status status-beta">Closed testing</span>
-            <span class="badge-type">Flagship remote desk</span>
+            <span class="badge-type">Remote control</span>
           </div>
-          <h3>TapDesk: Remote Phone</h3>
-          <p>Control your Android phone from a browser. Same Wi-Fi is free. Secure Link reaches another network with one short video, or TapDesk Pro removes ads and includes it. You start every session and can stop it.</p>
+          <h3>TapDesk: Phone Remote Control</h3>
+          <p>Control your Android phone from a browser. Same Wi-Fi is free. Secure Link includes one free session, then a short video or a one-time unlock. You start every session and can stop it.</p>
           <div class="featured-actions">
             <a class="btn btn-primary" href="tapdesk/">Open Connect</a>
-            <a class="btn btn-ghost" href="tapdesk/privacy.html">Privacy policy</a>
-            <a class="btn btn-ghost" href="tapdesk/play.html">Store listing</a>
           </div>
         </div>
       </article>
@@ -590,8 +596,8 @@
         <div class="grid">
 
           <article class="app-card" data-accent="pink">
-            <a class="card-support" href="junk-journal/privacy.html" aria-label="Junk Journal privacy policy" title="Privacy policy">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            <a class="card-privacy" href="junk-journal/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Junk Journal privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon has-img">
@@ -621,8 +627,8 @@
           </article>
 
           <article class="app-card" data-accent="orange">
-            <a class="card-support" href="museprompt/support.html" aria-label="MusePrompt support &amp; legal" title="Support &amp; legal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            <a class="card-privacy" href="museprompt/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="AI Photo Prompts Generator privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon has-img">
@@ -652,8 +658,8 @@
           </article>
 
           <article class="app-card" data-accent="green">
-            <a class="card-support" href="fourcut/support.html" aria-label="4CUT support &amp; legal" title="Support &amp; legal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            <a class="card-privacy" href="fourcut/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="4CUT privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon has-img">
@@ -683,8 +689,8 @@
           </article>
 
           <article class="app-card" data-accent="rose">
-            <a class="card-support" href="unsent-journal/privacy.html" aria-label="Unsent Journal privacy policy" title="Privacy policy">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            <a class="card-privacy" href="unsent-journal/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Unsent Journal privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon sleep" aria-hidden="true">✉️</div>
@@ -699,7 +705,6 @@
             <div class="app-card-body">
               <p>Write unsent letters privately—add photos, voice notes, and memories. Seal, release, or burn when you are ready. Encrypted on your device.</p>
               <div class="app-card-footer">
-                <a class="btn btn-ghost" href="unsent-journal/privacy.html">Privacy policy</a>
                 <span class="btn btn-muted">Closed testing</span>
               </div>
             </div>
@@ -714,6 +719,9 @@
         <div class="grid">
 
           <article class="app-card" data-accent="yellow">
+            <a class="card-privacy" href="emoji-battery/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Emoji Battery privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </a>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -742,8 +750,8 @@
           </article>
 
           <article class="app-card" data-accent="blue">
-            <a class="card-support" href="smart-tv-remote/support.html" aria-label="TV Remote support" title="Support">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            <a class="card-privacy" href="smart-tv-remote/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Android TV Remote privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon has-img">
@@ -781,8 +789,8 @@
         <div class="grid">
 
           <article class="app-card" data-accent="green">
-            <a class="card-support" href="orchard-pop/privacy.html" aria-label="Orchard Pop privacy policy" title="Privacy policy">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            <a class="card-privacy" href="orchard-pop/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Fruit Merge: Orchard Pop privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon sleep" aria-hidden="true">🍉</div>
@@ -804,6 +812,9 @@
           </article>
 
           <article class="app-card" data-accent="purple">
+            <a class="card-privacy" href="bead-12/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="12 Beads privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </a>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -832,8 +843,8 @@
           </article>
 
           <article class="app-card" data-accent="teal">
-            <a class="card-support" href="drowsy/support.html" aria-label="Drowsy support &amp; legal" title="Support &amp; legal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            <a class="card-privacy" href="drowsy/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Drowsy privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
             <div class="app-card-top">
               <div class="app-icon has-img">
