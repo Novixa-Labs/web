@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>TapDesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=10" />
+</head>
+<body>
+  <div id="loginGate" class="login-gate">
+    <form id="loginForm" class="login-card">
+      <div class="brand-mark">TD</div>
+      <h1>TapDesk</h1>
+      <p>Enter the 6-digit code shown on the phone</p>
+      <label class="field-label" for="pairingInput">Pairing code</label>
+      <input id="pairingInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456" autocomplete="one-time-code" required autofocus />
+      <button type="submit">Connect</button>
+      <p id="loginError" class="login-error" hidden>Incorrect or expired code</p>
+      <details class="login-advanced">
+        <summary>Or use password instead</summary>
+        <label class="field-label" for="passwordInput">Password</label>
+        <input id="passwordInput" type="password" placeholder="From phone app (advanced)" autocomplete="current-password" />
+        <button type="button" id="btnPasswordLogin" class="btn-secondary">Connect with password</button>
+      </details>
+      <p class="login-hint">This browser remembers your session for 24 hours.</p>
+    </form>
+  </div>
+
+  <div id="consoleApp" class="console-app" hidden>
+    <header class="console-header">
+      <div class="header-brand">
+        <div class="brand-mark sm">TD</div>
+        <div>
+          <h1>TapDesk</h1>
+          <p id="statusLine">Connecting…</p>
+        </div>
+      </div>
+      <button id="btnLogout" type="button" class="btn-ghost">Logout</button>
+    </header>
+
+    <main>
+      <section class="viewer">
+        <div class="viewer-stage">
+          <div id="overlayHint" class="control-hint">Click or drag to control</div>
+          <div id="screenWrap" class="phone-frame portrait">
+            <img id="screen" alt="Device screen" draggable="false" />
+            <video id="rtcVideo" autoplay playsinline muted></video>
+            <div id="screenLoading" class="screen-loading">
+              <div class="screen-loading__spinner"></div>
+              <p id="screenLoadingText" class="screen-loading__title">Connecting to your phone…</p>
+              <p id="screenLoadingSub" class="screen-loading__sub">Starting the live view. This only takes a moment.</p>
+            </div>
+          </div>
+        </div>
+        <div class="keys">
+          <button data-key="back">Back</button>
+          <button data-key="home">Home</button>
+          <button data-key="recents">Recents</button>
+          <button data-key="notifications">Alerts</button>
+          <button data-key="power">Power</button>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-block">
+          <h2>Device</h2>
+          <div class="info-grid">
+            <div class="info-row"><span>Model</span><strong id="infoModel">—</strong></div>
+            <div class="info-row"><span>Android</span><strong id="infoAndroid">—</strong></div>
+            <div class="info-row"><span>Screen</span><strong id="infoScreen">—</strong></div>
+            <div class="info-row"><span>Stream</span><strong id="infoStream">—</strong></div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Unlock</h2>
+          <p class="panel-note">Face unlock cannot be driven remotely. Stream stays blank on lock — normal. Order: Wake → Prefer PIN (once, before digits) → pad 2 5 8 0.</p>
+          <div class="row" style="margin-bottom:6px">
+            <button id="btnWake" type="button" class="secondary">Wake</button>
+            <button id="btnSwipeUnlock" type="button" class="secondary">Swipe</button>
+            <button id="btnPreferPin" type="button" class="secondary">Prefer PIN</button>
+          </div>
+          <div id="pinTyped" class="pin-typed" aria-live="polite">—</div>
+          <div id="pinPad" class="pin-pad" aria-label="PIN pad">
+            <button type="button" data-digit="1">1</button>
+            <button type="button" data-digit="2">2</button>
+            <button type="button" data-digit="3">3</button>
+            <button type="button" data-digit="4">4</button>
+            <button type="button" data-digit="5">5</button>
+            <button type="button" data-digit="6">6</button>
+            <button type="button" data-digit="7">7</button>
+            <button type="button" data-digit="8">8</button>
+            <button type="button" data-digit="9">9</button>
+            <button type="button" id="btnPinClear" class="secondary">C</button>
+            <button type="button" data-digit="0">0</button>
+            <button type="button" id="btnPinSend" class="accent">OK</button>
+          </div>
+          <p id="unlockStatus" class="panel-note" hidden></p>
+        </div>
+
+        <div class="panel-block">
+          <h2>Quick settings</h2>
+          <div class="row wrap">
+            <button data-settings="wifi">Wi‑Fi</button>
+            <button data-settings="bluetooth">Bluetooth</button>
+            <button data-settings="datetime">Date &amp; time</button>
+            <button data-settings="display">Display</button>
+            <button data-settings="apps">Apps</button>
+            <button data-settings="">Settings</button>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Set time</h2>
+          <div class="time-row">
+            <input id="timeInput" type="datetime-local" />
+            <button id="btnSetTime">Apply</button>
+          </div>
+          <button id="btnAutoTime" class="secondary full" style="margin-top:6px">Automatic time</button>
+        </div>
+
+        <div class="panel-block">
+          <h2>Transfer file</h2>
+          <input id="fileInput" type="file" />
+          <button id="btnUpload" type="button" class="accent full" style="margin-top:6px">Upload</button>
+          <p class="info-chip">Saved to Downloads</p>
+          <p id="uploadStatus" class="panel-note" hidden></p>
+        </div>
+
+        <div class="panel-block apps">
+          <h2>Apps</h2>
+          <input id="appFilter" type="search" placeholder="Search apps…" />
+          <div id="appList"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="app.js?v=11"></script>
+</body>
+</html>

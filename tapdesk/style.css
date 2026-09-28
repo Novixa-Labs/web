@@ -1,0 +1,446 @@
+:root {
+  --bg: #0b1210;
+  --bg-2: #12201a;
+  --panel-2: #1a2b24;
+  --text: #eef6f1;
+  --muted: #8fa399;
+  --accent: #19a56f;
+  --accent-2: #12835a;
+  --danger: #c2413a;
+  --line: #24362e;
+  --screen: #000;
+  --header-h: 48px;
+  font-family: "Outfit", "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--bg-2), var(--bg));
+}
+
+.console-app[hidden],
+.login-gate[hidden] {
+  display: none !important;
+}
+
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, var(--accent), var(--accent-2));
+  color: white;
+  font-weight: 700;
+  margin: 0 auto 8px;
+}
+.brand-mark.sm {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  border-radius: 9px;
+  font-size: 0.75rem;
+}
+
+.login-gate {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: auto;
+}
+.login-card {
+  width: min(400px, 100%);
+  background: rgba(21, 35, 29, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 28px;
+  display: grid;
+  gap: 10px;
+  text-align: center;
+}
+.login-card h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
+.login-card p { margin: 0 0 6px; color: var(--muted); }
+.field-label {
+  text-align: left;
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.login-card input { width: 100%; text-align: left; }
+#pairingInput {
+  text-align: center;
+  font-size: 1.8rem;
+  letter-spacing: 0.35em;
+  font-weight: 700;
+  padding: 14px 10px;
+}
+.login-advanced {
+  margin-top: 8px;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.login-advanced summary {
+  cursor: pointer;
+  color: var(--accent-2);
+  margin-bottom: 8px;
+}
+.login-advanced input { margin-top: 4px; }
+.btn-secondary {
+  width: 100%;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid var(--line);
+  font-weight: 600;
+  padding: 10px;
+}
+.login-hint {
+  font-size: 0.75rem !important;
+  margin-top: 8px !important;
+  opacity: 0.75;
+}
+.login-card button {
+  width: 100%;
+  margin-top: 6px;
+  background: linear-gradient(145deg, var(--accent), var(--accent-2));
+  border: none;
+  font-weight: 600;
+  padding: 12px;
+}
+.login-error { color: #ffb4a9; margin-top: 4px !important; }
+
+.console-app:not([hidden]) {
+  height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.console-header {
+  flex: 0 0 var(--header-h);
+  height: var(--header-h);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(11, 18, 16, 0.96);
+}
+.header-brand { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.console-header h1 { margin: 0; font-size: 1rem; font-weight: 650; }
+#statusLine { margin: 1px 0 0; color: var(--muted); font-size: 0.75rem; }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  min-width: 80px;
+  flex-shrink: 0;
+  padding: 6px 10px;
+}
+
+main {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.viewer {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 6px 8px 8px;
+  background: #050807;
+  border: none;
+  margin: 0;
+}
+
+.viewer-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.control-hint,
+#overlayHint {
+  align-self: flex-start;
+  flex: 0 0 auto;
+  margin: 0;
+  z-index: 2;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+}
+
+.phone-frame {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  background: #000;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+}
+
+/* Frame aspect comes from real device size (JS). Never stretch the image. */
+.phone-frame.portrait {
+  width: auto;
+  height: 100%;
+  max-height: calc(100dvh - var(--header-h) - 52px);
+  aspect-ratio: 9 / 20;
+}
+
+.phone-frame.landscape {
+  aspect-ratio: 16 / 9;
+  width: min(100%, calc((100dvh - var(--header-h) - 52px) * 16 / 9));
+  height: auto;
+  max-height: calc(100dvh - var(--header-h) - 52px);
+}
+
+.console-app.device-landscape main {
+  grid-template-columns: minmax(0, 1fr) 240px;
+}
+
+.console-app.device-landscape .viewer {
+  justify-content: center;
+}
+
+#screen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  cursor: crosshair;
+  background: #000;
+}
+
+/* hint lives outside phone frame — see .control-hint */
+
+.keys, .row { display: flex; gap: 6px; flex-wrap: wrap; }
+.keys {
+  flex: 0 0 auto;
+  justify-content: center;
+  width: 100%;
+}
+.wrap { flex-wrap: wrap; }
+
+button, input {
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 0.85rem;
+}
+button { cursor: pointer; }
+button:hover { background: #22372e; }
+button.secondary { background: transparent; }
+button.danger { border-color: #7f1d1d; background: #3a1715; }
+button.accent {
+  background: linear-gradient(145deg, var(--accent), var(--accent-2));
+  border: none;
+  font-weight: 600;
+}
+button.full { width: 100%; }
+button.btn-open {
+  background: linear-gradient(145deg, var(--accent), var(--accent-2));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  min-width: 72px;
+}
+
+.panel {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 10px 12px 16px;
+  background: rgba(15, 24, 20, 0.95);
+  border-left: 1px solid var(--line);
+}
+
+.panel-block {
+  background: transparent;
+  border: none;
+  padding: 0 0 12px;
+  margin: 0 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.panel-block:last-child { border-bottom: none; margin-bottom: 0; }
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.panel-note {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.info-grid { display: grid; gap: 2px; }
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+}
+.info-row span { color: var(--muted); font-size: 0.78rem; }
+.info-row strong {
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+
+#appFilter, #fileInput, #timeInput { width: 100%; max-width: 100%; }
+#appFilter { margin-bottom: 6px; }
+#appList { display: grid; gap: 4px; }
+
+.info-chip {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+#uploadStatus, #unlockStatus { margin: 6px 0 0; font-size: 0.78rem; color: var(--muted); }
+#uploadStatus[hidden], #unlockStatus[hidden] { display: none !important; }
+#uploadStatus.is-ok, #unlockStatus.is-ok { color: #9fe0c0; }
+#uploadStatus.is-error, #unlockStatus.is-error { color: #ffb4a9; }
+
+.pin-typed {
+  text-align: center;
+  letter-spacing: 0.35em;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 8px 4px 2px;
+  min-height: 1.6em;
+  color: var(--text, #e8ecf2);
+}
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 8px 0;
+}
+.pin-pad button {
+  min-height: 42px;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.app-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.app-row:last-child { border-bottom: none; }
+.app-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  display: block;
+}
+.app-row small {
+  color: var(--muted);
+  display: block;
+  font-size: 0.68rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  html, body { overflow: auto; height: auto; }
+  .console-app:not([hidden]) {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  main {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+  }
+  .viewer {
+    height: auto;
+    min-height: 70dvh;
+  }
+  .phone-frame.portrait,
+  .phone-frame.landscape {
+    width: min(100%, 100%);
+    height: auto;
+    max-height: 78dvh;
+  }
+  .console-app.device-landscape .phone-frame.landscape {
+    width: 100%;
+    max-height: 56dvh;
+  }
+  .panel {
+    height: auto;
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+}

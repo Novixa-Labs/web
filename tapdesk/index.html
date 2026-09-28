@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="TapDesk Connect — control your phone from this computer." />
+  <title>TapDesk Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css?v=2" />
+  <style>
+    :root {
+      --bg: #070B12;
+      --bg-2: #121826;
+      --panel-2: #141B27;
+      --text: #E8EEF8;
+      --muted: #8B98AD;
+      --accent: #2EE6C7;
+      --accent-2: #14B8A6;
+      --line: #2A384C;
+    }
+    #screen { cursor: crosshair; touch-action: none; user-select: none; }
+    /* WebRTC video overlays the JPEG image and is click-through.
+       Keep it in the layout (opacity:0) so the browser can still decode frames for health checks;
+       display:none would prevent requestVideoFrameCallback and break the upgrade/fallback logic. */
+    #rtcVideo {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: fill; background: transparent; pointer-events: none;
+      opacity: 0; z-index: 2; transition: opacity 0.12s ease;
+    }
+    #rtcVideo.is-live { opacity: 1; background: #000; }
+    .room-gate { min-height: 100dvh; display: grid; place-items: center; padding: 24px; overflow: auto; }
+    .room-card {
+      width: min(400px, 100%);
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px;
+      display: grid;
+      gap: 10px;
+      text-align: center;
+    }
+    .room-card h1 { margin: 0; font-size: 1.6rem; }
+    .room-card p { margin: 0; color: var(--muted); }
+    .room-card input {
+      width: 100%;
+      text-align: center;
+      font-size: 1.6rem;
+      letter-spacing: 0.28em;
+      font-weight: 700;
+      padding: 14px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      color: var(--text);
+    }
+    .room-card button, .login-card button[type=submit] {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 650;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.1s ease;
+    }
+    .room-card button:active:not(:disabled) { transform: scale(0.98); }
+    .room-card button:disabled,
+    .login-card button:disabled {
+      opacity: 0.55;
+      cursor: wait;
+      filter: grayscale(0.2);
+    }
+    .room-card button.is-busy::after {
+      content: "";
+      display: inline-block;
+      width: 0.85em;
+      height: 0.85em;
+      margin-left: 0.5em;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      vertical-align: -0.1em;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .status-line { font-size: 13px; color: var(--muted); min-height: 1.2em; }
+    .status-line.is-error { color: #f87171; }
+    .status-line.is-ok { color: #34d399; }
+    .hidden { display: none !important; }
+
+    /* Premium loading overlay shown over the phone screen until the first frame arrives. */
+    .screen-loading {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+      background: radial-gradient(120% 120% at 50% 40%, rgba(19,32,51,0.96), rgba(11,18,32,0.98));
+      backdrop-filter: blur(2px);
+      transition: opacity 0.25s ease;
+    }
+    .screen-loading.is-hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+    .screen-loading__spinner {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.14);
+      border-top-color: #22D3EE;
+      animation: spin 0.8s linear infinite;
+    }
+    .screen-loading__title { margin: 0; font-size: 15px; font-weight: 650; color: var(--text); }
+    .screen-loading__sub { margin: 0; font-size: 12.5px; color: var(--muted); max-width: 260px; }
+  </style>
+</head>
+<body>
+  <div id="roomGate" class="room-gate">
+    <div class="room-card">
+      <div class="brand-mark">TD</div>
+      <h1>TapDesk</h1>
+      <p>Welcome. Enter the room code from your phone to start controlling it here.</p>
+      <label class="field-label" for="roomInput">Room code</label>
+      <input id="roomInput" maxlength="8" placeholder="ABC123" autocomplete="off" spellcheck="false" autofocus />
+      <button id="btnJoin" type="button">Continue</button>
+      <p id="roomStatus" class="status-line">Get the room code from TapDesk → Other network → Start room.</p>
+    </div>
+  </div>
+
+  <div id="loginGate" class="login-gate" hidden>
+    <form id="loginForm" class="login-card">
+      <div class="brand-mark">TD</div>
+      <h1>TapDesk</h1>
+      <p>Enter the pairing PIN from your phone</p>
+      <label class="field-label" for="pairingInput">Pairing PIN</label>
+      <input id="pairingInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456" autocomplete="one-time-code" />
+      <button id="btnPinSubmit" type="submit">Start controlling</button>
+      <p id="loginError" class="login-error" hidden>Incorrect or expired PIN</p>
+      <details class="login-advanced">
+        <summary>Or use password instead</summary>
+        <label class="field-label" for="passwordInput">Password</label>
+        <input id="passwordInput" type="password" placeholder="From phone app (advanced)" autocomplete="current-password" />
+        <button type="button" id="btnPasswordLogin" class="btn-secondary">Connect with password</button>
+      </details>
+    </form>
+  </div>
+
+  <div id="consoleApp" class="console-app" hidden>
+    <header class="console-header">
+      <div class="header-brand">
+        <div class="brand-mark sm">TD</div>
+        <div>
+          <h1>TapDesk</h1>
+          <p id="statusLine">Connecting…</p>
+        </div>
+      </div>
+      <button id="btnLogout" type="button" class="btn-ghost">Disconnect</button>
+    </header>
+
+    <main>
+      <section class="viewer">
+        <div class="viewer-stage">
+          <div id="overlayHint" class="control-hint">Click or drag to control</div>
+          <div id="screenWrap" class="phone-frame portrait">
+            <img id="screen" alt="Device screen" draggable="false" />
+            <video id="rtcVideo" autoplay playsinline muted></video>
+            <div id="screenLoading" class="screen-loading">
+              <div class="screen-loading__spinner"></div>
+              <p id="screenLoadingText" class="screen-loading__title">Connecting to your phone…</p>
+              <p id="screenLoadingSub" class="screen-loading__sub">Setting up your secure link. This can take a few seconds.</p>
+            </div>
+          </div>
+        </div>
+        <div class="keys">
+          <button data-key="back">Back</button>
+          <button data-key="home">Home</button>
+          <button data-key="recents">Recents</button>
+          <button data-key="notifications">Alerts</button>
+          <button data-key="power">Power</button>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-block">
+          <h2>Device</h2>
+          <div class="info-grid">
+            <div class="info-row"><span>Model</span><strong id="infoModel">—</strong></div>
+            <div class="info-row"><span>Android</span><strong id="infoAndroid">—</strong></div>
+            <div class="info-row"><span>Screen</span><strong id="infoScreen">—</strong></div>
+            <div class="info-row"><span>Stream</span><strong id="infoStream">—</strong></div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Unlock</h2>
+          <p class="panel-note">Wake → Prefer PIN → use pad. Stream may stay blank on lock screen.</p>
+          <div class="row" style="margin-bottom:6px">
+            <button id="btnWake" type="button" class="secondary">Wake</button>
+            <button id="btnSwipeUnlock" type="button" class="secondary">Swipe</button>
+            <button id="btnPreferPin" type="button" class="secondary">Prefer PIN</button>
+          </div>
+          <div id="pinTyped" class="pin-typed" aria-live="polite">—</div>
+          <div id="pinPad" class="pin-pad" aria-label="PIN pad">
+            <button type="button" data-digit="1">1</button>
+            <button type="button" data-digit="2">2</button>
+            <button type="button" data-digit="3">3</button>
+            <button type="button" data-digit="4">4</button>
+            <button type="button" data-digit="5">5</button>
+            <button type="button" data-digit="6">6</button>
+            <button type="button" data-digit="7">7</button>
+            <button type="button" data-digit="8">8</button>
+            <button type="button" data-digit="9">9</button>
+            <button type="button" id="btnPinClear" class="secondary">C</button>
+            <button type="button" data-digit="0">0</button>
+            <button type="button" id="btnPinSend" class="accent">OK</button>
+          </div>
+          <p id="unlockStatus" class="panel-note" hidden></p>
+        </div>
+
+        <div class="panel-block">
+          <h2>Quick settings</h2>
+          <div class="row wrap">
+            <button data-settings="wifi">Wi‑Fi</button>
+            <button data-settings="bluetooth">Bluetooth</button>
+            <button data-settings="datetime">Date &amp; time</button>
+            <button data-settings="display">Display</button>
+            <button data-settings="apps">Apps</button>
+            <button data-settings="">Settings</button>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Set time</h2>
+          <div class="time-row">
+            <input id="timeInput" type="datetime-local" />
+            <button id="btnSetTime">Apply</button>
+          </div>
+          <button id="btnAutoTime" class="secondary full" style="margin-top:6px">Automatic time</button>
+        </div>
+
+        <div class="panel-block">
+          <h2>Transfer file</h2>
+          <input id="fileInput" type="file" />
+          <button id="btnUpload" type="button" class="accent full" style="margin-top:6px">Upload</button>
+          <p class="info-chip">Saved to Downloads (max ~300KB on Secure Link)</p>
+          <p id="uploadStatus" class="panel-note" hidden></p>
+        </div>
+
+        <div class="panel-block apps">
+          <h2>Apps</h2>
+          <input id="appFilter" type="search" placeholder="Search apps…" />
+          <div id="appList"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="./mqtt.min.js"></script>
+  <script src="./connect.js?v=22"></script>
+</body>
+</html>
