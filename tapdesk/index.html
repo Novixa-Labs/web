@@ -163,7 +163,7 @@
           <p id="statusLine">Connecting…</p>
         </div>
       </div>
-      <button id="btnLogout" type="button" class="btn-ghost">Disconnect</button>
+      <button id="btnLogout" type="button" class="btn-stop">Stop session</button>
     </header>
 
     <main>
@@ -231,7 +231,6 @@
           <div class="row wrap">
             <button data-settings="wifi">Wi‑Fi</button>
             <button data-settings="bluetooth">Bluetooth</button>
-            <button data-settings="datetime">Date &amp; time</button>
             <button data-settings="display">Display</button>
             <button data-settings="apps">Apps</button>
             <button data-settings="">Settings</button>
@@ -239,19 +238,17 @@
         </div>
 
         <div class="panel-block">
-          <h2>Set time</h2>
-          <div class="time-row">
-            <input id="timeInput" type="datetime-local" />
-            <button id="btnSetTime">Apply</button>
-          </div>
-          <button id="btnAutoTime" class="secondary full" style="margin-top:6px">Automatic time</button>
-        </div>
-
-        <div class="panel-block">
-          <h2>Transfer file</h2>
-          <input id="fileInput" type="file" />
-          <button id="btnUpload" type="button" class="accent full" style="margin-top:6px">Upload</button>
-          <p class="info-chip">Saved to Downloads (max ~300KB on Secure Link)</p>
+          <h2>Send a file</h2>
+          <label id="dropZone" for="fileInput" class="drop-zone">
+            <input id="fileInput" type="file" hidden />
+            <svg class="drop-zone__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 16V4m0 0 4 4m-4-4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span id="dropZoneLabel" class="drop-zone__label">Tap to choose a file</span>
+            <span class="drop-zone__hint">Up to 300 KB on Secure Link · saved to Downloads</span>
+          </label>
+          <button id="btnUpload" type="button" class="accent full" style="margin-top:10px" disabled>Send to phone</button>
           <p id="uploadStatus" class="panel-note" hidden></p>
         </div>
 

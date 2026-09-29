@@ -1169,28 +1169,23 @@ document.getElementById("btnPinSend").onclick = async () => {
   }
 };
 
-document.getElementById("btnSetTime").onclick = async () => {
-  const v = document.getElementById("timeInput").value;
-  if (!v) return;
-  const d = new Date(v);
-  await request("time", {
-    year: d.getFullYear(),
-    month: d.getMonth() + 1,
-    day: d.getDate(),
-    hour: d.getHours(),
-    minute: d.getMinutes(),
-    second: d.getSeconds(),
-  }).catch(() => {});
-};
-document.getElementById("btnAutoTime").onclick = () =>
-  request("time", { auto: true }).catch(() => {});
-
 const fileInput = document.getElementById("fileInput");
 const uploadStatus = document.getElementById("uploadStatus");
+const dropZone = document.getElementById("dropZone");
+const dropZoneLabel = document.getElementById("dropZoneLabel");
+const btnUpload = document.getElementById("btnUpload");
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
 function setUploadStatus(message, kind) {
   if (!message) {
     uploadStatus.hidden = true;
     uploadStatus.textContent = "";
+    uploadStatus.classList.remove("is-ok", "is-error");
     return;
   }
   uploadStatus.hidden = false;
@@ -1198,17 +1193,55 @@ function setUploadStatus(message, kind) {
   uploadStatus.classList.toggle("is-ok", kind === "ok");
   uploadStatus.classList.toggle("is-error", kind === "error");
 }
-document.getElementById("btnUpload").onclick = async () => {
+
+function onFileChosen() {
   const file = fileInput.files && fileInput.files[0];
   if (!file) {
-    setUploadStatus("Select a file first.", "error");
+    dropZone.classList.remove("has-file");
+    dropZoneLabel.textContent = "Tap to choose a file";
+    btnUpload.disabled = true;
+    return;
+  }
+  dropZone.classList.add("has-file");
+  dropZoneLabel.textContent = `${file.name} · ${formatFileSize(file.size)}`;
+  btnUpload.disabled = false;
+  setUploadStatus("", null);
+}
+fileInput.addEventListener("change", onFileChosen);
+
+["dragover", "dragenter"].forEach((evt) =>
+  dropZone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropZone.classList.add("is-dragging");
+  })
+);
+["dragleave", "dragend"].forEach((evt) =>
+  dropZone.addEventListener(evt, () => dropZone.classList.remove("is-dragging"))
+);
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.classList.remove("is-dragging");
+  const file = e.dataTransfer?.files?.[0];
+  if (file) {
+    fileInput.files = e.dataTransfer.files;
+    onFileChosen();
+  }
+});
+
+btnUpload.onclick = async () => {
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) {
+    setUploadStatus("Choose a file first.", "error");
     return;
   }
   if (file.size > 220000) {
-    setUploadStatus("File too large for Secure Link (keep under ~200KB).", "error");
+    setUploadStatus("Too large for Secure Link — keep it under 220 KB.", "error");
     return;
   }
-  setUploadStatus("Uploading…");
+  btnUpload.disabled = true;
+  const originalLabel = btnUpload.textContent;
+  btnUpload.textContent = "Sending…";
+  setUploadStatus("Sending to phone…", null);
   try {
     const buf = await file.arrayBuffer();
     const bytes = new Uint8Array(buf);
@@ -1222,10 +1255,14 @@ document.getElementById("btnUpload").onclick = async () => {
       30000
     );
     if (r.ok) {
-      setUploadStatus("Upload complete.", "ok");
+      setUploadStatus("Saved to Downloads on the phone.", "ok");
       fileInput.value = "";
-    } else setUploadStatus(r.message || "Upload failed.", "error");
+      onFileChosen();
+    } else setUploadStatus(r.message || "Send failed.", "error");
   } catch (_) {
-    setUploadStatus("Upload failed.", "error");
+    setUploadStatus("Send failed.", "error");
+  } finally {
+    btnUpload.textContent = originalLabel;
+    btnUpload.disabled = !(fileInput.files && fileInput.files[0]);
   }
 };

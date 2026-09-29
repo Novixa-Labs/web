@@ -1,15 +1,17 @@
 :root {
-  --bg: #0b1210;
-  --bg-2: #12201a;
-  --panel-2: #1a2b24;
-  --text: #eef6f1;
-  --muted: #8fa399;
-  --accent: #19a56f;
-  --accent-2: #12835a;
-  --danger: #c2413a;
-  --line: #24362e;
+  /* Unified with the TapDesk app palette (Obsidian + ice cyan). */
+  --bg: #070B12;
+  --bg-2: #121826;
+  --panel-2: #141B27;
+  --text: #E8EEF8;
+  --muted: #8B98AD;
+  --accent: #2EE6C7;
+  --accent-2: #14B8A6;
+  --danger: #F87171;
+  --line: #2A384C;
   --screen: #000;
   --header-h: 48px;
+  --shadow-accent: 0 8px 24px rgba(46, 230, 199, 0.22);
   font-family: "Outfit", "Segoe UI", sans-serif;
 }
 
@@ -32,13 +34,14 @@ html, body {
 .brand-mark {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
+  border-radius: 16px;
   display: grid;
   place-items: center;
   background: linear-gradient(145deg, var(--accent), var(--accent-2));
-  color: white;
+  color: #04221C;
   font-weight: 700;
   margin: 0 auto 8px;
+  box-shadow: var(--shadow-accent);
 }
 .brand-mark.sm {
   width: 32px;
@@ -112,9 +115,14 @@ html, body {
   margin-top: 6px;
   background: linear-gradient(145deg, var(--accent), var(--accent-2));
   border: none;
-  font-weight: 600;
+  color: #04221C;
+  font-weight: 700;
   padding: 12px;
+  box-shadow: var(--shadow-accent);
+  transition: filter 0.15s ease, transform 0.1s ease;
 }
+.login-card button:hover { filter: brightness(1.06); }
+.login-card button:active { transform: scale(0.98); }
 .login-error { color: #ffb4a9; margin-top: 4px !important; }
 
 .console-app:not([hidden]) {
@@ -146,6 +154,18 @@ html, body {
   flex-shrink: 0;
   padding: 6px 10px;
 }
+.btn-stop {
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: var(--danger);
+  font-weight: 600;
+  min-width: 96px;
+  flex-shrink: 0;
+  padding: 6px 12px;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.btn-stop:hover { background: rgba(248, 113, 113, 0.12); }
+.btn-stop:active { transform: scale(0.97); }
 
 main {
   flex: 1;
@@ -335,23 +355,34 @@ button, input {
   padding: 7px 10px;
   font: inherit;
   font-size: 0.85rem;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
 }
 button { cursor: pointer; }
-button:hover { background: #22372e; }
+button:hover { background: #1c2534; }
+button:active { transform: scale(0.97); }
 button.secondary { background: transparent; }
 button.danger { border-color: #7f1d1d; background: #3a1715; }
-button.accent {
+button.accent, button.btn-open {
   background: linear-gradient(145deg, var(--accent), var(--accent-2));
   border: none;
-  font-weight: 600;
+  color: #04221C;
+  font-weight: 700;
+  box-shadow: var(--shadow-accent);
+}
+button.accent:hover, button.btn-open:hover { filter: brightness(1.06); }
+button.accent:disabled {
+  background: var(--panel-2);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
 }
 button.full { width: 100%; }
-button.btn-open {
-  background: linear-gradient(145deg, var(--accent), var(--accent-2));
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  min-width: 72px;
+button.btn-open { min-width: 72px; }
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(46, 230, 199, 0.18);
 }
 
 .panel {
@@ -407,14 +438,7 @@ h2 {
   white-space: nowrap;
 }
 
-.time-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px;
-}
-
-#appFilter, #fileInput, #timeInput { width: 100%; max-width: 100%; }
-#appFilter { margin-bottom: 6px; }
+#appFilter { width: 100%; max-width: 100%; margin-bottom: 6px; }
 #appList { display: grid; gap: 4px; }
 
 .info-chip {
@@ -425,8 +449,51 @@ h2 {
 
 #uploadStatus, #unlockStatus { margin: 6px 0 0; font-size: 0.78rem; color: var(--muted); }
 #uploadStatus[hidden], #unlockStatus[hidden] { display: none !important; }
-#uploadStatus.is-ok, #unlockStatus.is-ok { color: #9fe0c0; }
+#uploadStatus.is-ok, #unlockStatus.is-ok { color: #6ee7b7; }
 #uploadStatus.is-error, #unlockStatus.is-error { color: #ffb4a9; }
+
+/* Premium drop-zone for the file-send panel: dashed border, accent on hover/drag/chosen. */
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  padding: 18px 12px;
+  border: 1.5px dashed var(--line);
+  border-radius: 12px;
+  background: rgba(20, 27, 39, 0.5);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.drop-zone:hover { border-color: var(--accent); background: rgba(46, 230, 199, 0.06); }
+.drop-zone.is-dragging {
+  border-color: var(--accent);
+  background: rgba(46, 230, 199, 0.1);
+}
+.drop-zone.has-file {
+  border-style: solid;
+  border-color: var(--accent);
+  background: rgba(46, 230, 199, 0.08);
+}
+.drop-zone__icon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+}
+.drop-zone__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.drop-zone__hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
 
 .pin-typed {
   text-align: center;

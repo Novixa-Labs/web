@@ -77,7 +77,7 @@ function hideScreenLoading() {
   if (el) el.classList.add("is-hidden");
 }
 
-function showLogin(clearStorage = true) {
+function showLogin(clearStorage = true, message = "") {
   if (clearStorage) clearToken(true);
   else clearToken(false);
   loginGate.hidden = false;
@@ -97,7 +97,12 @@ function showLogin(clearStorage = true) {
   }
   if (pairingInput) pairingInput.value = "";
   if (passwordInput) passwordInput.value = "";
-  loginError.hidden = true;
+  if (message) {
+    loginError.textContent = message;
+    loginError.hidden = false;
+  } else {
+    loginError.hidden = true;
+  }
   setTimeout(() => pairingInput?.focus(), 50);
 }
 
@@ -474,8 +479,15 @@ function connectWs() {
     // Ask the phone to start a WebRTC offer (JPEG keeps flowing until it connects).
     if (typeof RTCPeerConnection !== "undefined") wsSend({ type: "rtc_ready" });
   };
-  ws.onclose = () => {
+  ws.onclose = (ev) => {
     teardownRtc(true);
+    // Code 1008 (policy violation) is the phone deliberately ending this session — Stop was
+    // pressed, or the session expired. Reflect that immediately instead of saying "Reconnecting…"
+    // and waiting for the next status poll to notice.
+    if (ev && ev.code === 1008) {
+      showLogin(true, "Session ended on the phone. Enter the code again to reconnect.");
+      return;
+    }
     if (getToken()) {
       setStatus("Reconnecting…");
       showScreenLoading("Reconnecting…", "The connection dropped — restoring the live view.");
@@ -641,6 +653,15 @@ document.querySelectorAll("[data-settings]").forEach((btn) => {
 
 const fileInput = document.getElementById("fileInput");
 const uploadStatus = document.getElementById("uploadStatus");
+const dropZone = document.getElementById("dropZone");
+const dropZoneLabel = document.getElementById("dropZoneLabel");
+const btnUpload = document.getElementById("btnUpload");
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
 
 function setUploadStatus(message, kind) {
   if (!uploadStatus) return;
@@ -656,17 +677,55 @@ function setUploadStatus(message, kind) {
   uploadStatus.classList.toggle("is-error", kind === "error");
 }
 
-document.getElementById("btnUpload").onclick = async () => {
+function onFileChosen() {
   const file = fileInput.files && fileInput.files[0];
   if (!file) {
-    setUploadStatus("Select a file first.", "error");
+    dropZone.classList.remove("has-file");
+    dropZoneLabel.textContent = "Tap to choose a file";
+    btnUpload.disabled = true;
+    return;
+  }
+  dropZone.classList.add("has-file");
+  dropZoneLabel.textContent = `${file.name} · ${formatFileSize(file.size)}`;
+  btnUpload.disabled = false;
+  setUploadStatus("", null);
+}
+fileInput.addEventListener("change", onFileChosen);
+
+// Drag-and-drop onto the zone (desktop browsers), same premium feel as a native file picker.
+["dragover", "dragenter"].forEach((evt) =>
+  dropZone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropZone.classList.add("is-dragging");
+  })
+);
+["dragleave", "dragend"].forEach((evt) =>
+  dropZone.addEventListener(evt, () => dropZone.classList.remove("is-dragging"))
+);
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.classList.remove("is-dragging");
+  const file = e.dataTransfer?.files?.[0];
+  if (file) {
+    fileInput.files = e.dataTransfer.files;
+    onFileChosen();
+  }
+});
+
+btnUpload.onclick = async () => {
+  const file = fileInput.files && fileInput.files[0];
+  if (!file) {
+    setUploadStatus("Choose a file first.", "error");
     return;
   }
   if (!getToken()) {
     showLogin();
     return;
   }
-  setUploadStatus("Uploading…", null);
+  btnUpload.disabled = true;
+  const originalLabel = btnUpload.textContent;
+  btnUpload.textContent = "Sending…";
+  setUploadStatus("Sending to phone…", null);
   try {
     // Encrypted DataChannel upload (chunked, E2E) when it's up; REST multipart otherwise.
     if (dcReady()) {
@@ -681,10 +740,11 @@ document.getElementById("btnUpload").onclick = async () => {
         data
       );
       if (r.ok) {
-        setUploadStatus("Upload complete.", "ok");
+        setUploadStatus("Saved to Downloads on the phone.", "ok");
         fileInput.value = "";
+        onFileChosen();
       } else {
-        setUploadStatus(r.message || "Upload failed.", "error");
+        setUploadStatus(r.message || "Send failed.", "error");
       }
       return;
     }
@@ -701,35 +761,19 @@ document.getElementById("btnUpload").onclick = async () => {
     }
     const data = await res.json();
     if (data.ok) {
-      setUploadStatus("Upload complete.", "ok");
+      setUploadStatus("Saved to Downloads on the phone.", "ok");
       fileInput.value = "";
+      onFileChosen();
     } else {
-      setUploadStatus(data.message || "Upload failed.", "error");
+      setUploadStatus(data.message || "Send failed.", "error");
     }
   } catch (e) {
-    setUploadStatus("Upload failed.", "error");
+    setUploadStatus("Send failed.", "error");
+  } finally {
+    btnUpload.textContent = originalLabel;
+    btnUpload.disabled = !(fileInput.files && fileInput.files[0]);
   }
 };
-
-document.getElementById("btnSetTime").onclick = async () => {
-  const v = document.getElementById("timeInput").value;
-  if (!v) return;
-  const d = new Date(v);
-  await api("/api/time", {
-    method: "POST",
-    body: JSON.stringify({
-      year: d.getFullYear(),
-      month: d.getMonth() + 1,
-      day: d.getDate(),
-      hour: d.getHours(),
-      minute: d.getMinutes(),
-      second: d.getSeconds(),
-    }),
-  });
-};
-
-document.getElementById("btnAutoTime").onclick = () =>
-  api("/api/time", { method: "POST", body: JSON.stringify({ auto: true }) });
 
 const unlockStatus = document.getElementById("unlockStatus");
 function setUnlockStatus(message, kind) {
