@@ -93,6 +93,31 @@
     .status-line.is-error { color: #f87171; }
     .status-line.is-ok { color: #34d399; }
     .hidden { display: none !important; }
+    .direct-first {
+      margin-top: 4px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(46, 230, 199, 0.35);
+      background: rgba(46, 230, 199, 0.08);
+      text-align: left;
+    }
+    .direct-first-hint { margin: 0 0 10px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+    .btn-direct {
+      width: 100%;
+      padding: 13px;
+      border-radius: 14px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .btn-direct:hover { background: rgba(46, 230, 199, 0.12); }
+    .direct-urls { margin: 10px 0 0; font-size: 12px; color: var(--muted); word-break: break-all; }
+    .direct-urls a { color: var(--accent); text-decoration: none; }
+    .direct-urls a:hover { text-decoration: underline; }
+    .room-divider { margin: 14px 0 4px; font-size: 12px; color: var(--muted); }
 
     /* Premium loading overlay shown over the phone screen until the first frame arrives. */
     .screen-loading {
@@ -129,9 +154,15 @@
       <div class="brand-mark">TD</div>
       <h1>TapDesk</h1>
       <p>Welcome. Enter the room code from your phone to start controlling it here.</p>
+      <div id="directLinkBox" class="direct-first hidden">
+        <p class="direct-first-hint">On the same Wi‑Fi? Open the phone’s desk directly — fastest when your router allows it.</p>
+        <button type="button" id="btnTryDirect" class="btn-direct">Try direct link first</button>
+        <p id="directLinkUrls" class="direct-urls"></p>
+      </div>
+      <p id="roomBridgeDivider" class="room-divider hidden">Or use Wi‑Fi bridge (works when direct fails)</p>
       <label class="field-label" for="roomInput">Room code</label>
       <input id="roomInput" maxlength="8" placeholder="ABC123" autocomplete="off" spellcheck="false" autofocus />
-      <button id="btnJoin" type="button">Continue</button>
+      <button id="btnJoin" type="button">Continue with bridge</button>
       <p id="roomStatus" class="status-line">Get the room code from TapDesk → Other network → Start room.</p>
     </div>
   </div>
@@ -262,6 +293,6 @@
   </div>
 
   <script src="/tapdesk/mqtt.min.js"></script>
-  <script src="/tapdesk/connect.js?v=23"></script>
+  <script src="/tapdesk/connect.js?v=24"></script>
 </body>
 </html>

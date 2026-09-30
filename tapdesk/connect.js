@@ -96,6 +96,10 @@ const SESSION_KEY = "tapdesk_connect_session";
 const SESSION_TTL_MS = 20 * 60 * 60 * 1000; // stay under the phone's 24h session TTL
 let joinAlerted = false;
 let resuming = false;
+let smartConnectActive = false;
+let sameWifiBridge = false;
+let directHandoffTimer = null;
+let smartPort = 8765;
 
 function saveSession(roomCode, token) {
   if (!roomCode || !token) return;
@@ -151,6 +155,95 @@ function hardFail(message) {
 }
 function setStatus(t) {
   statusLine.textContent = t;
+}
+function mediaPathLabel() {
+  if (!sameWifiBridge) return "";
+  if (sawRelay || sawRemoteRelay) return " · relay (bridge)";
+  if (rtcActive) return " · direct path";
+  return " · bridge";
+}
+function smartDirectUrls() {
+  const p = new URLSearchParams(location.search);
+  const port = parseInt(p.get("port") || String(smartPort), 10) || 8765;
+  const urls = [];
+  const hosts = (p.get("hosts") || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  hosts.forEach((h) => {
+    if (/^https?:\/\//i.test(h)) urls.push(h.replace(/\/$/, ""));
+    else urls.push("http://" + h.replace(/\/$/, "") + ":" + port);
+  });
+  const mdns = (p.get("mdns") || "").trim();
+  if (mdns) urls.push(mdns.replace(/\/$/, ""));
+  const seen = new Set();
+  return urls.filter((u) => {
+    if (seen.has(u)) return false;
+    seen.add(u);
+    return true;
+  });
+}
+function openDirectDesk(url) {
+  const base = (url || "").replace(/\/$/, "");
+  if (!base) return;
+  window.location.assign(base + "/");
+}
+function setupDirectFirstUI() {
+  const box = document.getElementById("directLinkBox");
+  const btn = document.getElementById("btnTryDirect");
+  const list = document.getElementById("directLinkUrls");
+  const divider = document.getElementById("roomBridgeDivider");
+  const urls = smartDirectUrls();
+  if (!box || !btn || !urls.length) {
+    if (box) box.classList.add("hidden");
+    if (divider) divider.classList.add("hidden");
+    return;
+  }
+  box.classList.remove("hidden");
+  if (divider) divider.classList.remove("hidden");
+  btn.onclick = () => openDirectDesk(urls[0]);
+  if (list) {
+    if (urls.length === 1) {
+      list.innerHTML =
+        'Opens <a href="' +
+        urls[0] +
+        '/" rel="noopener">' +
+        urls[0] +
+        "</a> — enter the pairing PIN on that page.";
+    } else {
+      list.innerHTML =
+        "Other links: " +
+        urls
+          .map(
+            (u) =>
+              '<a href="' + u + '/" rel="noopener">' + u.replace(/^https?:\/\//, "") + "</a>"
+          )
+          .join(" · ");
+    }
+  }
+}
+function attemptDirectHandoff(urls, token) {
+  const list = Array.isArray(urls) ? urls.filter(Boolean) : [];
+  if (!list.length || !token) {
+    showConsole();
+    return;
+  }
+  const target = list[0].replace(/\/$/, "") + "/?tk=" + encodeURIComponent(token);
+  setRoomStatus("Handing off to fast local desk…", "ok");
+  let fellBack = false;
+  const fallback = () => {
+    if (fellBack) return;
+    fellBack = true;
+    setRoomStatus("Staying on Wi‑Fi bridge (local desk unreachable).", "ok");
+    showConsole();
+  };
+  if (directHandoffTimer) clearTimeout(directHandoffTimer);
+  directHandoffTimer = setTimeout(fallback, 5000);
+  try {
+    location.assign(target);
+  } catch (_) {
+    fallback();
+  }
 }
 function showScreenLoading(title, sub) {
   const el = document.getElementById("screenLoading");
@@ -420,7 +513,7 @@ async function startRtcAnswer(offerSdp) {
       pumpRtcFrameCallback();
       armRtcStartupGuard();
       try { publish("want_jpeg", {}, 1); } catch (_) {}
-      setStatus("Connected · live video (MQTT)");
+      setStatus("Connected · live video (MQTT)" + mediaPathLabel());
     } else if (s === "failed") {
       rtcActive = false;
       if (rtcVideo) rtcVideo.classList.remove("is-live");
@@ -629,6 +722,7 @@ function onMessage(msg) {
       authed = true;
       resuming = false;
       loginError.hidden = true;
+      sameWifiBridge = !!payload.same_wifi;
       if (payload.token) {
         resumeToken = payload.token;
         saveSession(room, payload.token);
@@ -637,6 +731,10 @@ function onMessage(msg) {
       if (btn) {
         btn.disabled = false;
         btn.textContent = "Start controlling";
+      }
+      if (sameWifiBridge && payload.lan_urls && payload.token) {
+        attemptDirectHandoff(payload.lan_urls, payload.token);
+        return;
       }
       showConsole();
     } else if (resuming) {
@@ -867,8 +965,27 @@ document.getElementById("btnLogout").onclick = () => {
   }, 600);
 };
 
-// On load (including a refresh), resume the last session automatically — no room/PIN retype.
-(function initResume() {
+// Smart connect (?smart=1&room=…&hosts=…) or resume saved session.
+(function initSmartOrResume() {
+  const p = new URLSearchParams(location.search);
+  if (p.get("smart") === "1") {
+    smartPort = parseInt(p.get("port") || "8765", 10) || 8765;
+    const r = (p.get("room") || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+    if (r.length >= 4) {
+      smartConnectActive = true;
+      const input = document.getElementById("roomInput");
+      if (input) input.value = r;
+      room = r;
+      setupDirectFirstUI();
+      setRoomStatus(
+        smartDirectUrls().length
+          ? "Try direct link first, or Continue with bridge + PIN from the phone."
+          : "Smart connect — Continue with bridge, then enter the PIN from Same Wi‑Fi.",
+        "ok"
+      );
+      return;
+    }
+  }
   const s = loadSession();
   if (!s) return;
   const input = document.getElementById("roomInput");

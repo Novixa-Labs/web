@@ -310,6 +310,18 @@ document.getElementById("btnLogout").onclick = async () => {
 };
 
 async function tryRestoreSession() {
+  const params = new URLSearchParams(location.search);
+  const handed = params.get("tk") || params.get("token");
+  if (handed) {
+    setToken(handed, true);
+    try {
+      const s = await api("/api/status");
+      if (s.ok) {
+        showConsole();
+        return;
+      }
+    } catch (_) {}
+  }
   let saved = "";
   try {
     saved = localStorage.getItem(storageKey()) || "";
