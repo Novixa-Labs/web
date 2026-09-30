@@ -153,17 +153,18 @@
     <div class="room-card">
       <div class="brand-mark">TD</div>
       <h1>TapDesk</h1>
-      <p>Welcome. Enter the room code from your phone to start controlling it here.</p>
+      <p id="roomIntro">Enter the room code from the phone.</p>
       <div id="directLinkBox" class="direct-first hidden">
-        <p class="direct-first-hint">On the same Wi‑Fi? Open the phone’s desk directly — fastest when your router allows it.</p>
-        <button type="button" id="btnTryDirect" class="btn-direct">Try direct link first</button>
-        <p id="directLinkUrls" class="direct-urls"></p>
+        <button type="button" id="btnTryDirect" class="btn-direct hidden">Open phone link</button>
+        <p id="directLinkUrls" class="direct-urls hidden"></p>
       </div>
-      <p id="roomBridgeDivider" class="room-divider hidden">Or use Wi‑Fi bridge (works when direct fails)</p>
-      <label class="field-label" for="roomInput">Room code</label>
-      <input id="roomInput" maxlength="8" placeholder="ABC123" autocomplete="off" spellcheck="false" autofocus />
-      <button id="btnJoin" type="button">Continue with bridge</button>
-      <p id="roomStatus" class="status-line">Get the room code from TapDesk → Other network → Start room.</p>
+      <p id="roomBridgeDivider" class="room-divider hidden"></p>
+      <div id="roomFormBlock">
+        <label class="field-label" for="roomInput">Room code</label>
+        <input id="roomInput" maxlength="8" placeholder="ABC123" autocomplete="off" spellcheck="false" autofocus />
+        <button id="btnJoin" type="button">Connect</button>
+      </div>
+      <p id="roomStatus" class="status-line"></p>
     </div>
   </div>
 
@@ -171,7 +172,7 @@
     <form id="loginForm" class="login-card">
       <div class="brand-mark">TD</div>
       <h1>TapDesk</h1>
-      <p>Enter the pairing PIN from your phone</p>
+      <p>Enter the PIN shown on the phone</p>
       <label class="field-label" for="pairingInput">Pairing PIN</label>
       <input id="pairingInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456" autocomplete="one-time-code" />
       <button id="btnPinSubmit" type="submit">Start controlling</button>
@@ -207,7 +208,7 @@
             <div id="screenLoading" class="screen-loading">
               <div class="screen-loading__spinner"></div>
               <p id="screenLoadingText" class="screen-loading__title">Connecting to your phone…</p>
-              <p id="screenLoadingSub" class="screen-loading__sub">Setting up your secure link. This can take a few seconds.</p>
+              <p id="screenLoadingSub" class="screen-loading__sub">This may take a few seconds.</p>
             </div>
           </div>
         </div>
@@ -293,6 +294,6 @@
   </div>
 
   <script src="/tapdesk/mqtt.min.js"></script>
-  <script src="/tapdesk/connect.js?v=24"></script>
+  <script src="/tapdesk/connect.js?v=25"></script>
 </body>
 </html>

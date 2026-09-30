@@ -97,6 +97,8 @@ const SESSION_TTL_MS = 20 * 60 * 60 * 1000; // stay under the phone's 24h sessio
 let joinAlerted = false;
 let resuming = false;
 let smartConnectActive = false;
+/** QR / Same network link (?auto=1 or legacy ?smart=1): join room silently, PIN only. */
+let autoConnectMode = false;
 let sameWifiBridge = false;
 let directHandoffTimer = null;
 let smartPort = 8765;
@@ -146,6 +148,12 @@ function setRoomStatus(t, kind) {
   if (kind === "ok") roomStatus.classList.add("is-ok");
 }
 function hardFail(message) {
+  if (autoConnectMode) {
+    autoConnectMode = false;
+    ["roomFormBlock", "roomIntro"].forEach((id) => {
+      document.getElementById(id)?.classList.remove("hidden");
+    });
+  }
   setRoomStatus(message, "error");
   setJoinBusy(false);
   if (!joinAlerted) {
@@ -188,7 +196,17 @@ function openDirectDesk(url) {
   if (!base) return;
   window.location.assign(base + "/");
 }
+function hideManualRoomForm() {
+  ["directLinkBox", "roomBridgeDivider", "roomFormBlock", "roomIntro"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
+}
 function setupDirectFirstUI() {
+  if (autoConnectMode) {
+    hideManualRoomForm();
+    return;
+  }
   const box = document.getElementById("directLinkBox");
   const btn = document.getElementById("btnTryDirect");
   const list = document.getElementById("directLinkUrls");
@@ -229,12 +247,12 @@ function attemptDirectHandoff(urls, token) {
     return;
   }
   const target = list[0].replace(/\/$/, "") + "/?tk=" + encodeURIComponent(token);
-  setRoomStatus("Handing off to fast local desk…", "ok");
+  setRoomStatus("Connecting…", "ok");
   let fellBack = false;
   const fallback = () => {
     if (fellBack) return;
     fellBack = true;
-    setRoomStatus("Staying on Wi‑Fi bridge (local desk unreachable).", "ok");
+    setRoomStatus("Connected.", "ok");
     showConsole();
   };
   if (directHandoffTimer) clearTimeout(directHandoffTimer);
@@ -803,7 +821,7 @@ function joinRoom(opts) {
   cleanupMqtt();
   clientId = "web-" + Math.random().toString(36).slice(2, 10);
   setJoinBusy(true, "Connecting…");
-  setRoomStatus("Connecting… looking for room " + room);
+  setRoomStatus(autoConnectMode ? "Connecting…" : "Connecting…");
 
   let connectedOk = false;
   const connectWatch = setTimeout(() => {
@@ -833,7 +851,7 @@ function joinRoom(opts) {
     connectedOk = true;
     clearTimeout(connectWatch);
     setJoinBusy(true, "Looking for phone…");
-    setRoomStatus("Connected. Looking for phone in room " + room + "…");
+    setRoomStatus("Connecting…");
     let pendingSubs = 2;
     const onSub = (err) => {
       if (err) {
@@ -849,14 +867,14 @@ function joinRoom(opts) {
         if (phoneReady) return;
         tries += 1;
         publish("hello");
-        setRoomStatus("Looking for phone… (" + tries + "s) — keep Start room open on the phone");
+        setRoomStatus("Connecting…");
         if (tries >= 25) {
           clearInterval(waitTimer);
           waitTimer = null;
           hardFail(
-            "Phone not found for " +
-              room +
-              ". On the phone, open Secure Link and tap Start room. The status should say it is waiting. Then try this room code again."
+            autoConnectMode
+              ? "Could not reach this phone. On the phone, open Same network again, or use Different network."
+              : "Phone not found. Check the room code on the phone and try again."
           );
         }
       }, 1000);
@@ -965,24 +983,22 @@ document.getElementById("btnLogout").onclick = () => {
   }, 600);
 };
 
-// Smart connect (?smart=1&room=…&hosts=…) or resume saved session.
+// Auto connect (?auto=1 or legacy ?smart=1&room=…) or resume saved session.
 (function initSmartOrResume() {
   const p = new URLSearchParams(location.search);
-  if (p.get("smart") === "1") {
+  const autoFlag = p.get("auto") === "1" || p.get("smart") === "1";
+  if (autoFlag) {
     smartPort = parseInt(p.get("port") || "8765", 10) || 8765;
     const r = (p.get("room") || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
     if (r.length >= 4) {
       smartConnectActive = true;
+      autoConnectMode = true;
       const input = document.getElementById("roomInput");
       if (input) input.value = r;
       room = r;
-      setupDirectFirstUI();
-      setRoomStatus(
-        smartDirectUrls().length
-          ? "Try direct link first, or Continue with bridge + PIN from the phone."
-          : "Smart connect — Continue with bridge, then enter the PIN from Same Wi‑Fi.",
-        "ok"
-      );
+      hideManualRoomForm();
+      setRoomStatus("Connecting…", "ok");
+      setTimeout(() => joinRoom(), 80);
       return;
     }
   }
