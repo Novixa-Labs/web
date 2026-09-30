@@ -64,9 +64,9 @@ html, body {
   background: rgba(21, 35, 29, 0.92);
   border: 1px solid var(--line);
   border-radius: 20px;
-  padding: 28px;
+  padding: 32px 28px 28px;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   text-align: center;
 }
 .login-card h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
@@ -84,7 +84,8 @@ html, body {
   font-size: 1.8rem;
   letter-spacing: 0.35em;
   font-weight: 700;
-  padding: 14px 10px;
+  padding: 16px 12px;
+  margin-bottom: 4px;
 }
 .login-advanced {
   margin-top: 8px;
@@ -111,13 +112,12 @@ html, body {
   margin-top: 8px !important;
   opacity: 0.75;
 }
-.login-card button {
+.login-card button[type="submit"] {
   width: 100%;
-  margin-top: 6px;
-  background: linear-gradient(145deg, var(--accent), var(--accent-2));
-  border: none;
-  font-weight: 600;
-  padding: 12px;
+  margin-top: 10px;
+}
+.login-card .btn-secondary {
+  margin-top: 10px;
 }
 .login-error { color: #ffb4a9; margin-top: 4px !important; }
 
@@ -482,7 +482,7 @@ button {
   transition: transform 0.1s ease, background 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 button:active { transform: scale(0.98); }
-.room-card button,
+#roomFormBlock #btnJoin,
 .login-card button[type="submit"],
 button.accent,
 button.btn-open,
@@ -490,7 +490,7 @@ button.btn-open,
   color: #04221C;
   box-shadow: var(--shadow-accent);
 }
-.room-card button:hover,
+#roomFormBlock #btnJoin:hover,
 .login-card button[type="submit"]:hover,
 button.accent:hover,
 button.btn-open:hover {
