@@ -96,6 +96,8 @@ const SESSION_KEY = "tapdesk_connect_session";
 const SESSION_TTL_MS = 20 * 60 * 60 * 1000; // stay under the phone's 24h session TTL
 let joinAlerted = false;
 let resuming = false;
+let resumeToken = "";
+let connectWatch = null;
 let smartConnectActive = false;
 /** QR / Same network link (?auto=1 or legacy ?smart=1): join room silently, PIN only. */
 let autoConnectMode = false;
@@ -148,17 +150,46 @@ function setRoomStatus(t, kind) {
   if (kind === "ok") roomStatus.classList.add("is-ok");
 }
 function hardFail(message) {
-  if (autoConnectMode) {
-    autoConnectMode = false;
-    ["roomFormBlock", "roomIntro"].forEach((id) => {
-      document.getElementById(id)?.classList.remove("hidden");
-    });
-  }
+  clearSession();
+  cancelConnecting();
   setRoomStatus(message, "error");
-  setJoinBusy(false);
   if (!joinAlerted) {
     joinAlerted = true;
     window.alert(message);
+  }
+}
+function showManualRoomForm() {
+  ["directLinkBox", "roomBridgeDivider", "roomFormBlock", "roomIntro"].forEach((id) => {
+    document.getElementById(id)?.classList.remove("hidden");
+  });
+}
+/** Stop MQTT hello loop, timers, and re-enable the room form (different code / cancel). */
+function cancelConnecting(opts) {
+  const alertMessage = opts && opts.alertMessage;
+  if (autoConnectMode || smartConnectActive) {
+    autoConnectMode = false;
+    smartConnectActive = false;
+    showManualRoomForm();
+  }
+  if (connectWatch) {
+    clearTimeout(connectWatch);
+    connectWatch = null;
+  }
+  if (directHandoffTimer) {
+    clearTimeout(directHandoffTimer);
+    directHandoffTimer = null;
+  }
+  clearInterval(waitTimer);
+  waitTimer = null;
+  joinAlerted = false;
+  phoneReady = false;
+  authed = false;
+  setJoinBusy(false);
+  cleanupMqtt();
+  if (alertMessage) {
+    setRoomStatus(alertMessage, "error");
+    joinAlerted = true;
+    window.alert(alertMessage);
   }
 }
 function setStatus(t) {
@@ -634,15 +665,18 @@ function setJoinBusy(busy, label) {
   btnJoin.disabled = busy;
   btnJoin.classList.toggle("is-busy", busy);
   btnJoin.textContent = label || (busy ? "Connecting…" : "Continue");
+  const cancelBtn = document.getElementById("btnCancelJoin");
+  if (cancelBtn) cancelBtn.classList.toggle("hidden", !busy);
 }
-function showRoom() {
+function showRoom(keepCode) {
+  cancelConnecting();
   authed = false;
   phoneReady = false;
-  // Closing a session must not leave the room code or PIN behind — wipe both the entry fields and
-  // the in-memory room so the next person has to type them in fresh.
-  room = "";
-  const roomIn = document.getElementById("roomInput");
-  if (roomIn) roomIn.value = "";
+  if (!keepCode) {
+    room = "";
+    const roomIn = document.getElementById("roomInput");
+    if (roomIn) roomIn.value = "";
+  }
   const pinIn = document.getElementById("pairingInput");
   if (pinIn) pinIn.value = "";
   roomGate.classList.remove("hidden");
@@ -652,12 +686,10 @@ function showRoom() {
   consoleApp.hidden = true;
   consoleApp.style.display = "none";
   document.body.classList.remove("logged-in");
-  setJoinBusy(false);
   if (statusTimer) {
     clearInterval(statusTimer);
     statusTimer = null;
   }
-  cleanupMqtt();
 }
 function showPin() {
   setJoinBusy(false);
@@ -699,9 +731,8 @@ function onMessage(msg) {
 
   if (type === "ended") {
     const reason = String(payload.reason || "").toLowerCase();
-    const hardEnd = reason === "stopped" || reason === "leave";
-    // Stay in the live console unless the phone explicitly stopped the room.
-    if (authed && !hardEnd) {
+    // Only treat broker LWT-style offline as a soft pause; stopped/leave/empty → back to room code.
+    if (authed && reason === "offline") {
       showScreenLoading(
         "Phone link paused",
         "Keep TapDesk open on the phone. Your session is still active — video and controls resume when the link is back."
@@ -712,7 +743,7 @@ function onMessage(msg) {
     }
     teardownRtc(true);
     clearSession();
-    showRoom();
+    showRoom(true);
     setRoomStatus("Session ended on the phone. Enter the room code to reconnect.");
     return;
   }
@@ -785,13 +816,18 @@ function onMessage(msg) {
         return;
       }
       showConsole();
-    } else if (resuming) {
-      // Saved token expired / phone restarted — fall back to entering the PIN.
+    } else if (resuming || resumeToken) {
       resuming = false;
       clearSession();
-      showPin();
-      loginError.hidden = false;
-      loginError.textContent = "Your session expired — please enter the PIN again.";
+      resumeToken = "";
+      if (phoneReady) {
+        showPin();
+        loginError.hidden = false;
+        loginError.textContent = "Your session expired — please enter the PIN again.";
+      } else {
+        showRoom(true);
+        setRoomStatus("That room is closed on the phone. Enter the code shown on the phone now.", "error");
+      }
     } else {
       loginError.hidden = false;
       loginError.textContent = "Incorrect or expired PIN";
@@ -825,11 +861,17 @@ function onMessage(msg) {
 }
 
 function joinRoom(opts) {
-  if (btnJoin.disabled) return;
-
-  room = (document.getElementById("roomInput").value || "")
+  opts = opts || {};
+  const typedRoom = (document.getElementById("roomInput").value || "")
     .replace(/[^A-Za-z0-9]/g, "")
     .toUpperCase();
+  if (btnJoin.disabled) {
+    const sameRoom = typedRoom && typedRoom === room;
+    if (!opts.force && sameRoom) return;
+    cancelConnecting();
+  }
+
+  room = typedRoom;
   document.getElementById("roomInput").value = room;
 
   if (room.length < 4) {
@@ -848,13 +890,15 @@ function joinRoom(opts) {
 
   authed = false;
   phoneReady = false;
+  if (connectWatch) clearTimeout(connectWatch);
   cleanupMqtt();
   clientId = "web-" + Math.random().toString(36).slice(2, 10);
   setJoinBusy(true, "Connecting…");
   setRoomStatus(autoConnectMode ? "Connecting…" : "Connecting…");
 
   let connectedOk = false;
-  const connectWatch = setTimeout(() => {
+  connectWatch = setTimeout(() => {
+    connectWatch = null;
     if (connectedOk || phoneReady) return;
     setRoomStatus("Still connecting… check internet, keep the phone room open.", "error");
   }, 8000);
@@ -879,7 +923,10 @@ function joinRoom(opts) {
 
   mqttClient.on("connect", () => {
     connectedOk = true;
-    clearTimeout(connectWatch);
+    if (connectWatch) {
+      clearTimeout(connectWatch);
+      connectWatch = null;
+    }
     const liveConsole = authed && resumeToken && consoleApp && !consoleApp.hidden;
     if (liveConsole) {
       let subs = 2;
@@ -942,7 +989,10 @@ function joinRoom(opts) {
   });
 
   mqttClient.on("error", (err) => {
-    clearTimeout(connectWatch);
+    if (connectWatch) {
+      clearTimeout(connectWatch);
+      connectWatch = null;
+    }
     if (authed) {
       setStatus("Network blip — retrying…");
       showScreenLoading(
@@ -977,11 +1027,30 @@ function joinRoom(opts) {
   });
 }
 
-btnJoin.onclick = () => joinRoom();
+function joinRoomFromForm() {
+  const typed = (document.getElementById("roomInput").value || "")
+    .replace(/[^A-Za-z0-9]/g, "")
+    .toUpperCase();
+  const s = loadSession();
+  const resume = !!(s && s.token && s.room === typed);
+  joinRoom({ resume, force: btnJoin.disabled && typed !== room });
+}
+btnJoin.onclick = () => joinRoomFromForm();
+document.getElementById("btnCancelJoin")?.addEventListener("click", () => {
+  clearSession();
+  cancelConnecting();
+  setRoomStatus("Enter a room code to connect.", "");
+});
+document.getElementById("btnChangeRoom")?.addEventListener("click", () => {
+  clearSession();
+  teardownRtc(true);
+  showRoom(true);
+  setRoomStatus("Enter the room code shown on the phone.", "");
+});
 document.getElementById("roomInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    joinRoom();
+    joinRoomFromForm();
   }
 });
 document.getElementById("roomInput").addEventListener("input", (e) => {
@@ -1075,9 +1144,10 @@ document.getElementById("btnLogout").onclick = () => {
   if (input) input.value = s.room;
   room = s.room;
   resumeToken = s.token;
-  resuming = true;
-  setRoomStatus("Resuming your last session…");
-  joinRoom({ resume: true });
+  setRoomStatus(
+    "Saved room " + s.room + ". Tap Connect to resume, or change the code for a different phone.",
+    "ok"
+  );
 })();
 
 function applyPhoneOrientation(mode, screenW, screenH) {

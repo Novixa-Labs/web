@@ -99,6 +99,7 @@
       cursor: wait;
       filter: grayscale(0.2);
     }
+    .room-card .room-cancel { width: 100%; margin-top: 4px; }
     #roomFormBlock #btnJoin.is-busy::after {
       content: "";
       display: inline-block;
@@ -187,6 +188,7 @@
         <input id="roomInput" maxlength="8" placeholder="ABC123" autocomplete="off" spellcheck="false" autofocus />
         <button id="btnJoin" type="button">Connect</button>
       </div>
+      <button id="btnCancelJoin" type="button" class="btn-secondary room-cancel hidden">Cancel connecting</button>
       <p id="roomStatus" class="status-line"></p>
     </div>
   </div>
@@ -199,6 +201,7 @@
       <label class="field-label" for="pairingInput">Pairing PIN</label>
       <input id="pairingInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456" autocomplete="one-time-code" />
       <button id="btnPinSubmit" type="submit">Start controlling</button>
+      <button type="button" id="btnChangeRoom" class="btn-secondary">Use a different room</button>
       <p id="loginError" class="login-error" hidden>Incorrect or expired PIN</p>
       <details class="login-advanced">
         <summary>Or use password instead</summary>
@@ -317,6 +320,6 @@
   </div>
 
   <script src="/tapdesk/mqtt.min.js"></script>
-  <script src="/tapdesk/connect.js?v=27"></script>
+  <script src="/tapdesk/connect.js?v=28"></script>
 </body>
 </html>
