@@ -1299,9 +1299,8 @@ function handleVideoFrame(payload) {
   } catch (_) {
     return;
   }
-  // During / right after input, or while a previous image is still decoding, hold the newest
-  // frame so we never fight the UI thread — older pending frames are dropped and revoked.
-  if (Date.now() < interactUntil || screen.dataset.busy === "1") {
+  // Only defer while the user is actively tapping — never block on img "busy" (onload can skip).
+  if (Date.now() < interactUntil) {
     setPendingFrame(url);
     return;
   }
@@ -1310,12 +1309,10 @@ function handleVideoFrame(payload) {
 
 function applyFrameUrl(url) {
   lastFrameAt = Date.now();
-  screen.dataset.busy = "1";
   const prev = frameObjectUrl;
-  screen.onload = screen.onerror = () => {
-    screen.dataset.busy = "0";
+  const finish = () => {
     hideScreenLoading();
-    if (prev) {
+    if (prev && prev !== url) {
       try {
         URL.revokeObjectURL(prev);
       } catch (_) {}
@@ -1328,7 +1325,10 @@ function applyFrameUrl(url) {
     }
   };
   frameObjectUrl = url;
+  screen.onload = screen.onerror = finish;
   screen.src = url;
+  // Some browsers skip onload for rapid blob swaps — always paint the next frame.
+  setTimeout(finish, 120);
 }
 
 function markInteract(ms) {
@@ -1392,7 +1392,7 @@ screen.addEventListener("pointerup", (e) => {
   pointerDown = null;
   // Flush newest frame after input settles.
   setTimeout(() => {
-    if (pendingFrameUrl && screen.dataset.busy !== "1" && Date.now() >= interactUntil) {
+    if (pendingFrameUrl && Date.now() >= interactUntil) {
       const next = pendingFrameUrl;
       pendingFrameUrl = null;
       applyFrameUrl(next);
