@@ -574,6 +574,10 @@ function connectWs() {
       try { m = JSON.parse(ev.data); } catch (_) { return; }
       if (m.type === "rtc_offer") startRtcAnswer(m.sdp);
       else if (m.type === "rtc_ice") addRtcIce(m);
+      else if (m.type === "rtc_unavailable") {
+        rtcReadySent = true;
+        teardownRtc(true);
+      }
     }
   };
 }
