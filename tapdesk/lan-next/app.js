@@ -478,9 +478,19 @@ function stopMjpegFallback() {
   }
 }
 
+function normalizeAppsList(raw) {
+  const list = Array.isArray(raw) ? raw : raw?.apps || [];
+  return list
+    .map((a) => ({
+      name: a?.name || a?.packageName || a?.package || "App",
+      packageName: a?.packageName || a?.package || "",
+    }))
+    .filter((a) => a.packageName);
+}
+
 async function loadApps() {
   try {
-    apps = await api("/api/apps");
+    apps = normalizeAppsList(await api("/api/apps"));
     renderApps();
   } catch (_) {}
 }
@@ -724,13 +734,23 @@ function sendCommand(obj) {
 
 function normPoint(evt) {
   const rect = screen.getBoundingClientRect();
+  const nw = screen.naturalWidth || 0;
+  const nh = screen.naturalHeight || 0;
   if (!rect.width || !rect.height) return null;
-  const x = (evt.clientX - rect.left) / rect.width;
-  const y = (evt.clientY - rect.top) / rect.height;
-  return {
-    x: Math.min(1, Math.max(0, x)),
-    y: Math.min(1, Math.max(0, y)),
-  };
+  if (!nw || !nh) {
+    const x = (evt.clientX - rect.left) / rect.width;
+    const y = (evt.clientY - rect.top) / rect.height;
+    return { x: Math.min(1, Math.max(0, x)), y: Math.min(1, Math.max(0, y)) };
+  }
+  const scale = Math.min(rect.width / nw, rect.height / nh);
+  const dw = nw * scale;
+  const dh = nh * scale;
+  const ox = (rect.width - dw) / 2;
+  const oy = (rect.height - dh) / 2;
+  const x = (evt.clientX - rect.left - ox) / dw;
+  const y = (evt.clientY - rect.top - oy) / dh;
+  if (x < 0 || x > 1 || y < 0 || y > 1) return null;
+  return { x: Math.min(1, Math.max(0, x)), y: Math.min(1, Math.max(0, y)) };
 }
 
 screen.addEventListener("pointerdown", (e) => {
