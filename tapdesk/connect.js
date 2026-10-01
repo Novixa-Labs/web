@@ -685,11 +685,25 @@ function onMessage(msg) {
   const payload = msg.payload || {};
 
   if (type === "ended") {
-    // Phone stopped the session (or dropped offline) — go straight back to the room screen.
+    const reason = String(payload.reason || "stopped").toLowerCase();
+    // Brief MQTT drops used to publish a false "ended" — never kick a live session for that.
+    if (authed && reason === "offline") {
+      showScreenLoading(
+        "Phone link paused",
+        "Keep TapDesk open on the phone. Video may return — controls still work when the link is back."
+      );
+      setStatus("Connected · waiting for phone" + mediaPathLabel());
+      return;
+    }
     teardownRtc(true);
     clearSession();
     showRoom();
     setRoomStatus("Session ended on the phone. Enter the room code to reconnect.");
+    return;
+  }
+
+  if (type === "presence" && payload.online === false && authed) {
+    setStatus("Connected · phone link paused" + mediaPathLabel());
     return;
   }
 

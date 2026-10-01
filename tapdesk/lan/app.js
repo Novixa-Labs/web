@@ -13,6 +13,8 @@ const appList = document.getElementById("appList");
 const appFilter = document.getElementById("appFilter");
 
 let ws = null;
+let rtcReadySent = false;
+let wsReconnectTimer = null;
 let apps = [];
 let pointerDown = null;
 let gotWsFrame = false;
@@ -477,22 +479,42 @@ function escapeHtml(s) {
     .replaceAll(">", "&gt;");
 }
 
+function scheduleWsReconnect() {
+  if (wsReconnectTimer) return;
+  wsReconnectTimer = setTimeout(() => {
+    wsReconnectTimer = null;
+    if (getToken() && (!ws || ws.readyState === WebSocket.CLOSED)) connectWs();
+  }, 1200);
+}
+
+function maybeStartRtcUpgrade() {
+  if (rtcReadySent || rtcActive) return;
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  if (typeof RTCPeerConnection === "undefined") return;
+  rtcReadySent = true;
+  wsSend({ type: "rtc_ready" });
+}
+
 function connectWs() {
   if (!getToken()) return;
   if (ws) {
     try { ws.close(); } catch (_) {}
   }
   gotWsFrame = false;
+  rtcReadySent = false;
   const proto = location.protocol === "https:" ? "wss" : "ws";
   ws = new WebSocket(`${proto}://${location.host}/ws?token=${encodeURIComponent(getToken())}`);
   ws.binaryType = "arraybuffer";
   ws.onopen = () => {
     setStatus("Connected · live");
-    // Ask the phone to start a WebRTC offer (JPEG keeps flowing until it connects).
-    if (typeof RTCPeerConnection !== "undefined") wsSend({ type: "rtc_ready" });
+    // Prefer WebRTC only after JPEG is flowing; if capture is slow, try upgrade after a few seconds.
+    setTimeout(() => {
+      if (!rtcReadySent && ws && ws.readyState === WebSocket.OPEN) maybeStartRtcUpgrade();
+    }, 3500);
   };
   ws.onclose = (ev) => {
     teardownRtc(true);
+    rtcReadySent = false;
     // Code 1008 (policy violation) is the phone deliberately ending this session — Stop was
     // pressed, or the session expired. Reflect that immediately instead of saying "Reconnecting…"
     // and waiting for the next status poll to notice.
@@ -503,6 +525,7 @@ function connectWs() {
     if (getToken()) {
       setStatus("Reconnecting…");
       showScreenLoading("Reconnecting…", "The connection dropped — restoring the live view.");
+      scheduleWsReconnect();
     }
   };
   ws.onerror = () => {};
@@ -512,6 +535,7 @@ function connectWs() {
       gotWsFrame = true;
       stopMjpegFallback();
       showFrameBlob(new Blob([ev.data], { type: "image/jpeg" }));
+      maybeStartRtcUpgrade();
       return;
     }
     if (typeof ev.data === "string") {
