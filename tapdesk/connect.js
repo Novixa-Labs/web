@@ -19,6 +19,7 @@ let phoneReady = false;
 let authed = false;
 let waitTimer = null;
 let statusTimer = null;
+let streamKickTimer = null;
 let pointerDown = null;
 let apps = [];
 let pending = new Map();
@@ -184,6 +185,7 @@ function cancelConnecting(opts) {
   joinAlerted = false;
   phoneReady = false;
   authed = false;
+  stopStreamKick();
   setJoinBusy(false);
   cleanupMqtt();
   if (alertMessage) {
@@ -319,6 +321,33 @@ function showScreenLoading(title, sub) {
 function hideScreenLoading() {
   const el = document.getElementById("screenLoading");
   if (el) el.classList.add("is-hidden");
+}
+/** Other-network: nudge the phone to start capture if MQTT JPEG never arrives. */
+function startStreamKick() {
+  clearInterval(streamKickTimer);
+  let ticks = 0;
+  streamKickTimer = setInterval(() => {
+    if (!authed) {
+      clearInterval(streamKickTimer);
+      streamKickTimer = null;
+      return;
+    }
+    if (Date.now() - lastFrameAt < 2500) return;
+    ticks += 1;
+    if (ticks > 10) {
+      clearInterval(streamKickTimer);
+      streamKickTimer = null;
+      return;
+    }
+    try {
+      publish("stream_start", { reqId: reqId() });
+      publish("want_jpeg", {}, 1);
+    } catch (_) {}
+  }, 2500);
+}
+function stopStreamKick() {
+  clearInterval(streamKickTimer);
+  streamKickTimer = null;
 }
 
 /* ---- WebRTC stall detection → JPEG/MQTT is the default Other-network video --------------
@@ -722,6 +751,7 @@ function showConsole() {
     if (authed) loadApps();
   }, 1800);
   if (!statusTimer) statusTimer = setInterval(refreshStatus, 5000);
+  startStreamKick();
 }
 
 function onMessage(msg) {
@@ -1185,10 +1215,11 @@ async function refreshStatus() {
   try {
     const s = await request("status_req", {});
     applyStatus(s);
-    if (!s.streaming) {
+    const framesRecent = Date.now() - lastFrameAt < 3500;
+    if (!s.streaming && !framesRecent) {
       showScreenLoading(
         "Waiting for screen sharing",
-        "Controls still work. Turn on sharing on the phone if video is blank."
+        "Controls still work. On the phone open TapDesk and approve screen sharing if video is blank."
       );
     } else {
       hideScreenLoading();
