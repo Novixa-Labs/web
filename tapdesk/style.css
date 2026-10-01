@@ -28,6 +28,16 @@ html, body {
   background: linear-gradient(180deg, var(--bg-2), var(--bg));
 }
 
+.transport-tech {
+  margin: 2px 0 0;
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--muted);
+  opacity: 0.72;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  letter-spacing: 0.02em;
+}
+
 .console-app[hidden],
 .login-gate[hidden] {
   display: none !important;

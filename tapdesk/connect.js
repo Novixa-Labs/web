@@ -7,6 +7,7 @@ const consoleApp = document.getElementById("consoleApp");
 const roomStatus = document.getElementById("roomStatus");
 const loginError = document.getElementById("loginError");
 const statusLine = document.getElementById("statusLine");
+const transportTech = document.getElementById("transportTech");
 const screen = document.getElementById("screen");
 const appList = document.getElementById("appList");
 const appFilter = document.getElementById("appFilter");
@@ -196,6 +197,19 @@ function cancelConnecting(opts) {
 }
 function setStatus(t) {
   statusLine.textContent = t;
+  refreshTransportTech();
+}
+function refreshTransportTech() {
+  if (!transportTech) return;
+  if (!authed) {
+    transportTech.hidden = true;
+    return;
+  }
+  const jpegLive = lastFrameAt && Date.now() - lastFrameAt < 5000;
+  const v = rtcActive ? "v:rtc" : jpegLive ? "v:mqtt-jpeg" : "v:idle";
+  const c = dcReady() ? "c:dc" : "c:mqtt";
+  transportTech.textContent = `tech · ${v} · ${c}`;
+  transportTech.hidden = false;
 }
 function mediaPathLabel() {
   if (!sameWifiBridge) return "";
@@ -605,8 +619,10 @@ async function startRtcAnswer(offerSdp) {
       armRtcStartupGuard();
       try { publish("want_jpeg", {}, 1); } catch (_) {}
       setStatus("Connected · live video (MQTT)" + mediaPathLabel());
+      refreshTransportTech();
     } else if (s === "failed") {
       rtcActive = false;
+      refreshTransportTech();
       if (rtcVideo) rtcVideo.classList.remove("is-live");
       showScreenLoading(
         "Reconnecting the secure video…",
@@ -1309,6 +1325,7 @@ function handleVideoFrame(payload) {
 
 function applyFrameUrl(url) {
   lastFrameAt = Date.now();
+  refreshTransportTech();
   const prev = frameObjectUrl;
   const finish = () => {
     hideScreenLoading();

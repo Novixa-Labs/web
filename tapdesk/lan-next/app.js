@@ -10,6 +10,7 @@ const passwordInput = document.getElementById("passwordInput");
 const loginError = document.getElementById("loginError");
 const screen = document.getElementById("screen");
 const statusLine = document.getElementById("statusLine");
+const transportTech = document.getElementById("transportTech");
 const appList = document.getElementById("appList");
 const appFilter = document.getElementById("appFilter");
 
@@ -71,6 +72,19 @@ function clearToken(clearStorage = true) {
 
 function setStatus(text) {
   statusLine.textContent = text;
+  refreshTransportTech();
+}
+
+function refreshTransportTech() {
+  if (!transportTech) return;
+  if (!getToken() || consoleApp.hidden) {
+    transportTech.hidden = true;
+    return;
+  }
+  const v = rtcActive ? "v:rtc" : gotWsFrame ? "v:ws-jpeg" : "v:idle";
+  const c = dcReady() ? "c:dc" : ws && ws.readyState === WebSocket.OPEN ? "c:ws" : "c:http";
+  transportTech.textContent = `tech · ${v} · ${c}`;
+  transportTech.hidden = false;
 }
 function showScreenLoading(title, sub) {
   const el = document.getElementById("screenLoading");
@@ -583,6 +597,7 @@ function connectWs() {
       wsFrameCount += 1;
       stopMjpegFallback();
       showFrameBlob(new Blob([ev.data], { type: "image/jpeg" }));
+      refreshTransportTech();
       maybeStartRtcUpgrade();
       return;
     }
@@ -594,6 +609,7 @@ function connectWs() {
       else if (m.type === "rtc_unavailable") {
         rtcReadySent = true;
         teardownRtc(true);
+        refreshTransportTech();
       }
     }
   };
@@ -614,6 +630,7 @@ async function startRtcAnswer(sdp) {
     if (ev.channel && ev.channel.label === "control") {
       controlChannel = ev.channel;
       controlChannel.onmessage = (e) => onDcMessage(e.data);
+      controlChannel.onopen = () => refreshTransportTech();
     }
   };
   pc.onicecandidate = (e) => {
