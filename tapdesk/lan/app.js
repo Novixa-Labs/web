@@ -15,6 +15,8 @@ const appFilter = document.getElementById("appFilter");
 let ws = null;
 let rtcReadySent = false;
 let wsReconnectTimer = null;
+let wsReconnectAttempts = 0;
+const WS_RECONNECT_MAX = 15;
 let apps = [];
 let pointerDown = null;
 let gotWsFrame = false;
@@ -402,9 +404,22 @@ async function refreshStatus() {
     const auto = d.orientation === "landscape" ? "landscape" : "portrait";
     applyPhoneOrientation(auto, d.screenWidth, d.screenHeight);
 
-    if (!s.streaming || !s.hasFrame) startMjpegFallback();
+    if (!s.streaming || !s.hasFrame) {
+      startMjpegFallback();
+      showScreenLoading(
+        "Waiting for screen sharing",
+        "Controls still work. Approve sharing on the phone if the screen is blank."
+      );
+    } else {
+      hideScreenLoading();
+    }
   } catch (e) {
-    if (e.message !== "unauthorized") setStatus("Connection lost");
+    if (e.message === "unauthorized") {
+      showLogin(true, "Session ended on the phone. Enter the code again.");
+      return;
+    }
+    setStatus("Connected · waiting for phone");
+    if (!ws || ws.readyState !== WebSocket.OPEN) scheduleWsReconnect();
   }
 }
 
@@ -481,10 +496,20 @@ function escapeHtml(s) {
 
 function scheduleWsReconnect() {
   if (wsReconnectTimer) return;
+  if (wsReconnectAttempts >= WS_RECONNECT_MAX) {
+    setStatus("Connection unstable — refresh this page");
+    showScreenLoading(
+      "Connection paused",
+      "Your PIN is still saved. Refresh the page or re-open the link from the phone."
+    );
+    return;
+  }
+  wsReconnectAttempts += 1;
+  const delay = Math.min(800 + wsReconnectAttempts * 400, 6000);
   wsReconnectTimer = setTimeout(() => {
     wsReconnectTimer = null;
     if (getToken() && (!ws || ws.readyState === WebSocket.CLOSED)) connectWs();
-  }, 1200);
+  }, delay);
 }
 
 function maybeStartRtcUpgrade() {
@@ -506,7 +531,10 @@ function connectWs() {
   ws = new WebSocket(`${proto}://${location.host}/ws?token=${encodeURIComponent(getToken())}`);
   ws.binaryType = "arraybuffer";
   ws.onopen = () => {
+    wsReconnectAttempts = 0;
+    hideScreenLoading();
     setStatus("Connected · live");
+    startMjpegFallback();
     // Prefer WebRTC only after JPEG is flowing; if capture is slow, try upgrade after a few seconds.
     setTimeout(() => {
       if (!rtcReadySent && ws && ws.readyState === WebSocket.OPEN) maybeStartRtcUpgrade();
@@ -524,7 +552,10 @@ function connectWs() {
     }
     if (getToken()) {
       setStatus("Reconnecting…");
-      showScreenLoading("Reconnecting…", "The connection dropped — restoring the live view.");
+      showScreenLoading(
+        "Reconnecting…",
+        "Session still active — keep TapDesk open on the phone. Video returns in a moment."
+      );
       scheduleWsReconnect();
     }
   };
@@ -883,3 +914,15 @@ appFilter.addEventListener("input", renderApps);
 
 // Restore saved session or show pairing login.
 tryRestoreSession();
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  if (!consoleApp || consoleApp.hidden || !getToken()) return;
+  if (!ws || ws.readyState !== WebSocket.OPEN) scheduleWsReconnect();
+  else refreshStatus();
+});
+
+window.setInterval(() => {
+  if (!consoleApp || consoleApp.hidden || !getToken()) return;
+  if (!ws || ws.readyState === WebSocket.CLOSED) scheduleWsReconnect();
+}, 3500);

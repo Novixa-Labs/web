@@ -240,25 +240,38 @@ function setupDirectFirstUI() {
     }
   }
 }
+function mqttResyncAfterBlip() {
+  if (!authed || !resumeToken || !mqttClient) return;
+  window.setTimeout(() => {
+    if (!authed || !mqttClient || !mqttClient.connected) return;
+    try {
+      publish("auth", { token: resumeToken }, 1);
+      publish("want_jpeg", {}, 1);
+      publish("hello");
+    } catch (_) {}
+  }, 1200);
+}
+
 function attemptDirectHandoff(urls, token) {
   const list = Array.isArray(urls) ? urls.filter(Boolean) : [];
   if (!list.length || !token) {
     showConsole();
     return;
   }
+  saveSession(room, token);
   const target = list[0].replace(/\/$/, "") + "/?tk=" + encodeURIComponent(token);
-  setRoomStatus("Connecting…", "ok");
+  setRoomStatus("Opening direct desk…", "ok");
   let fellBack = false;
   const fallback = () => {
     if (fellBack) return;
     fellBack = true;
-    setRoomStatus("Connected.", "ok");
+    setRoomStatus("Connected on bridge.", "ok");
     showConsole();
   };
   if (directHandoffTimer) clearTimeout(directHandoffTimer);
-  directHandoffTimer = setTimeout(fallback, 5000);
+  directHandoffTimer = setTimeout(fallback, 6000);
   try {
-    location.assign(target);
+    location.replace(target);
   } catch (_) {
     fallback();
   }
@@ -685,14 +698,16 @@ function onMessage(msg) {
   const payload = msg.payload || {};
 
   if (type === "ended") {
-    const reason = String(payload.reason || "stopped").toLowerCase();
-    // Brief MQTT drops used to publish a false "ended" — never kick a live session for that.
-    if (authed && reason === "offline") {
+    const reason = String(payload.reason || "").toLowerCase();
+    const hardEnd = reason === "stopped" || reason === "leave";
+    // Stay in the live console unless the phone explicitly stopped the room.
+    if (authed && !hardEnd) {
       showScreenLoading(
         "Phone link paused",
-        "Keep TapDesk open on the phone. Video may return — controls still work when the link is back."
+        "Keep TapDesk open on the phone. Your session is still active — video and controls resume when the link is back."
       );
-      setStatus("Connected · waiting for phone" + mediaPathLabel());
+      setStatus("Connected · link paused" + mediaPathLabel());
+      mqttResyncAfterBlip();
       return;
     }
     teardownRtc(true);
@@ -704,6 +719,7 @@ function onMessage(msg) {
 
   if (type === "presence" && payload.online === false && authed) {
     setStatus("Connected · phone link paused" + mediaPathLabel());
+    mqttResyncAfterBlip();
     return;
   }
 
@@ -849,9 +865,9 @@ function joinRoom(opts) {
       username: "tapdesk-remote-device",
       password: "tapDesk##@@",
       clean: true,
-      reconnectPeriod: 2000,
-      connectTimeout: 10000,
-      keepalive: 30,
+      reconnectPeriod: 2500,
+      connectTimeout: 15000,
+      keepalive: 45,
       resubscribe: true,
       protocolVersion: 4,
     });
@@ -864,6 +880,23 @@ function joinRoom(opts) {
   mqttClient.on("connect", () => {
     connectedOk = true;
     clearTimeout(connectWatch);
+    const liveConsole = authed && resumeToken && consoleApp && !consoleApp.hidden;
+    if (liveConsole) {
+      let subs = 2;
+      const onResyncSub = (err) => {
+        if (err) return;
+        subs -= 1;
+        if (subs > 0) return;
+        publish("auth", { token: resumeToken }, 1);
+        publish("want_jpeg", {}, 1);
+        hideScreenLoading();
+        setStatus("Connected · live session" + mediaPathLabel());
+        refreshStatus();
+      };
+      mqttClient.subscribe(topic(), { qos: 0 }, onResyncSub);
+      mqttClient.subscribe(topicVideo(), { qos: 0 }, onResyncSub);
+      return;
+    }
     setJoinBusy(true, "Looking for phone…");
     setRoomStatus("Connecting…");
     let pendingSubs = 2;
@@ -910,6 +943,14 @@ function joinRoom(opts) {
 
   mqttClient.on("error", (err) => {
     clearTimeout(connectWatch);
+    if (authed) {
+      setStatus("Network blip — retrying…");
+      showScreenLoading(
+        "Reconnecting…",
+        "Your session is still active. Keep TapDesk open on the phone."
+      );
+      return;
+    }
     hardFail(
       "Couldn’t reach the connection service. Check the computer’s internet" +
         (err && err.message ? " (" + err.message + ")" : "") +
@@ -918,9 +959,21 @@ function joinRoom(opts) {
   });
 
   mqttClient.on("close", () => {
+    if (authed) {
+      setStatus("Reconnecting…");
+      showScreenLoading(
+        "Reconnecting…",
+        "Brief pause — your session stays open. Keep the phone app in the foreground."
+      );
+      return;
+    }
     if (!phoneReady && !authed && btnJoin.disabled) {
       /* reconnectPeriod may recover; keep busy until timeout loop ends */
     }
+  });
+
+  mqttClient.on("reconnect", () => {
+    if (authed) setStatus("Reconnecting to phone…");
   });
 }
 
@@ -1062,10 +1115,25 @@ async function refreshStatus() {
   try {
     const s = await request("status_req", {});
     applyStatus(s);
+    if (!s.streaming) {
+      showScreenLoading(
+        "Waiting for screen sharing",
+        "Controls still work. Turn on sharing on the phone if video is blank."
+      );
+    } else {
+      hideScreenLoading();
+    }
   } catch (_) {
-    setStatus("Waiting for phone…");
+    setStatus("Connected · waiting for phone" + mediaPathLabel());
+    mqttResyncAfterBlip();
   }
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible" || !authed) return;
+  mqttResyncAfterBlip();
+  refreshStatus();
+});
 
 async function loadApps() {
   if (!authed) return;
