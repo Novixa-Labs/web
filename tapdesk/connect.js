@@ -758,7 +758,9 @@ function showConsole() {
   showScreenLoading("Starting the live view…", "Waking the screen and preparing the stream.");
   publish("stream_start", { reqId: reqId() });
   publish("want_jpeg", {}, 1); // Other-network default: MQTT JPEG until WebRTC proves healthy
-  startRtcUpgrade(); // try to upgrade video to P2P WebRTC; JPEG keeps working meanwhile
+  setTimeout(() => {
+    if (authed) startRtcUpgrade();
+  }, 2000); // MQTT video + control first; WebRTC upgrades in parallel when the phone is ready
   // Defer heavy MQTT traffic so first taps/frames are not blocked by apps list.
   setTimeout(() => {
     if (authed) refreshStatus();

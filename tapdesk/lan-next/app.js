@@ -531,12 +531,21 @@ function scheduleWsReconnect() {
   }, delay);
 }
 
+let rtcUpgradeTimer = null;
+
 function maybeStartRtcUpgrade() {
   if (rtcReadySent || rtcActive) return;
   if (!ws || ws.readyState !== WebSocket.OPEN) return;
   if (typeof RTCPeerConnection === "undefined") return;
-  rtcReadySent = true;
-  wsSend({ type: "rtc_ready" });
+  if (rtcUpgradeTimer) return;
+  // Let WS JPEG run first so the desk never looks frozen while the phone probes WebRTC.
+  rtcUpgradeTimer = setTimeout(() => {
+    rtcUpgradeTimer = null;
+    if (rtcReadySent || rtcActive) return;
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    rtcReadySent = true;
+    wsSend({ type: "rtc_ready" });
+  }, 1500);
 }
 
 function connectWs() {
@@ -548,6 +557,10 @@ function connectWs() {
   wsFrameCount = 0;
   rtcReadySent = false;
   rtcVideoUpgradeSent = false;
+  if (rtcUpgradeTimer) {
+    clearTimeout(rtcUpgradeTimer);
+    rtcUpgradeTimer = null;
+  }
   const proto = location.protocol === "https:" ? "wss" : "ws";
   ws = new WebSocket(`${proto}://${location.host}/ws?token=${encodeURIComponent(getToken())}`);
   ws.binaryType = "arraybuffer";
