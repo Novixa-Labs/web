@@ -1217,10 +1217,10 @@ async function refreshStatus() {
     applyStatus(s);
     const framesRecent = Date.now() - lastFrameAt < 3500;
     if (!s.streaming && !framesRecent) {
-      showScreenLoading(
-        "Waiting for screen sharing",
-        "Controls still work. On the phone open TapDesk and approve screen sharing if video is blank."
-      );
+      const sub = s.projectionSaved
+        ? "Controls still work. On the phone, allow screen sharing again — the saved permission expired."
+        : "Controls still work. On the phone open TapDesk and tap Allow on the screen-sharing prompt.";
+      showScreenLoading("Waiting for screen sharing", sub);
     } else {
       hideScreenLoading();
     }
