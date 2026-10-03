@@ -57,6 +57,9 @@ let rtcHealthy = false; // did WebRTC deliver a SUSTAINED stream? Until then, co
 let rtcFrameCount = 0; // frames decoded since the current ICE connection came up
 let rtcStartupTimer = null;
 const rtcPending = [];
+let phoneVideoCapable = false; // phone EGL/WebRTC screen pipeline available
+let rtcScreenVideoOffered = false; // current offer includes a video track (not DC-only)
+let rtcVideoUpgradeSent = false; // user asked for WebRTC screen video (want_rtc)
 
 // Vercel route /api/tapdesk-turn. Cloudflare TURN when those env vars are set, otherwise
 // the static relay below.
@@ -206,7 +209,8 @@ function refreshTransportTech() {
     return;
   }
   const jpegLive = lastFrameAt && Date.now() - lastFrameAt < 5000;
-  const v = rtcActive ? "v:rtc" : jpegLive ? "v:mqtt-jpeg" : "v:idle";
+  const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
+  const v = rtcVideoLive ? "v:rtc" : jpegLive ? "v:mqtt-jpeg" : "v:idle";
   const c = dcReady() ? "c:dc" : "c:mqtt";
   transportTech.textContent = `tech · ${v} · ${c}`;
   transportTech.hidden = false;
@@ -379,8 +383,12 @@ const RTC_MIN_FRAMES = 8; // require a real stream before trusting WebRTC (not 1
 function markRtcFrame() {
   lastRtcFrameAt = Date.now();
   rtcFrameCount += 1;
-  // Other-network does not upgrade the visible video to WebRTC (MQTT JPEG owns the picture).
-  // Frames are only used for diagnostics; never call exitJpegFallback / want_rtc here.
+  if (!rtcScreenVideoOffered) return;
+  if (rtcFrameCount >= RTC_MIN_FRAMES && !rtcHealthy) {
+    rtcHealthy = true;
+    rtcStalled = false;
+    exitJpegFallback();
+  }
 }
 function pumpRtcFrameCallback() {
   if (!rtcVideo || typeof rtcVideo.requestVideoFrameCallback !== "function") return;
@@ -397,18 +405,22 @@ function pumpRtcFrameCallback() {
 }
 function startRtcStallWatch() {
   lastRtcFrameAt = Date.now();
-  rtcStalled = true; // Other-network: MQTT JPEG is always the picture
   rtcHealthy = false;
   rtcFrameCount = 0;
-  if (rtcVideo) {
-    rtcVideo.classList.remove("is-live");
-    try { rtcVideo.srcObject = null; } catch (_) {}
+  if (!rtcScreenVideoOffered) {
+    rtcStalled = true;
+    if (rtcVideo) {
+      rtcVideo.classList.remove("is-live");
+      try { rtcVideo.srcObject = null; } catch (_) {}
+    }
+    try { publish("want_jpeg", {}, 1); } catch (_) {}
+  } else {
+    rtcStalled = false;
   }
-  try { publish("want_jpeg", {}, 1); } catch (_) {}
   clearTimeout(rtcStartupTimer);
   rtcStartupTimer = null;
   clearInterval(rtcStallTimer);
-  rtcStallTimer = null; // no media-stall watch needed — video is MQTT-only
+  rtcStallTimer = null;
 }
 function armRtcStartupGuard() {
   // Call when ICE becomes connected/completed. If WebRTC doesn't deliver a sustained stream
@@ -441,8 +453,29 @@ function enterJpegFallback() {
   setStatus("Connected · live video (MQTT)");
 }
 function exitJpegFallback() {
-  // Other-network: stay on MQTT JPEG. (Same Wi‑Fi uses app.js for WebRTC video.)
-  enterJpegFallback();
+  if (!rtcScreenVideoOffered) return;
+  rtcStalled = false;
+  rtcHealthy = true;
+  if (rtcVideo) rtcVideo.classList.add("is-live");
+  try { publish("want_rtc", {}, 1); } catch (_) {}
+  setStatus("Connected · live video (WebRTC)" + mediaPathLabel());
+  refreshTransportTech();
+  refreshRtcVideoButton();
+}
+function requestWebRtcScreenVideo() {
+  const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
+  if (rtcVideoUpgradeSent || rtcVideoLive) return;
+  rtcVideoUpgradeSent = true;
+  publish("want_rtc", {}, 1);
+  setStatus("Switching to WebRTC video…");
+  refreshRtcVideoButton();
+}
+function refreshRtcVideoButton() {
+  const btn = document.getElementById("btnRtcVideo");
+  if (!btn) return;
+  const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
+  const show = phoneVideoCapable && rtcActive && !rtcVideoLive && !rtcScreenVideoOffered;
+  btn.hidden = !show;
 }
 function publish(type, payload = {}, qos = 0) {
   if (!mqttClient || !mqttClient.connected) return;
@@ -461,15 +494,7 @@ const MQTT_ONLY = new Set([
   "want_jpeg", "want_rtc", // video-mode switches must not depend on a possibly-dead DataChannel
 ]);
 function dcReady() {
-  // "open" isn't enough over a bad relay — the channel can report open while the transport is dead.
-  // Only trust the DataChannel once WebRTC has proven a sustained stream and isn't stalled; until
-  // then (and whenever stalled) control falls back to MQTT so clicks ALWAYS get through.
-  return (
-    controlChannel &&
-    controlChannel.readyState === "open" &&
-    rtcHealthy &&
-    !rtcStalled
-  );
+  return controlChannel && controlChannel.readyState === "open";
 }
 function sendMsg(type, payload = {}) {
   if (!MQTT_ONLY.has(type) && dcReady()) {
@@ -570,8 +595,12 @@ function stopRtcReadyTimer() {
   if (rtcReadyTimer) clearInterval(rtcReadyTimer);
   rtcReadyTimer = null;
 }
-async function startRtcAnswer(offerSdp) {
+async function startRtcAnswer(offerSdp, screenVideoOffered) {
   teardownRtc(false);
+  rtcScreenVideoOffered = screenVideoOffered === true;
+  if (!rtcScreenVideoOffered) {
+    enterJpegFallback();
+  }
   const cfg = await getIceConfig();
   try {
     pc = new RTCPeerConnection(cfg);
@@ -587,9 +616,12 @@ async function startRtcAnswer(offerSdp) {
   rtcTrackSeen = false;
 
   pc.ontrack = (ev) => {
-    // Other-network offers are DataChannel-only (no video track). If a track arrives anyway, ignore
-    // it for display — MQTT JPEG owns the picture so the JPEG capturer is never starved.
     rtcTrackSeen = true;
+    if (!rtcScreenVideoOffered) return;
+    if (rtcVideo && ev.streams && ev.streams[0]) {
+      rtcVideo.srcObject = ev.streams[0];
+      pumpRtcFrameCallback();
+    }
   };
   startRtcStallWatch();
   pc.onicecandidate = (ev) => {
@@ -617,9 +649,14 @@ async function startRtcAnswer(offerSdp) {
       // Re-arm pump + startup guard now that ICE is actually up (old bug: timers died before this).
       pumpRtcFrameCallback();
       armRtcStartupGuard();
-      try { publish("want_jpeg", {}, 1); } catch (_) {}
-      setStatus("Connected · live video (MQTT)" + mediaPathLabel());
+      if (!rtcScreenVideoOffered) {
+        try { publish("want_jpeg", {}, 1); } catch (_) {}
+        setStatus("Connected · live video (MQTT)" + mediaPathLabel());
+      } else {
+        setStatus("Connected · securing WebRTC video…" + mediaPathLabel());
+      }
       refreshTransportTech();
+      refreshRtcVideoButton();
     } else if (s === "failed") {
       rtcActive = false;
       refreshTransportTech();
@@ -641,6 +678,7 @@ async function startRtcAnswer(offerSdp) {
       controlChannel.onmessage = (e) => {
         try { onMessage(JSON.parse(e.data)); } catch (_) {}
       };
+      controlChannel.onopen = () => refreshRtcVideoButton();
     }
   };
 
@@ -696,6 +734,8 @@ function teardownRtc(clearVideo) {
   clearInterval(rtcDiagTimer);
   stopRtcStallWatch();
   rtcActive = false;
+  rtcScreenVideoOffered = false;
+  if (clearVideo) rtcVideoUpgradeSent = false;
   rtcRemoteSet = false;
   rtcPending.length = 0;
   if (controlChannel) { try { controlChannel.close(); } catch (_) {} controlChannel = null; }
@@ -770,6 +810,12 @@ function showConsole() {
   }, 1800);
   if (!statusTimer) statusTimer = setInterval(refreshStatus, 5000);
   startStreamKick();
+  const btnRtc = document.getElementById("btnRtcVideo");
+  if (btnRtc && !btnRtc._tapdeskRtcBound) {
+    btnRtc._tapdeskRtcBound = true;
+    btnRtc.onclick = () => requestWebRtcScreenVideo();
+  }
+  refreshRtcVideoButton();
 }
 
 function onMessage(msg) {
@@ -803,12 +849,22 @@ function onMessage(msg) {
   }
 
   // WebRTC upgrade signaling (phone is the offerer).
+  if (type === "video_lane") {
+    if (payload.videoCapable === true) phoneVideoCapable = true;
+    if ((payload.carrier === "mqtt_jpeg" || payload.screenVideo === false) && !rtcScreenVideoOffered) {
+      enterJpegFallback();
+    }
+    refreshRtcVideoButton();
+    return;
+  }
   if (type === "rtc_offer") {
     // An offer arrived — stop pinging rtc_ready so the phone doesn't restart the connection.
     // Cross-network ICE (TURN relay) needs a few seconds; let this negotiation finish.
     offerReceived = true;
     stopRtcReadyTimer();
-    startRtcAnswer(payload.sdp);
+    if (payload.videoCapable === true) phoneVideoCapable = true;
+    startRtcAnswer(payload.sdp, payload.screenVideo === true);
+    refreshRtcVideoButton();
     return;
   }
   if (type === "rtc_ice") {

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Same Wi‑Fi desk: https://novixa-labs.vercel.app/tapdesk/lan/ -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -36,6 +37,7 @@
         <div>
           <h1>TapDesk</h1>
           <p id="statusLine">Connecting…</p>
+          <p id="transportTech" class="transport-tech" hidden></p>
         </div>
       </div>
       <button id="btnLogout" type="button" class="btn-stop">Stop session</button>
@@ -73,6 +75,9 @@
             <div class="info-row"><span>Screen</span><strong id="infoScreen">—</strong></div>
             <div class="info-row"><span>Stream</span><strong id="infoStream">—</strong></div>
           </div>
+          <button id="btnRtcVideo" type="button" class="accent full" hidden style="margin-top:10px">
+            HD stream (WebRTC)
+          </button>
         </div>
 
         <div class="panel-block">
@@ -136,6 +141,6 @@
     </main>
   </div>
 
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>
