@@ -347,6 +347,37 @@ main {
   }
 }
 
+/* Small chip while HD is tested — JPEG stays visible underneath. */
+.hd-upgrade-loader {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e8eef8;
+  background: rgba(8, 12, 20, 0.82);
+  border: 1px solid rgba(46, 230, 199, 0.35);
+  pointer-events: none;
+}
+.hd-upgrade-loader.is-hidden {
+  display: none;
+}
+.hd-upgrade-loader__spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #2ee6c7;
+  animation: tapdesk-spin 0.7s linear infinite;
+}
+
 /* hint lives outside phone frame — see .control-hint */
 
 .keys, .row { display: flex; gap: 6px; flex-wrap: wrap; }

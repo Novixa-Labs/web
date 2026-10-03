@@ -25,9 +25,13 @@ let gotWsFrame = false;
 let wsOpenAt = 0;
 let wsFrameCount = 0;
 let rtcVideoUpgradeSent = false;
+let rtcHdWanted = false;
+let rtcHdUpgradeTimer = null;
+const RTC_HD_TIMEOUT_MS = 18000;
 let phoneVideoCapable = false;
 const LAN_WS_STALL_MS = 4500;
-const LAN_AUTO_RTC_VIDEO_MS = 3000;
+/** HD WebRTC video is manual only — auto-upgrade renegotiates ICE and drops the control DC. */
+const LAN_AUTO_RTC_VIDEO_MS = 0;
 let mjpegTimer = null;
 let statusTimer = null;
 
@@ -39,7 +43,11 @@ let rtcActive = false;
 let rtcScreenVideoOffered = false;
 let rtcVideoLive = false;
 let rtcVideoFrameCount = 0;
-const RTC_MIN_VIDEO_FRAMES = 8;
+const RTC_HD_SUSTAIN_MS = 5000;
+const RTC_HD_FRAME_GAP_MS = 700;
+let rtcHdStreamSince = 0;
+let rtcHdLastFrameAt = 0;
+let rtcHdBlockedSession = false;
 let rtcRemoteSet = false;
 const rtcPending = [];
 const RTC_ICE = {
@@ -334,7 +342,7 @@ document.getElementById("btnPasswordLogin")?.addEventListener("click", async () 
 
 const btnRtcVideoEl = document.getElementById("btnRtcVideo");
 if (btnRtcVideoEl) {
-  btnRtcVideoEl.onclick = () => requestWebRtcScreenVideo();
+  btnRtcVideoEl.onclick = () => onRtcHdToggle();
 }
 
 document.getElementById("btnLogout").onclick = async () => {
@@ -466,7 +474,8 @@ function showFrameBlob(blob) {
 function startMjpegFallback() {
   if (mjpegTimer) return;
   mjpegTimer = setInterval(async () => {
-    if (gotWsFrame || !getToken()) return;
+    if (!getToken()) return;
+    if (!rtcHdWanted && gotWsFrame) return;
     try {
       const res = await fetch("/api/frame.jpg?ts=" + Date.now() + "&token=" + encodeURIComponent(getToken()), {
         cache: "no-store",
@@ -579,6 +588,8 @@ function connectWs() {
   wsFrameCount = 0;
   rtcReadySent = false;
   rtcVideoUpgradeSent = false;
+  rtcHdWanted = false;
+  clearRtcHdUpgradeTimer();
   if (rtcUpgradeTimer) {
     clearTimeout(rtcUpgradeTimer);
     rtcUpgradeTimer = null;
@@ -628,13 +639,22 @@ function connectWs() {
       let m;
       try { m = JSON.parse(ev.data); } catch (_) { return; }
       if (m.type === "video_lane") {
-        if (m.videoCapable === true) {
-          phoneVideoCapable = true;
-          if (rtcActive && dcReady()) scheduleLanAutoWebRtcVideo();
+        if (m.videoCapable === true) phoneVideoCapable = true;
+        if (m.videoError && rtcHdWanted && !rtcVideoLive) {
+          abortRtcHdAttempt(hdErrorMessage(m.videoError), true, true);
+          return;
         }
         if (m.carrier === "ws_jpeg" || m.screenVideo === false) {
           rtcScreenVideoOffered = false;
-          hideRtcVideoOverlay();
+          if (rtcVideoLive || rtcHdWanted) {
+            abortRtcHdAttempt(
+              m.videoError ? hdErrorMessage(m.videoError) : "Using standard video (JPEG)",
+              true,
+              rtcHdWanted && !rtcVideoLive,
+            );
+          } else {
+            hideRtcVideoOverlay();
+          }
         }
         refreshRtcVideoButton();
         return;
@@ -658,14 +678,59 @@ function wsSend(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
-function requestWebRtcScreenVideo() {
-  if (rtcVideoUpgradeSent || rtcVideoLive) return;
+function hdErrorMessage(code) {
+  if (code === "egl_unavailable") return "HD not supported on this phone — using standard video";
+  if (code === "no_frames") return "HD frames unavailable — using standard video";
+  return "HD unavailable — using standard video";
+}
+function clearRtcHdUpgradeTimer() {
+  if (rtcHdUpgradeTimer) {
+    clearTimeout(rtcHdUpgradeTimer);
+    rtcHdUpgradeTimer = null;
+  }
+}
+/** @param blockSession if true, HD stays off until user reconnects. */
+function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
+  clearRtcHdUpgradeTimer();
+  hideHdLoader();
+  rtcHdWanted = false;
+  rtcVideoUpgradeSent = false;
+  rtcScreenVideoOffered = false;
+  rtcHdStreamSince = 0;
+  rtcHdLastFrameAt = 0;
+  hideRtcVideoOverlay();
+  if (sendWantJpeg) wsSend({ type: "want_jpeg" });
+  if (blockSession) {
+    rtcHdBlockedSession = true;
+    if (message) setStatus(message + " HD is off for this session.");
+  } else if (message) setStatus(message);
+  refreshRtcVideoButton();
+  refreshTransportTech();
+}
+function onRtcHdToggle() {
+  if (rtcHdBlockedSession) return;
+  if (rtcVideoLive) {
+    abortRtcHdAttempt("Using standard video (JPEG)", true, false);
+    return;
+  }
+  if (rtcHdWanted) return;
+  if (!rtcActive || !dcReady() || rtcVideoUpgradeSent) return;
+  rtcHdWanted = true;
   rtcVideoUpgradeSent = true;
+  rtcHdStreamSince = 0;
+  rtcHdLastFrameAt = 0;
+  startMjpegFallback();
+  showHdLoader();
   wsSend({ type: "rtc_video_upgrade" });
-  setStatus("Switching to WebRTC video…");
+  clearRtcHdUpgradeTimer();
+  rtcHdUpgradeTimer = setTimeout(() => {
+    if (!rtcVideoLive) abortRtcHdAttempt(hdErrorMessage("no_frames"), true, true);
+  }, RTC_HD_TIMEOUT_MS);
+  refreshRtcVideoButton();
 }
 
 function scheduleLanAutoWebRtcVideo() {
+  if (LAN_AUTO_RTC_VIDEO_MS <= 0) return;
   if (!phoneVideoCapable || rtcVideoUpgradeSent || rtcVideoLive) return;
   setTimeout(() => {
     if (rtcActive && dcReady() && phoneVideoCapable && !rtcVideoLive && !rtcVideoUpgradeSent) {
@@ -677,8 +742,15 @@ function scheduleLanAutoWebRtcVideo() {
 function refreshRtcVideoButton() {
   const btn = document.getElementById("btnRtcVideo");
   if (!btn) return;
-  const show = phoneVideoCapable && rtcActive && !rtcVideoLive && !rtcScreenVideoOffered;
+  if (rtcHdBlockedSession) {
+    btn.hidden = true;
+    return;
+  }
+  const show = rtcActive && dcReady() && (!rtcHdWanted || rtcVideoLive);
   btn.hidden = !show;
+  btn.disabled = false;
+  btn.textContent = rtcVideoLive ? "HD stream: On (tap for standard video)" : "HD stream (WebRTC)";
+  btn.classList.toggle("is-active", rtcVideoLive);
 }
 function hideRtcVideoOverlay() {
   rtcVideoLive = false;
@@ -690,9 +762,25 @@ function hideRtcVideoOverlay() {
   startMjpegFallback();
 }
 
+function noteRtcHdFrame() {
+  if (!rtcScreenVideoOffered || rtcVideoLive) return;
+  const now = Date.now();
+  if (rtcHdLastFrameAt && now - rtcHdLastFrameAt > RTC_HD_FRAME_GAP_MS) {
+    rtcHdStreamSince = now;
+  }
+  rtcHdLastFrameAt = now;
+  if (!rtcHdStreamSince) rtcHdStreamSince = now;
+  rtcVideoFrameCount += 1;
+  showHdLoader();
+  if (now - rtcHdStreamSince >= RTC_HD_SUSTAIN_MS) maybePromoteRtcVideo();
+}
 function maybePromoteRtcVideo() {
-  if (!rtcScreenVideoOffered || rtcVideoFrameCount < RTC_MIN_VIDEO_FRAMES) return;
+  if (!rtcScreenVideoOffered || rtcVideoLive) return;
+  if (!rtcHdStreamSince || Date.now() - rtcHdStreamSince < RTC_HD_SUSTAIN_MS) return;
   rtcVideoLive = true;
+  rtcHdWanted = false;
+  clearRtcHdUpgradeTimer();
+  hideHdLoader();
   if (rtcVideo) rtcVideo.classList.add("is-live");
   stopMjpegFallback();
   setStatus("Connected · HD video (WebRTC)");
@@ -704,6 +792,8 @@ async function startRtcAnswer(sdp, screenVideo) {
   teardownRtc(false);
   rtcScreenVideoOffered = screenVideo === true;
   rtcVideoFrameCount = 0;
+  rtcHdStreamSince = 0;
+  rtcHdLastFrameAt = 0;
   try { pc = new RTCPeerConnection(RTC_ICE); } catch (_) { return; }
   rtcRemoteSet = false;
   rtcPending.length = 0;
@@ -718,7 +808,6 @@ async function startRtcAnswer(sdp, screenVideo) {
       controlChannel.onmessage = (e) => onDcMessage(e.data);
       controlChannel.onopen = () => {
         refreshTransportTech();
-        scheduleLanAutoWebRtcVideo();
       };
     }
   };
@@ -776,8 +865,7 @@ function pumpRtcVideoFrames() {
   if (!rtcVideo || typeof rtcVideo.requestVideoFrameCallback !== "function") return;
   try {
     rtcVideo.requestVideoFrameCallback(function onFrame() {
-      rtcVideoFrameCount += 1;
-      maybePromoteRtcVideo();
+      noteRtcHdFrame();
       if (pc && rtcScreenVideoOffered && rtcVideo) {
         try { rtcVideo.requestVideoFrameCallback(onFrame); } catch (_) {}
       }

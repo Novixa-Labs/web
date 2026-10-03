@@ -60,6 +60,14 @@ const rtcPending = [];
 let phoneVideoCapable = false; // phone EGL/WebRTC screen pipeline available
 let rtcScreenVideoOffered = false; // current offer includes a video track (not DC-only)
 let rtcVideoUpgradeSent = false; // user asked for WebRTC screen video (want_rtc)
+let rtcHdWanted = false;
+let rtcHdUpgradeTimer = null;
+const RTC_HD_TIMEOUT_MS = 45000;
+const RTC_HD_SUSTAIN_MS = 5000;
+const RTC_HD_FRAME_GAP_MS = 700;
+let rtcHdStreamSince = 0;
+let rtcHdLastFrameAt = 0;
+let rtcHdBlockedSession = false;
 
 // Vercel route /api/tapdesk-turn. Cloudflare TURN when those env vars are set, otherwise
 // the static relay below.
@@ -340,6 +348,14 @@ function hideScreenLoading() {
   const el = document.getElementById("screenLoading");
   if (el) el.classList.add("is-hidden");
 }
+function showHdLoader() {
+  const el = document.getElementById("hdUpgradeLoader");
+  if (el) el.classList.remove("is-hidden");
+}
+function hideHdLoader() {
+  const el = document.getElementById("hdUpgradeLoader");
+  if (el) el.classList.add("is-hidden");
+}
 /** Other-network: nudge the phone to start capture if MQTT JPEG never arrives. */
 function startStreamKick() {
   clearInterval(streamKickTimer);
@@ -379,12 +395,18 @@ function stopStreamKick() {
  * (`if (!rtcActive) clearInterval`), so fallback never ran after ICE connected. */
 const RTC_STALL_MS = 1500;
 const RTC_STARTUP_MS = 2500; // after ICE connected, must become healthy or stay on JPEG
-const RTC_MIN_FRAMES = 8; // require a real stream before trusting WebRTC (not 1–4 frozen frames)
 function markRtcFrame() {
   lastRtcFrameAt = Date.now();
   rtcFrameCount += 1;
-  if (!rtcScreenVideoOffered) return;
-  if (rtcFrameCount >= RTC_MIN_FRAMES && !rtcHealthy) {
+  if (!rtcScreenVideoOffered || rtcHealthy) return;
+  const now = Date.now();
+  if (rtcHdLastFrameAt && now - rtcHdLastFrameAt > RTC_HD_FRAME_GAP_MS) {
+    rtcHdStreamSince = now;
+  }
+  rtcHdLastFrameAt = now;
+  if (!rtcHdStreamSince) rtcHdStreamSince = now;
+  if (rtcHdWanted) showHdLoader();
+  if (now - rtcHdStreamSince >= RTC_HD_SUSTAIN_MS) {
     rtcHealthy = true;
     rtcStalled = false;
     exitJpegFallback();
@@ -428,6 +450,7 @@ function armRtcStartupGuard() {
   clearTimeout(rtcStartupTimer);
   rtcStartupTimer = setTimeout(() => {
     if (!rtcActive || rtcHealthy) return;
+    if (rtcHdWanted) return;
     enterJpegFallback();
   }, RTC_STARTUP_MS);
 }
@@ -456,26 +479,87 @@ function exitJpegFallback() {
   if (!rtcScreenVideoOffered) return;
   rtcStalled = false;
   rtcHealthy = true;
+  rtcHdWanted = false;
+  clearRtcHdUpgradeTimer();
+  hideHdLoader();
   if (rtcVideo) rtcVideo.classList.add("is-live");
   try { publish("want_rtc", {}, 1); } catch (_) {}
   setStatus("Connected · live video (WebRTC)" + mediaPathLabel());
   refreshTransportTech();
   refreshRtcVideoButton();
 }
-function requestWebRtcScreenVideo() {
+function hdErrorMessage(code) {
+  if (code === "egl_unavailable") return "HD not supported on this phone — using standard video";
+  if (code === "no_frames") return "HD frames unavailable — using standard video";
+  return "HD unavailable — using standard video";
+}
+function clearRtcHdUpgradeTimer() {
+  if (rtcHdUpgradeTimer) {
+    clearTimeout(rtcHdUpgradeTimer);
+    rtcHdUpgradeTimer = null;
+  }
+}
+function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
+  clearRtcHdUpgradeTimer();
+  hideHdLoader();
+  rtcHdWanted = false;
+  rtcVideoUpgradeSent = false;
+  rtcScreenVideoOffered = false;
+  rtcHealthy = false;
+  rtcFrameCount = 0;
+  rtcHdStreamSince = 0;
+  rtcHdLastFrameAt = 0;
+  if (rtcVideo) {
+    rtcVideo.classList.remove("is-live");
+    try { rtcVideo.srcObject = null; } catch (_) {}
+  }
+  if (sendWantJpeg) {
+    try { publish("want_jpeg", {}, 1); } catch (_) {}
+  }
+  if (blockSession) {
+    rtcHdBlockedSession = true;
+    if (message) setStatus(message + " HD is off for this session.");
+    else setStatus("HD is off for this session." + mediaPathLabel());
+  } else if (message) setStatus(message);
+  else setStatus("Connected · live video (MQTT)" + mediaPathLabel());
+  refreshRtcVideoButton();
+  refreshTransportTech();
+}
+function onRtcHdToggle() {
   const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
-  if (rtcVideoUpgradeSent || rtcVideoLive) return;
+  if (rtcHdBlockedSession) return;
+  if (rtcVideoLive) {
+    abortRtcHdAttempt("Using standard video (MQTT)", true, false);
+    return;
+  }
+  if (rtcHdWanted) return;
+  if (!rtcActive || rtcVideoUpgradeSent) return;
+  rtcHdWanted = true;
   rtcVideoUpgradeSent = true;
+  rtcHdStreamSince = 0;
+  rtcHdLastFrameAt = 0;
+  showHdLoader();
   publish("want_rtc", {}, 1);
-  setStatus("Switching to WebRTC video…");
+  clearRtcHdUpgradeTimer();
+  rtcHdUpgradeTimer = setTimeout(() => {
+    if (!(rtcVideo && rtcVideo.classList.contains("is-live"))) {
+      abortRtcHdAttempt(hdErrorMessage("no_frames"), true, true);
+    }
+  }, RTC_HD_TIMEOUT_MS);
   refreshRtcVideoButton();
 }
 function refreshRtcVideoButton() {
   const btn = document.getElementById("btnRtcVideo");
   if (!btn) return;
   const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
-  const show = phoneVideoCapable && rtcActive && !rtcVideoLive && !rtcScreenVideoOffered;
+  if (rtcHdBlockedSession) {
+    btn.hidden = true;
+    return;
+  }
+  const show = rtcActive && (!rtcHdWanted || rtcVideoLive);
   btn.hidden = !show;
+  btn.textContent = rtcVideoLive ? "HD stream: On (tap for standard video)" : "HD stream (WebRTC)";
+  btn.classList.toggle("is-active", rtcVideoLive);
 }
 function publish(type, payload = {}, qos = 0) {
   if (!mqttClient || !mqttClient.connected) return;
@@ -561,6 +645,8 @@ function resolvePending(payload) {
   return true;
 }
 function cleanupMqtt() {
+  rtcHdBlockedSession = false;
+  hideHdLoader();
   clearInterval(waitTimer);
   waitTimer = null;
   teardownRtc(true);
@@ -678,7 +764,10 @@ async function startRtcAnswer(offerSdp, screenVideoOffered) {
       controlChannel.onmessage = (e) => {
         try { onMessage(JSON.parse(e.data)); } catch (_) {}
       };
-      controlChannel.onopen = () => refreshRtcVideoButton();
+      controlChannel.onopen = () => {
+        refreshRtcVideoButton();
+        refreshTransportTech();
+      };
     }
   };
 
@@ -813,7 +902,7 @@ function showConsole() {
   const btnRtc = document.getElementById("btnRtcVideo");
   if (btnRtc && !btnRtc._tapdeskRtcBound) {
     btnRtc._tapdeskRtcBound = true;
-    btnRtc.onclick = () => requestWebRtcScreenVideo();
+    btnRtc.onclick = () => onRtcHdToggle();
   }
   refreshRtcVideoButton();
 }
@@ -851,8 +940,19 @@ function onMessage(msg) {
   // WebRTC upgrade signaling (phone is the offerer).
   if (type === "video_lane") {
     if (payload.videoCapable === true) phoneVideoCapable = true;
-    if ((payload.carrier === "mqtt_jpeg" || payload.screenVideo === false) && !rtcScreenVideoOffered) {
-      enterJpegFallback();
+    if (payload.videoError && rtcHdWanted && !(rtcVideo && rtcVideo.classList.contains("is-live"))) {
+      abortRtcHdAttempt(hdErrorMessage(payload.videoError), true, true);
+      return;
+    }
+    if (payload.carrier === "mqtt_jpeg" || payload.screenVideo === false) {
+      if (rtcHdWanted || (rtcVideo && rtcVideo.classList.contains("is-live"))) {
+        abortRtcHdAttempt(
+          payload.videoError ? hdErrorMessage(payload.videoError) : "Using standard video (MQTT)",
+          !(rtcVideo && rtcVideo.classList.contains("is-live")),
+        );
+      } else if (!rtcScreenVideoOffered) {
+        enterJpegFallback();
+      }
     }
     refreshRtcVideoButton();
     return;

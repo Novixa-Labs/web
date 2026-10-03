@@ -30,6 +30,20 @@
       opacity: 0; z-index: 2; transition: opacity 0.12s ease;
     }
     #rtcVideo.is-live { opacity: 1; background: #000; }
+    .hd-upgrade-loader {
+      position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 4;
+      display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; color: #e8eef8;
+      background: rgba(8, 12, 20, 0.82); border: 1px solid rgba(46, 230, 199, 0.35);
+      pointer-events: none;
+    }
+    .hd-upgrade-loader.is-hidden { display: none; }
+    .hd-upgrade-loader__spinner {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2); border-top-color: #2ee6c7;
+      animation: tapdesk-hd-spin 0.7s linear infinite;
+    }
+    @keyframes tapdesk-hd-spin { to { transform: rotate(360deg); } }
     .room-gate { min-height: 100dvh; display: grid; place-items: center; padding: 24px; overflow: auto; }
     .room-card {
       width: min(400px, 100%);
@@ -237,6 +251,10 @@
               <p id="screenLoadingText" class="screen-loading__title">Connecting to your phone…</p>
               <p id="screenLoadingSub" class="screen-loading__sub">This may take a few seconds.</p>
             </div>
+            <div id="hdUpgradeLoader" class="hd-upgrade-loader is-hidden" aria-live="polite">
+              <div class="hd-upgrade-loader__spinner"></div>
+              <span>HD connecting…</span>
+            </div>
           </div>
         </div>
         <div class="keys">
@@ -257,6 +275,9 @@
             <div class="info-row"><span>Screen</span><strong id="infoScreen">—</strong></div>
             <div class="info-row"><span>Stream</span><strong id="infoStream">—</strong></div>
           </div>
+          <button id="btnRtcVideo" type="button" class="accent full" hidden style="margin-top:10px">
+            HD stream (WebRTC)
+          </button>
         </div>
 
         <div class="panel-block">
