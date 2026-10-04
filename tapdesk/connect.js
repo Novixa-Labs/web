@@ -551,6 +551,7 @@ function applyPhoneHdBlocked(lane) {
   rtcHdBlockedSession = true;
   rtcHdWanted = false;
   rtcVideoUpgradeSent = false;
+  rtcScreenVideoOffered = false;
   phoneHdHealthy = false;
   clearRtcHdUpgradeTimer();
   hideHdLoader();
@@ -558,6 +559,8 @@ function applyPhoneHdBlocked(lane) {
     rtcVideo.classList.remove("is-live");
     try { rtcVideo.srcObject = null; } catch (_) {}
   }
+  // Phone is back on MQTT JPEG — resync even when HD is blocked for the rest of the session.
+  try { publish("want_jpeg", {}, 1); } catch (_) {}
   const reason =
     lane.hdBlockReason || hdErrorMessage(lane.videoError) || "HD unavailable this session";
   setStatus(reason + " Standard video continues." + mediaPathLabel());
@@ -587,7 +590,7 @@ function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
     try { rtcVideo.srcObject = null; } catch (_) {}
   }
   if (sendWantJpeg) {
-    try { publish("want_jpeg", {}, 1); } catch (_) {}
+    enterJpegFallback();
   }
   if (blockSession) {
     rtcHdBlockedSession = true;
@@ -1092,6 +1095,11 @@ function onMessage(msg) {
       refreshTransportTech();
       refreshRtcVideoButton();
       return;
+    }
+    const backOnMqtt = payload.carrier === "mqtt_jpeg" || payload.screenVideo === false;
+    if (backOnMqtt && (rtcHdWanted || rtcScreenVideoOffered)) {
+      rtcScreenVideoOffered = false;
+      enterJpegFallback();
     }
     if (applyPhoneHdBlocked(payload)) {
       return;

@@ -679,6 +679,7 @@ function connectWs() {
       }
       if (m.type === "rtc_hd_healthy") {
         phoneHdHealthy = true;
+        attachRtcVideoFromReceivers();
         refreshTransportTech();
         return;
       }
@@ -871,6 +872,28 @@ function maybePromoteRtcVideo() {
   refreshRtcVideoButton();
 }
 
+/** Unified Plan renegotiation often delivers e.track without e.streams[0]. */
+function attachRtcVideoFromTrackEvent(e) {
+  if (!rtcVideo || !rtcScreenVideoOffered) return;
+  let stream = null;
+  if (e.streams && e.streams[0]) stream = e.streams[0];
+  else if (e.track && e.track.kind === "video") stream = new MediaStream([e.track]);
+  if (!stream) return;
+  rtcVideo.srcObject = stream;
+  const p = rtcVideo.play();
+  if (p && typeof p.catch === "function") p.catch(() => {});
+  pumpRtcVideoFrames();
+}
+function attachRtcVideoFromReceivers() {
+  if (!pc || !rtcScreenVideoOffered) return;
+  for (const r of pc.getReceivers()) {
+    if (r.track && r.track.kind === "video") {
+      attachRtcVideoFromTrackEvent({ track: r.track, streams: [] });
+      return;
+    }
+  }
+}
+
 async function startRtcAnswer(sdp, screenVideo) {
   const newScreenVideo = screenVideo === true;
   if (pc && pc.signalingState !== "closed") {
@@ -884,7 +907,10 @@ async function startRtcAnswer(sdp, screenVideo) {
       const ans = await pc.createAnswer();
       await pc.setLocalDescription(ans);
       wsSend({ type: "rtc_answer", sdp: ans.sdp });
-      if (newScreenVideo) pumpRtcVideoFrames();
+      if (newScreenVideo) {
+        attachRtcVideoFromReceivers();
+        pumpRtcVideoFrames();
+      }
       refreshRtcVideoButton();
       return;
     } catch (_) {
@@ -901,8 +927,7 @@ async function startRtcAnswer(sdp, screenVideo) {
   rtcPending.length = 0;
   pc.ontrack = (e) => {
     if (!rtcScreenVideoOffered) return;
-    if (rtcVideo && e.streams && e.streams[0]) rtcVideo.srcObject = e.streams[0];
-    pumpRtcVideoFrames();
+    attachRtcVideoFromTrackEvent(e);
   };
   pc.ondatachannel = (ev) => {
     if (ev.channel && ev.channel.label === "control") {
