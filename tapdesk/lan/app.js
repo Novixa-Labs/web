@@ -22,6 +22,7 @@ const WS_RECONNECT_MAX = 15;
 let apps = [];
 let pointerDown = null;
 let gotWsFrame = false;
+let lastWsFrameAt = 0;
 let wsOpenAt = 0;
 let wsFrameCount = 0;
 let rtcVideoUpgradeSent = false;
@@ -483,7 +484,8 @@ function startMjpegFallback() {
   if (mjpegTimer) return;
   mjpegTimer = setInterval(async () => {
     if (!getToken()) return;
-    if (!rtcHdWanted && gotWsFrame) return;
+    // HTTP snapshot only while HD is probing — never serve stale /api/frame.jpg after fallback.
+    if (!rtcHdWanted) return;
     try {
       const res = await fetch("/api/frame.jpg?ts=" + Date.now() + "&token=" + encodeURIComponent(getToken()), {
         cache: "no-store",
@@ -637,7 +639,9 @@ function connectWs() {
     if (ev.data instanceof ArrayBuffer) {
       if (rtcVideoLive) return; // sustained WebRTC screen video only
       gotWsFrame = true;
+      lastWsFrameAt = Date.now();
       wsFrameCount += 1;
+      stopMjpegFallback();
       stopMjpegFallback();
       showFrameBlob(new Blob([ev.data], { type: "image/jpeg" }));
       refreshTransportTech();
@@ -654,8 +658,11 @@ function connectWs() {
           refreshRtcVideoButton();
           return;
         }
+        const backOnWsJpeg = m.carrier === "ws_jpeg" || m.screenVideo === false;
+        if (backOnWsJpeg && (rtcHdWanted || rtcScreenVideoOffered || rtcVideoLive)) {
+          resumeWsJpegViewAfterHd();
+        }
         if (applyPhoneHdBlocked(m)) {
-          if (m.carrier === "ws_jpeg" || m.screenVideo === false) rtcScreenVideoOffered = false;
           return;
         }
         if (m.videoError && rtcHdWanted && !rtcVideoLive) {
@@ -725,11 +732,23 @@ function applyPhoneHdBlocked(lane) {
   clearRtcHdUpgradeTimer();
   hideHdLoader();
   hideRtcVideoOverlay();
+  resumeWsJpegViewAfterHd();
   const reason = lane.hdBlockReason || hdErrorMessage(lane.videoError) || "HD unavailable this session";
   setStatus(reason + " Standard video continues.");
   refreshRtcVideoButton();
   refreshTransportTech();
   return true;
+}
+function resumeWsJpegViewAfterHd() {
+  stopMjpegFallback();
+  rtcScreenVideoOffered = false;
+  rtcHdWanted = false;
+  if (rtcVideo) {
+    rtcVideo.classList.remove("is-live");
+    try { rtcVideo.srcObject = null; } catch (_) {}
+  }
+  if (ws && ws.readyState === WebSocket.OPEN) wsSend({ type: "want_jpeg" });
+  refreshTransportTech();
 }
 function clearRtcHdUpgradeTimer() {
   if (rtcHdUpgradeTimer) {
@@ -748,7 +767,7 @@ function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   rtcHdStreamSince = 0;
   rtcHdLastFrameAt = 0;
   hideRtcVideoOverlay();
-  if (sendWantJpeg) wsSend({ type: "want_jpeg" });
+  if (sendWantJpeg) resumeWsJpegViewAfterHd();
   if (!message && !blockSession) {
     refreshRtcVideoButton();
     refreshTransportTech();
@@ -840,7 +859,6 @@ function hideRtcVideoOverlay() {
     rtcVideo.classList.remove("is-live");
     try { rtcVideo.srcObject = null; } catch (_) {}
   }
-  startMjpegFallback();
 }
 
 function noteRtcHdFrame() {
