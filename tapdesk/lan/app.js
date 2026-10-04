@@ -678,6 +678,14 @@ function wsSend(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj));
 }
 
+function showHdLoader() {
+  const el = document.getElementById("hdUpgradeLoader");
+  if (el) el.classList.remove("is-hidden");
+}
+function hideHdLoader() {
+  const el = document.getElementById("hdUpgradeLoader");
+  if (el) el.classList.add("is-hidden");
+}
 function hdErrorMessage(code) {
   if (code === "egl_unavailable") return "HD not supported on this phone — using standard video";
   if (code === "no_frames") return "HD frames unavailable — using standard video";
@@ -708,19 +716,31 @@ function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   refreshTransportTech();
 }
 function onRtcHdToggle() {
-  if (rtcHdBlockedSession) return;
+  if (rtcHdBlockedSession) {
+    setStatus("HD is off for this session — reconnect to try again.");
+    return;
+  }
   if (rtcVideoLive) {
     abortRtcHdAttempt("Using standard video (JPEG)", true, false);
     return;
   }
   if (rtcHdWanted) return;
-  if (!rtcActive || !dcReady() || rtcVideoUpgradeSent) return;
+  if (!rtcActive || !dcReady()) {
+    setStatus("HD needs encrypted control first — wait until tech shows c:dc.");
+    return;
+  }
+  if (rtcVideoUpgradeSent) return;
+  if (!ws || ws.readyState !== WebSocket.OPEN) {
+    setStatus("HD unavailable — connection to phone is not open.");
+    return;
+  }
   rtcHdWanted = true;
   rtcVideoUpgradeSent = true;
   rtcHdStreamSince = 0;
   rtcHdLastFrameAt = 0;
   startMjpegFallback();
   showHdLoader();
+  setStatus("Connecting HD stream… keep TapDesk open on the phone.");
   wsSend({ type: "rtc_video_upgrade" });
   clearRtcHdUpgradeTimer();
   rtcHdUpgradeTimer = setTimeout(() => {
@@ -746,8 +766,14 @@ function refreshRtcVideoButton() {
     btn.hidden = true;
     return;
   }
-  const show = rtcActive && dcReady() && (!rtcHdWanted || rtcVideoLive);
+  const show = rtcActive && dcReady() && !rtcHdBlockedSession;
   btn.hidden = !show;
+  if (rtcHdWanted && !rtcVideoLive) {
+    btn.disabled = true;
+    btn.textContent = "HD connecting…";
+    btn.classList.remove("is-active");
+    return;
+  }
   btn.disabled = false;
   btn.textContent = rtcVideoLive ? "HD stream: On (tap for standard video)" : "HD stream (WebRTC)";
   btn.classList.toggle("is-active", rtcVideoLive);

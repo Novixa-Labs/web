@@ -68,6 +68,47 @@ const RTC_HD_FRAME_GAP_MS = 700;
 let rtcHdStreamSince = 0;
 let rtcHdLastFrameAt = 0;
 let rtcHdBlockedSession = false;
+let iceDisconnectTimer = null;
+let rtcRecoverTimer = null;
+let lastHdBtnUi = "";
+
+function viewerHasLiveVideo() {
+  return Date.now() - lastFrameAt < 6000;
+}
+/** Avoid covering a live JPEG stream with a full-screen reconnect spinner. */
+function setSoftReconnectNotice(title, sub) {
+  if (viewerHasLiveVideo() || dcReady()) {
+    setStatus(title || "Brief pause — session still active.");
+    return;
+  }
+  showScreenLoading(title, sub);
+}
+function scheduleRtcRecover() {
+  if (rtcRecoverTimer) return;
+  const delay = viewerHasLiveVideo() ? 14000 : 5000;
+  rtcRecoverTimer = window.setTimeout(() => {
+    rtcRecoverTimer = null;
+    if (!authed || dcReady()) return;
+    if (pc && (pc.iceConnectionState === "connected" || pc.iceConnectionState === "completed")) {
+      rtcActive = true;
+      refreshTransportTech();
+      refreshRtcVideoButton();
+      return;
+    }
+    if (!viewerHasLiveVideo()) setStatus("Reconnecting secure control…");
+    startRtcUpgrade();
+  }, delay);
+}
+function clearRtcRecoverTimers() {
+  if (rtcRecoverTimer) {
+    clearTimeout(rtcRecoverTimer);
+    rtcRecoverTimer = null;
+  }
+  if (iceDisconnectTimer) {
+    clearTimeout(iceDisconnectTimer);
+    iceDisconnectTimer = null;
+  }
+}
 
 // Vercel route /api/tapdesk-turn. Cloudflare TURN when those env vars are set, otherwise
 // the static relay below.
@@ -533,12 +574,17 @@ function onRtcHdToggle() {
     return;
   }
   if (rtcHdWanted) return;
-  if (!rtcActive || rtcVideoUpgradeSent) return;
+  if (!rtcActive) {
+    setStatus("HD needs WebRTC control first — wait a few seconds after connect.");
+    return;
+  }
+  if (rtcVideoUpgradeSent) return;
   rtcHdWanted = true;
   rtcVideoUpgradeSent = true;
   rtcHdStreamSince = 0;
   rtcHdLastFrameAt = 0;
   showHdLoader();
+  setStatus("Connecting HD stream… keep TapDesk open on the phone.");
   publish("want_rtc", {}, 1);
   clearRtcHdUpgradeTimer();
   rtcHdUpgradeTimer = setTimeout(() => {
@@ -553,11 +599,24 @@ function refreshRtcVideoButton() {
   if (!btn) return;
   const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
   if (rtcHdBlockedSession) {
-    btn.hidden = true;
+    if (lastHdBtnUi !== "blocked") {
+      lastHdBtnUi = "blocked";
+      btn.hidden = true;
+    }
     return;
   }
-  const show = rtcActive && (!rtcHdWanted || rtcVideoLive);
+  const show = rtcActive && !rtcHdBlockedSession;
+  const uiKey = show + ":" + rtcHdWanted + ":" + rtcVideoLive;
+  if (uiKey === lastHdBtnUi) return;
+  lastHdBtnUi = uiKey;
   btn.hidden = !show;
+  if (rtcHdWanted && !rtcVideoLive) {
+    btn.disabled = true;
+    btn.textContent = "HD connecting…";
+    btn.classList.remove("is-active");
+    return;
+  }
+  btn.disabled = false;
   btn.textContent = rtcVideoLive ? "HD stream: On (tap for standard video)" : "HD stream (WebRTC)";
   btn.classList.toggle("is-active", rtcVideoLive);
 }
@@ -727,6 +786,7 @@ async function startRtcAnswer(offerSdp, screenVideoOffered) {
     const s = pc.iceConnectionState;
     if (s === "connected" || s === "completed") {
       rtcActive = true;
+      clearRtcRecoverTimers();
       stopRtcReadyTimer();
       clearTimeout(rtcConnectTimer);
       clearInterval(rtcDiagTimer);
@@ -745,16 +805,26 @@ async function startRtcAnswer(offerSdp, screenVideoOffered) {
       refreshRtcVideoButton();
     } else if (s === "failed") {
       rtcActive = false;
+      lastHdBtnUi = "";
       refreshTransportTech();
+      refreshRtcVideoButton();
       if (rtcVideo) rtcVideo.classList.remove("is-live");
-      showScreenLoading(
-        "Reconnecting the secure video…",
-        "The encrypted link dropped. Retrying — controls still work."
+      setSoftReconnectNotice(
+        "Secure channel retrying…",
+        "Controls still work over MQTT while WebRTC reconnects."
       );
-      startRtcUpgrade(); // re-ask the phone for a fresh offer
+      scheduleRtcRecover();
     } else if (s === "disconnected") {
-      rtcActive = false;
-      if (rtcVideo) rtcVideo.classList.remove("is-live");
+      if (iceDisconnectTimer) return;
+      iceDisconnectTimer = window.setTimeout(() => {
+        iceDisconnectTimer = null;
+        if (!pc || pc.iceConnectionState !== "disconnected") return;
+        rtcActive = false;
+        lastHdBtnUi = "";
+        refreshTransportTech();
+        refreshRtcVideoButton();
+        scheduleRtcRecover();
+      }, 5000);
     }
   };
   pc.ondatachannel = (ev) => {
@@ -765,6 +835,9 @@ async function startRtcAnswer(offerSdp, screenVideoOffered) {
         try { onMessage(JSON.parse(e.data)); } catch (_) {}
       };
       controlChannel.onopen = () => {
+        clearRtcRecoverTimers();
+        hideScreenLoading();
+        setStatus("Connected · live video (MQTT)" + mediaPathLabel());
         refreshRtcVideoButton();
         refreshTransportTech();
       };
@@ -785,8 +858,8 @@ async function startRtcAnswer(offerSdp, screenVideoOffered) {
     // frames are flowing, don't cover them; WebRTC keeps trying to upgrade in the background.
     clearInterval(rtcDiagTimer);
     rtcDiagTimer = setInterval(() => {
-      if (rtcActive) { clearInterval(rtcDiagTimer); return; }
-      if (Date.now() - lastFrameAt < 3000) return; // fallback video is live — leave it alone
+      if (rtcActive || dcReady()) { clearInterval(rtcDiagTimer); return; }
+      if (viewerHasLiveVideo()) return;
       showScreenLoading("Connecting…", "Setting up your secure link.");
     }, 1500);
 
@@ -819,10 +892,12 @@ async function addRtcIce(payload) {
 }
 function teardownRtc(clearVideo) {
   stopRtcReadyTimer();
+  clearRtcRecoverTimers();
   clearTimeout(rtcConnectTimer);
   clearInterval(rtcDiagTimer);
   stopRtcStallWatch();
   rtcActive = false;
+  lastHdBtnUi = "";
   rtcScreenVideoOffered = false;
   if (clearVideo) rtcVideoUpgradeSent = false;
   rtcRemoteSet = false;
@@ -889,7 +964,7 @@ function showConsole() {
   publish("want_jpeg", {}, 1); // Other-network default: MQTT JPEG until WebRTC proves healthy
   setTimeout(() => {
     if (authed) startRtcUpgrade();
-  }, 2000); // MQTT video + control first; WebRTC upgrades in parallel when the phone is ready
+  }, 600); // Start WebRTC quickly so c:dc replaces MQTT control without UI churn
   // Defer heavy MQTT traffic so first taps/frames are not blocked by apps list.
   setTimeout(() => {
     if (authed) refreshStatus();
@@ -1198,9 +1273,8 @@ function joinRoom(opts) {
       connectWatch = null;
     }
     if (authed) {
-      setStatus("Network blip — retrying…");
-      showScreenLoading(
-        "Reconnecting…",
+      setSoftReconnectNotice(
+        "Network blip — retrying…",
         "Your session is still active. Keep TapDesk open on the phone."
       );
       return;
@@ -1214,8 +1288,7 @@ function joinRoom(opts) {
 
   mqttClient.on("close", () => {
     if (authed) {
-      setStatus("Reconnecting…");
-      showScreenLoading(
+      setSoftReconnectNotice(
         "Reconnecting…",
         "Brief pause — your session stays open. Keep the phone app in the foreground."
       );
@@ -1389,13 +1462,13 @@ async function refreshStatus() {
   try {
     const s = await request("status_req", {});
     applyStatus(s);
-    const framesRecent = Date.now() - lastFrameAt < 3500;
-    if (!s.streaming && !framesRecent) {
+    const framesRecent = viewerHasLiveVideo();
+    if (!s.streaming && !framesRecent && !dcReady() && !rtcActive) {
       const sub = s.projectionSaved
         ? "Controls still work. On the phone, allow screen sharing again — the saved permission expired."
         : "Controls still work. On the phone open TapDesk and tap Allow on the screen-sharing prompt.";
       showScreenLoading("Waiting for screen sharing", sub);
-    } else {
+    } else if (framesRecent || dcReady() || rtcActive) {
       hideScreenLoading();
     }
   } catch (_) {
