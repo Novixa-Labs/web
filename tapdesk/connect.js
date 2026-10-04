@@ -1,4 +1,6 @@
 /* TapDesk Connect — LAN-parity console over Secure Link (MQTT) */
+/** Launch: MQTT JPEG + WebRTC control (c:dc) only — no HD screen video. */
+const DESK_HD_SCREEN_VIDEO = false;
 const BROKER = "wss://ffcc655fc92742cc88ae9b659f0bef6c.s1.eu.hivemq.cloud:8884/mqtt";
 
 const roomGate = document.getElementById("roomGate");
@@ -547,6 +549,24 @@ function hdErrorMessage(code) {
   return "HD unavailable — using standard video";
 }
 function applyPhoneHdBlocked(lane) {
+  if (!DESK_HD_SCREEN_VIDEO) {
+    if (!lane || lane.hdBlockedSession !== true) return false;
+    rtcHdWanted = false;
+    rtcVideoUpgradeSent = false;
+    rtcScreenVideoOffered = false;
+    phoneHdHealthy = false;
+    rtcHdBlockedSession = false;
+    clearRtcHdUpgradeTimer();
+    hideHdLoader();
+    if (rtcVideo) {
+      rtcVideo.classList.remove("is-live");
+      try { rtcVideo.srcObject = null; } catch (_) {}
+    }
+    try { publish("want_jpeg", {}, 1); } catch (_) {}
+    setStatus("Connected · live video (MQTT)" + mediaPathLabel());
+    refreshTransportTech();
+    return true;
+  }
   if (!lane || lane.hdBlockedSession !== true) return false;
   rtcHdBlockedSession = true;
   rtcHdWanted = false;
@@ -603,6 +623,7 @@ function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   refreshTransportTech();
 }
 function onRtcHdToggle() {
+  if (!DESK_HD_SCREEN_VIDEO) return;
   if (rtcHdBlockedSession) {
     setStatus("HD is off for this session — reconnect to try again.");
     return;
@@ -641,6 +662,10 @@ function onRtcHdToggle() {
 function refreshRtcVideoButton() {
   const btn = document.getElementById("btnRtcVideo");
   if (!btn) return;
+  if (!DESK_HD_SCREEN_VIDEO) {
+    btn.hidden = true;
+    return;
+  }
   const live = rtcVideo && rtcVideo.classList.contains("is-live");
   if (rtcHdBlockedSession) {
     const blockedKey = "blocked";
@@ -1051,10 +1076,15 @@ function showConsole() {
   if (!statusTimer) statusTimer = setInterval(refreshStatus, 5000);
   startStreamKick();
   const btnRtc = document.getElementById("btnRtcVideo");
-  if (btnRtc && !btnRtc._tapdeskRtcBound) {
-    btnRtc._tapdeskRtcBound = true;
-    btnRtc.onclick = () => onRtcHdToggle();
+  if (btnRtc) {
+    if (!DESK_HD_SCREEN_VIDEO) btnRtc.hidden = true;
+    else if (!btnRtc._tapdeskRtcBound) {
+      btnRtc._tapdeskRtcBound = true;
+      btnRtc.onclick = () => onRtcHdToggle();
+    }
   }
+  const hdLoader = document.getElementById("hdUpgradeLoader");
+  if (hdLoader && !DESK_HD_SCREEN_VIDEO) hdLoader.classList.add("is-hidden");
   refreshRtcVideoButton();
 }
 
@@ -1090,6 +1120,18 @@ function onMessage(msg) {
 
   // WebRTC upgrade signaling (phone is the offerer).
   if (type === "video_lane") {
+    if (!DESK_HD_SCREEN_VIDEO) {
+      const onMqtt = payload.carrier === "mqtt_jpeg" || payload.screenVideo === false;
+      if (onMqtt) {
+        rtcScreenVideoOffered = false;
+        rtcHdWanted = false;
+        rtcVideoUpgradeSent = false;
+        enterJpegFallback();
+      }
+      refreshTransportTech();
+      refreshRtcVideoButton();
+      return;
+    }
     if (payload.videoCapable === true) phoneVideoCapable = true;
     if (payload.hdProbe === true) {
       refreshTransportTech();

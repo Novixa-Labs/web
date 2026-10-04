@@ -1,5 +1,7 @@
 /* TapDesk Same Wi‑Fi desk — edit in novixa-labs-website/web/tapdesk/lan → Vercel …/tapdesk/lan */
 /* Pairing code login + session remembered in this browser (24h). */
+/** Launch: JPEG over WebSocket + WebRTC control (c:dc) only — no HD screen video. */
+const DESK_HD_SCREEN_VIDEO = false;
 let authToken = "";
 
 const loginGate = document.getElementById("loginGate");
@@ -351,8 +353,11 @@ document.getElementById("btnPasswordLogin")?.addEventListener("click", async () 
 
 const btnRtcVideoEl = document.getElementById("btnRtcVideo");
 if (btnRtcVideoEl) {
-  btnRtcVideoEl.onclick = () => onRtcHdToggle();
+  if (!DESK_HD_SCREEN_VIDEO) btnRtcVideoEl.hidden = true;
+  else btnRtcVideoEl.onclick = () => onRtcHdToggle();
 }
+const hdLoaderEl = document.getElementById("hdUpgradeLoader");
+if (hdLoaderEl && !DESK_HD_SCREEN_VIDEO) hdLoaderEl.classList.add("is-hidden");
 
 document.getElementById("btnLogout").onclick = async () => {
   try {
@@ -782,6 +787,7 @@ function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   refreshTransportTech();
 }
 function onRtcHdToggle() {
+  if (!DESK_HD_SCREEN_VIDEO) return;
   if (rtcHdBlockedSession) {
     setStatus("HD is off for this session — reconnect to try again.");
     return;
@@ -833,6 +839,10 @@ function scheduleLanAutoWebRtcVideo() {
 function refreshRtcVideoButton() {
   const btn = document.getElementById("btnRtcVideo");
   if (!btn) return;
+  if (!DESK_HD_SCREEN_VIDEO) {
+    btn.hidden = true;
+    return;
+  }
   if (rtcHdBlockedSession) {
     btn.hidden = false;
     btn.disabled = true;
