@@ -439,19 +439,37 @@ const RTC_STARTUP_MS = 2500; // after ICE connected, must become healthy or stay
 function markRtcFrame() {
   lastRtcFrameAt = Date.now();
   rtcFrameCount += 1;
+  if (rtcHdWanted && rtcScreenVideoOffered) {
+    const now = Date.now();
+    if (rtcHdLastFrameAt && now - rtcHdLastFrameAt > RTC_HD_FRAME_GAP_MS) {
+      rtcHdStreamSince = now;
+    }
+    rtcHdLastFrameAt = now;
+    if (!rtcHdStreamSince) rtcHdStreamSince = now;
+    showHdLoader();
+    if (now - rtcHdStreamSince >= RTC_HD_SUSTAIN_MS) {
+      maybePromoteRtcVideo();
+    }
+    return;
+  }
   if (!rtcScreenVideoOffered || rtcHealthy) return;
-  const now = Date.now();
-  if (rtcHdLastFrameAt && now - rtcHdLastFrameAt > RTC_HD_FRAME_GAP_MS) {
-    rtcHdStreamSince = now;
-  }
-  rtcHdLastFrameAt = now;
-  if (!rtcHdStreamSince) rtcHdStreamSince = now;
-  if (rtcHdWanted) showHdLoader();
-  if (now - rtcHdStreamSince >= RTC_HD_SUSTAIN_MS) {
-    rtcHealthy = true;
-    rtcStalled = false;
-    exitJpegFallback();
-  }
+}
+function maybePromoteRtcVideo() {
+  if (!rtcScreenVideoOffered) return;
+  if (rtcVideo && rtcVideo.classList.contains("is-live")) return;
+  if (!rtcHdStreamSince || Date.now() - rtcHdStreamSince < RTC_HD_SUSTAIN_MS) return;
+  rtcHealthy = true;
+  rtcStalled = false;
+  rtcHdWanted = false;
+  clearRtcHdUpgradeTimer();
+  hideHdLoader();
+  if (rtcVideo) rtcVideo.classList.add("is-live");
+  hideScreenLoading();
+  publish("rtc_video_promoted", {}, 1);
+  setStatus("Connected · HD video (WebRTC)" + mediaPathLabel());
+  lastHdBtnUi = "";
+  refreshRtcVideoButton();
+  refreshTransportTech();
 }
 function pumpRtcFrameCallback() {
   if (!rtcVideo || typeof rtcVideo.requestVideoFrameCallback !== "function") return;
@@ -516,19 +534,6 @@ function enterJpegFallback() {
   try { publish("want_jpeg", {}, 1); } catch (_) {}
   setStatus("Connected · live video (MQTT)");
 }
-function exitJpegFallback() {
-  if (!rtcScreenVideoOffered) return;
-  rtcStalled = false;
-  rtcHealthy = true;
-  rtcHdWanted = false;
-  clearRtcHdUpgradeTimer();
-  hideHdLoader();
-  if (rtcVideo) rtcVideo.classList.add("is-live");
-  try { publish("want_rtc", {}, 1); } catch (_) {}
-  setStatus("Connected · live video (WebRTC)" + mediaPathLabel());
-  refreshTransportTech();
-  refreshRtcVideoButton();
-}
 function hdErrorMessage(code) {
   if (code === "egl_unavailable") return "HD not supported on this phone — using standard video";
   if (code === "no_frames") return "HD frames unavailable — using standard video";
@@ -559,26 +564,34 @@ function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   }
   if (blockSession) {
     rtcHdBlockedSession = true;
-    if (message) setStatus(message + " HD is off for this session.");
-    else setStatus("HD is off for this session." + mediaPathLabel());
+    lastHdBtnUi = "";
+    if (message) setStatus(message + " Standard video continues — HD is off until you reconnect.");
+    else setStatus("Standard video continues — HD is off until you reconnect." + mediaPathLabel());
   } else if (message) setStatus(message);
   else setStatus("Connected · live video (MQTT)" + mediaPathLabel());
   refreshRtcVideoButton();
   refreshTransportTech();
 }
 function onRtcHdToggle() {
-  const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
-  if (rtcHdBlockedSession) return;
-  if (rtcVideoLive) {
+  if (rtcHdBlockedSession) {
+    setStatus("HD is off for this session — reconnect to try again.");
+    return;
+  }
+  const live = rtcVideo && rtcVideo.classList.contains("is-live");
+  if (live) {
     abortRtcHdAttempt("Using standard video (MQTT)", true, false);
     return;
   }
   if (rtcHdWanted) return;
-  if (!rtcActive) {
-    setStatus("HD needs WebRTC control first — wait a few seconds after connect.");
+  if (!rtcActive || !dcReady()) {
+    setStatus("HD needs encrypted control first — wait until tech shows c:dc.");
     return;
   }
   if (rtcVideoUpgradeSent) return;
+  if (!viewerHasLiveVideo()) {
+    setStatus("Wait for live video (MQTT) before trying HD.");
+    return;
+  }
   rtcHdWanted = true;
   rtcVideoUpgradeSent = true;
   rtcHdStreamSince = 0;
@@ -597,28 +610,32 @@ function onRtcHdToggle() {
 function refreshRtcVideoButton() {
   const btn = document.getElementById("btnRtcVideo");
   if (!btn) return;
-  const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
+  const live = rtcVideo && rtcVideo.classList.contains("is-live");
   if (rtcHdBlockedSession) {
-    if (lastHdBtnUi !== "blocked") {
-      lastHdBtnUi = "blocked";
-      btn.hidden = true;
+    const blockedKey = "blocked";
+    if (lastHdBtnUi !== blockedKey) {
+      lastHdBtnUi = blockedKey;
+      btn.hidden = false;
+      btn.disabled = true;
+      btn.textContent = "HD unavailable this session";
+      btn.classList.remove("is-active");
     }
     return;
   }
-  const show = rtcActive && !rtcHdBlockedSession;
-  const uiKey = show + ":" + rtcHdWanted + ":" + rtcVideoLive;
+  const show = rtcActive && dcReady() && !rtcHdBlockedSession;
+  const uiKey = show + ":" + rtcHdWanted + ":" + live;
   if (uiKey === lastHdBtnUi) return;
   lastHdBtnUi = uiKey;
   btn.hidden = !show;
-  if (rtcHdWanted && !rtcVideoLive) {
+  if (rtcHdWanted && !live) {
     btn.disabled = true;
     btn.textContent = "HD connecting…";
     btn.classList.remove("is-active");
     return;
   }
   btn.disabled = false;
-  btn.textContent = rtcVideoLive ? "HD stream: On (tap for standard video)" : "HD stream (WebRTC)";
-  btn.classList.toggle("is-active", rtcVideoLive);
+  btn.textContent = live ? "HD stream: On (tap for standard video)" : "HD stream (WebRTC)";
+  btn.classList.toggle("is-active", live);
 }
 function publish(type, payload = {}, qos = 0) {
   if (!mqttClient || !mqttClient.connected) return;
@@ -634,7 +651,7 @@ function publish(type, payload = {}, qos = 0) {
 // touches the public broker; if the channel isn't up yet, it falls back to MQTT automatically.
 const MQTT_ONLY = new Set([
   "hello", "auth", "rtc_ready", "rtc_answer", "rtc_ice", "leave",
-  "want_jpeg", "want_rtc", // video-mode switches must not depend on a possibly-dead DataChannel
+  "want_jpeg", "want_rtc", "rtc_video_promoted",
 ]);
 function dcReady() {
   return controlChannel && controlChannel.readyState === "open";

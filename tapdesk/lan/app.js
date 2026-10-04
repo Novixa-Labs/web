@@ -605,7 +605,8 @@ function connectWs() {
     startMjpegFallback();
   };
   ws.onclose = (ev) => {
-    teardownRtc(true);
+    abortRtcHdAttempt(null, false, false);
+    teardownRtc(false);
     rtcReadySent = false;
     // Code 1008 (policy violation) is the phone deliberately ending this session — Stop was
     // pressed, or the session expired. Reflect that immediately instead of saying "Reconnecting…"
@@ -708,9 +709,15 @@ function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   rtcHdLastFrameAt = 0;
   hideRtcVideoOverlay();
   if (sendWantJpeg) wsSend({ type: "want_jpeg" });
+  if (!message && !blockSession) {
+    refreshRtcVideoButton();
+    refreshTransportTech();
+    return;
+  }
   if (blockSession) {
     rtcHdBlockedSession = true;
-    if (message) setStatus(message + " HD is off for this session.");
+    if (message) setStatus(message + " Standard video continues — HD is off until you reconnect.");
+    else setStatus("Standard video continues — HD is off until you reconnect.");
   } else if (message) setStatus(message);
   refreshRtcVideoButton();
   refreshTransportTech();
@@ -732,6 +739,10 @@ function onRtcHdToggle() {
   if (rtcVideoUpgradeSent) return;
   if (!ws || ws.readyState !== WebSocket.OPEN) {
     setStatus("HD unavailable — connection to phone is not open.");
+    return;
+  }
+  if (!gotWsFrame) {
+    setStatus("Wait for live JPEG video before trying HD.");
     return;
   }
   rtcHdWanted = true;
@@ -763,7 +774,10 @@ function refreshRtcVideoButton() {
   const btn = document.getElementById("btnRtcVideo");
   if (!btn) return;
   if (rtcHdBlockedSession) {
-    btn.hidden = true;
+    btn.hidden = false;
+    btn.disabled = true;
+    btn.textContent = "HD unavailable this session";
+    btn.classList.remove("is-active");
     return;
   }
   const show = rtcActive && dcReady() && !rtcHdBlockedSession;
@@ -809,6 +823,8 @@ function maybePromoteRtcVideo() {
   hideHdLoader();
   if (rtcVideo) rtcVideo.classList.add("is-live");
   stopMjpegFallback();
+  hideScreenLoading();
+  wsSend({ type: "rtc_video_promoted" });
   setStatus("Connected · HD video (WebRTC)");
   refreshTransportTech();
   refreshRtcVideoButton();
