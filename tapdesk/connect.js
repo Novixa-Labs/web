@@ -68,6 +68,7 @@ const RTC_HD_FRAME_GAP_MS = 700;
 let rtcHdStreamSince = 0;
 let rtcHdLastFrameAt = 0;
 let rtcHdBlockedSession = false;
+let phoneHdHealthy = false;
 let iceDisconnectTimer = null;
 let rtcRecoverTimer = null;
 let lastHdBtnUi = "";
@@ -259,7 +260,13 @@ function refreshTransportTech() {
   }
   const jpegLive = lastFrameAt && Date.now() - lastFrameAt < 5000;
   const rtcVideoLive = rtcVideo && rtcVideo.classList.contains("is-live");
-  const v = rtcVideoLive ? "v:rtc" : jpegLive ? "v:mqtt-jpeg" : "v:idle";
+  const v = rtcVideoLive
+    ? "v:rtc"
+    : rtcHdWanted
+      ? "v:hd-probe"
+      : jpegLive
+        ? "v:mqtt-jpeg"
+        : "v:idle";
   const c = dcReady() ? "c:dc" : "c:mqtt";
   transportTech.textContent = `tech · ${v} · ${c}`;
   transportTech.hidden = false;
@@ -439,7 +446,7 @@ const RTC_STARTUP_MS = 2500; // after ICE connected, must become healthy or stay
 function markRtcFrame() {
   lastRtcFrameAt = Date.now();
   rtcFrameCount += 1;
-  if (rtcHdWanted && rtcScreenVideoOffered) {
+  if (rtcHdWanted && rtcScreenVideoOffered && phoneHdHealthy) {
     const now = Date.now();
     if (rtcHdLastFrameAt && now - rtcHdLastFrameAt > RTC_HD_FRAME_GAP_MS) {
       rtcHdStreamSince = now;
@@ -548,6 +555,7 @@ function clearRtcHdUpgradeTimer() {
 function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   clearRtcHdUpgradeTimer();
   hideHdLoader();
+  phoneHdHealthy = false;
   rtcHdWanted = false;
   rtcVideoUpgradeSent = false;
   rtcScreenVideoOffered = false;
@@ -593,6 +601,7 @@ function onRtcHdToggle() {
     return;
   }
   rtcHdWanted = true;
+  phoneHdHealthy = false;
   rtcVideoUpgradeSent = true;
   rtcHdStreamSince = 0;
   rtcHdLastFrameAt = 0;
@@ -1060,6 +1069,11 @@ function onMessage(msg) {
   // WebRTC upgrade signaling (phone is the offerer).
   if (type === "video_lane") {
     if (payload.videoCapable === true) phoneVideoCapable = true;
+    if (payload.hdProbe === true) {
+      refreshTransportTech();
+      refreshRtcVideoButton();
+      return;
+    }
     if (payload.videoError && rtcHdWanted && !(rtcVideo && rtcVideo.classList.contains("is-live"))) {
       abortRtcHdAttempt(hdErrorMessage(payload.videoError), true, true);
       return;
@@ -1075,6 +1089,11 @@ function onMessage(msg) {
       }
     }
     refreshRtcVideoButton();
+    return;
+  }
+  if (type === "rtc_hd_healthy") {
+    phoneHdHealthy = true;
+    refreshTransportTech();
     return;
   }
   if (type === "rtc_offer") {

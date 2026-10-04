@@ -48,6 +48,8 @@ const RTC_HD_FRAME_GAP_MS = 700;
 let rtcHdStreamSince = 0;
 let rtcHdLastFrameAt = 0;
 let rtcHdBlockedSession = false;
+/** Phone encoder confirmed before browser may promote to HD. */
+let phoneHdHealthy = false;
 let rtcRemoteSet = false;
 const rtcPending = [];
 const RTC_ICE = {
@@ -96,7 +98,13 @@ function refreshTransportTech() {
     transportTech.hidden = true;
     return;
   }
-  const v = rtcVideoLive ? "v:rtc" : gotWsFrame ? "v:ws-jpeg" : "v:idle";
+  const v = rtcVideoLive
+    ? "v:rtc"
+    : rtcHdWanted
+      ? "v:hd-probe"
+      : gotWsFrame
+        ? "v:ws-jpeg"
+        : "v:idle";
   const c = dcReady() ? "c:dc" : ws && ws.readyState === WebSocket.OPEN ? "c:ws" : "c:http";
   transportTech.textContent = `tech · ${v} · ${c}`;
   transportTech.hidden = false;
@@ -641,6 +649,11 @@ function connectWs() {
       try { m = JSON.parse(ev.data); } catch (_) { return; }
       if (m.type === "video_lane") {
         if (m.videoCapable === true) phoneVideoCapable = true;
+        if (m.hdProbe === true) {
+          refreshTransportTech();
+          refreshRtcVideoButton();
+          return;
+        }
         if (m.videoError && rtcHdWanted && !rtcVideoLive) {
           abortRtcHdAttempt(hdErrorMessage(m.videoError), true, true);
           return;
@@ -658,6 +671,11 @@ function connectWs() {
           }
         }
         refreshRtcVideoButton();
+        return;
+      }
+      if (m.type === "rtc_hd_healthy") {
+        phoneHdHealthy = true;
+        refreshTransportTech();
         return;
       }
       if (m.type === "rtc_offer") {
@@ -702,6 +720,7 @@ function clearRtcHdUpgradeTimer() {
 function abortRtcHdAttempt(message, sendWantJpeg = true, blockSession = false) {
   clearRtcHdUpgradeTimer();
   hideHdLoader();
+  phoneHdHealthy = false;
   rtcHdWanted = false;
   rtcVideoUpgradeSent = false;
   rtcScreenVideoOffered = false;
@@ -746,6 +765,7 @@ function onRtcHdToggle() {
     return;
   }
   rtcHdWanted = true;
+  phoneHdHealthy = false;
   rtcVideoUpgradeSent = true;
   rtcHdStreamSince = 0;
   rtcHdLastFrameAt = 0;
@@ -804,6 +824,7 @@ function hideRtcVideoOverlay() {
 
 function noteRtcHdFrame() {
   if (!rtcScreenVideoOffered || rtcVideoLive) return;
+  if (!phoneHdHealthy) return;
   const now = Date.now();
   if (rtcHdLastFrameAt && now - rtcHdLastFrameAt > RTC_HD_FRAME_GAP_MS) {
     rtcHdStreamSince = now;
