@@ -815,8 +815,27 @@ function maybePromoteRtcVideo() {
 }
 
 async function startRtcAnswer(sdp, screenVideo) {
+  const newScreenVideo = screenVideo === true;
+  if (pc && pc.signalingState !== "closed") {
+    try {
+      rtcScreenVideoOffered = newScreenVideo;
+      await pc.setRemoteDescription({ type: "offer", sdp });
+      rtcRemoteSet = true;
+      for (const c of rtcPending.splice(0)) {
+        try { await pc.addIceCandidate(c); } catch (_) {}
+      }
+      const ans = await pc.createAnswer();
+      await pc.setLocalDescription(ans);
+      wsSend({ type: "rtc_answer", sdp: ans.sdp });
+      if (newScreenVideo) pumpRtcVideoFrames();
+      refreshRtcVideoButton();
+      return;
+    } catch (_) {
+      /* rebuild below */
+    }
+  }
   teardownRtc(false);
-  rtcScreenVideoOffered = screenVideo === true;
+  rtcScreenVideoOffered = newScreenVideo;
   rtcVideoFrameCount = 0;
   rtcHdStreamSince = 0;
   rtcHdLastFrameAt = 0;

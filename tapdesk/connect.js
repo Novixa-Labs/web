@@ -726,7 +726,14 @@ function startRtcUpgrade() {
   rtcTries = 0;
   stopRtcReadyTimer();
   const ask = () => {
-    if (rtcActive || !authed) { stopRtcReadyTimer(); return; }
+    if (rtcActive || dcReady() || !authed) { stopRtcReadyTimer(); return; }
+    if (pc) {
+      const ice = pc.iceConnectionState;
+      if (ice === "checking" || ice === "new" || ice === "connected" || ice === "completed") {
+        stopRtcReadyTimer();
+        return;
+      }
+    }
     rtcTries += 1;
     // Reliable (QoS 1) so the phone definitely gets at least one ready. We stop pinging as soon as
     // the phone's offer arrives (see rtc_offer handler), so we never restart an in-flight connect.
@@ -741,8 +748,29 @@ function stopRtcReadyTimer() {
   rtcReadyTimer = null;
 }
 async function startRtcAnswer(offerSdp, screenVideoOffered) {
+  const newScreenVideo = screenVideoOffered === true;
+  if (pc && pc.signalingState !== "closed") {
+    try {
+      rtcScreenVideoOffered = newScreenVideo;
+      if (!newScreenVideo) enterJpegFallback();
+      await pc.setRemoteDescription({ type: "offer", sdp: offerSdp });
+      rtcRemoteSet = true;
+      for (const c of rtcPending.splice(0)) {
+        try { await pc.addIceCandidate(c); } catch (_) {}
+      }
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      publish("rtc_answer", { sdp: answer.sdp }, 1);
+      offerReceived = true;
+      stopRtcReadyTimer();
+      refreshRtcVideoButton();
+      return;
+    } catch (_) {
+      /* fall through to full rebuild */
+    }
+  }
   teardownRtc(false);
-  rtcScreenVideoOffered = screenVideoOffered === true;
+  rtcScreenVideoOffered = newScreenVideo;
   if (!rtcScreenVideoOffered) {
     enterJpegFallback();
   }
