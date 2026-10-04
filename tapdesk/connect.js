@@ -546,6 +546,25 @@ function hdErrorMessage(code) {
   if (code === "no_frames") return "HD frames unavailable — using standard video";
   return "HD unavailable — using standard video";
 }
+function applyPhoneHdBlocked(lane) {
+  if (!lane || lane.hdBlockedSession !== true) return false;
+  rtcHdBlockedSession = true;
+  rtcHdWanted = false;
+  rtcVideoUpgradeSent = false;
+  phoneHdHealthy = false;
+  clearRtcHdUpgradeTimer();
+  hideHdLoader();
+  if (rtcVideo) {
+    rtcVideo.classList.remove("is-live");
+    try { rtcVideo.srcObject = null; } catch (_) {}
+  }
+  const reason =
+    lane.hdBlockReason || hdErrorMessage(lane.videoError) || "HD unavailable this session";
+  setStatus(reason + " Standard video continues." + mediaPathLabel());
+  refreshRtcVideoButton();
+  refreshTransportTech();
+  return true;
+}
 function clearRtcHdUpgradeTimer() {
   if (rtcHdUpgradeTimer) {
     clearTimeout(rtcHdUpgradeTimer);
@@ -1072,6 +1091,9 @@ function onMessage(msg) {
     if (payload.hdProbe === true) {
       refreshTransportTech();
       refreshRtcVideoButton();
+      return;
+    }
+    if (applyPhoneHdBlocked(payload)) {
       return;
     }
     if (payload.videoError && rtcHdWanted && !(rtcVideo && rtcVideo.classList.contains("is-live"))) {

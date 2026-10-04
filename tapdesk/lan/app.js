@@ -654,6 +654,10 @@ function connectWs() {
           refreshRtcVideoButton();
           return;
         }
+        if (applyPhoneHdBlocked(m)) {
+          if (m.carrier === "ws_jpeg" || m.screenVideo === false) rtcScreenVideoOffered = false;
+          return;
+        }
         if (m.videoError && rtcHdWanted && !rtcVideoLive) {
           abortRtcHdAttempt(hdErrorMessage(m.videoError), true, true);
           return;
@@ -709,6 +713,22 @@ function hdErrorMessage(code) {
   if (code === "egl_unavailable") return "HD not supported on this phone — using standard video";
   if (code === "no_frames") return "HD frames unavailable — using standard video";
   return "HD unavailable — using standard video";
+}
+/** Phone reported HD blocked for this session — disable the HD button in the desk. */
+function applyPhoneHdBlocked(lane) {
+  if (!lane || lane.hdBlockedSession !== true) return false;
+  rtcHdBlockedSession = true;
+  rtcHdWanted = false;
+  rtcVideoUpgradeSent = false;
+  phoneHdHealthy = false;
+  clearRtcHdUpgradeTimer();
+  hideHdLoader();
+  hideRtcVideoOverlay();
+  const reason = lane.hdBlockReason || hdErrorMessage(lane.videoError) || "HD unavailable this session";
+  setStatus(reason + " Standard video continues.");
+  refreshRtcVideoButton();
+  refreshTransportTech();
+  return true;
 }
 function clearRtcHdUpgradeTimer() {
   if (rtcHdUpgradeTimer) {
