@@ -808,6 +808,7 @@ async function startRtcAnswer(sdp, screenVideo) {
       controlChannel.onmessage = (e) => onDcMessage(e.data);
       controlChannel.onopen = () => {
         refreshTransportTech();
+        refreshRtcVideoButton();
       };
     }
   };
@@ -834,10 +835,12 @@ async function startRtcAnswer(sdp, screenVideo) {
         setStatus("Connected · securing video…");
       }
       refreshTransportTech();
+      refreshRtcVideoButton();
     } else if (s === "failed" || s === "disconnected") {
       rtcActive = false;
       hideRtcVideoOverlay();
       refreshTransportTech();
+      refreshRtcVideoButton();
     }
   };
   try {
