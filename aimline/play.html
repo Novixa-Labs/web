@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Aimline — browser training demo</title>
+  <meta name="description" content="Try a short aim drill in your browser. Full game on Android with crosshair lab and five maps." />
+  <style>
+    :root { --bg:#0a0b0f; --panel:#141820; --accent:#ff6b2c; --ink:#e8ecf4; --muted:#8b93a8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .wrap { width: min(920px, 100%); }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
+    h1 { font-size: 1.35rem; margin: 0; letter-spacing: .06em; }
+    h1 span { color: var(--accent); }
+    .stats { display: flex; gap: 10px; font-size: .85rem; color: var(--muted); }
+    .stats b { color: var(--ink); font-size: 1.1rem; }
+    .arena { position: relative; border: 1px solid #2a3140; border-radius: 12px; overflow: hidden; background: #050608; }
+    canvas { width: 100%; display: block; touch-action: none; cursor: crosshair; aspect-ratio: 16/9; }
+    .hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: .75rem; letter-spacing: .12em; color: var(--muted); }
+    footer { margin-top: 12px; font-size: .8rem; color: var(--muted); line-height: 1.5; }
+    a { color: #9eb4ff; }
+    button { background: var(--accent); color: #1a0e08; border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>AIM<span>LINE</span> · demo range</h1>
+    <div class="stats"><div>Score <b id="score">0</b></div><div>Time <b id="time">30</b></div><div>Acc <b id="acc">—</b></div></div>
+    <button id="fire" type="button">FIRE</button>
+  </header>
+  <div class="arena">
+    <div class="hint" id="hint">DRAG TO AIM · TAP FIRE OR BUTTON</div>
+    <canvas id="c" width="960" height="540"></canvas>
+  </div>
+  <footer>
+    Browser prototype — not the full Android app (no crosshair lab, maps, or saves).
+    <a href="privacy.html">Privacy</a> ·
+    <a href="https://play.google.com/store/apps/developer?id=Novixa-Labs">Novixa-Labs on Play</a>
+  </footer>
+</div>
+<script>
+'use strict';
+const C = document.getElementById('c'), ctx = C.getContext('2d'), W = 480, H = 270;
+let ax = W/2, ay = H/2, targets = [], score = 0, shots = 0, hits = 0, t = 30, running = false;
+function spawn() {
+  targets.push({ x: 40 + Math.random() * (W-80), y: 40 + Math.random() * (H-80), r: 10 + Math.random() * 14, life: 1 });
+}
+function drawReticle(x,y) {
+  ctx.strokeStyle = '#7dff4a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x-14,y); ctx.lineTo(x+14,y); ctx.moveTo(x,y-14); ctx.lineTo(x,y+14); ctx.stroke();
+  ctx.beginPath(); ctx.arc(x,y,8,0,7); ctx.stroke();
+}
+function loop() {
+  ctx.fillStyle = '#06080c'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#ffffff08'; for (let i=0;i<6;i++) ctx.fillRect(i*80,0,40,H);
+  for (const tg of targets) {
+    ctx.fillStyle = '#ff6b2c'; ctx.beginPath(); ctx.arc(tg.x,tg.y,tg.r,0,7); ctx.fill();
+    ctx.strokeStyle = '#fff3'; ctx.stroke();
+  }
+  drawReticle(ax, ay);
+}
+function fire() {
+  if (!running) return;
+  shots++;
+  let hit = false;
+  for (let i=targets.length-1;i>=0;i--) {
+    const tg = targets[i];
+    if (Math.hypot(tg.x-ax, tg.y-ay) <= tg.r+4) { targets.splice(i,1); hits++; score += 10; hit = true; spawn(); break; }
+  }
+  document.getElementById('score').textContent = score;
+  document.getElementById('acc').textContent = shots ? Math.round(hits/shots*100)+'%' : '—';
+  if (!hit && targets.length < 4) spawn();
+}
+function start() {
+  targets = []; score = shots = hits = 0; t = 30; running = true;
+  for (let i=0;i<3;i++) spawn();
+  document.getElementById('hint').style.opacity = 0;
+}
+C.addEventListener('pointermove', e => {
+  const r = C.getBoundingClientRect();
+  ax = (e.clientX - r.left) / r.width * W;
+  ay = (e.clientY - r.top) / r.height * H;
+});
+C.addEventListener('pointerdown', e => { C.setPointerCapture(e.pointerId); fire(); });
+document.getElementById('fire').addEventListener('click', fire);
+setInterval(() => {
+  loop();
+  if (!running) return;
+  t -= 0.1;
+  document.getElementById('time').textContent = Math.max(0, Math.ceil(t));
+  if (t <= 0) { running = false; document.getElementById('hint').textContent = 'TIME — reload page to retry'; document.getElementById('hint').style.opacity = 1; }
+}, 100);
+start();
+</script>
+</body>
+</html>
