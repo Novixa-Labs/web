@@ -217,14 +217,14 @@
 
     /* ── Status badges ── */
     .status {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: .68rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .07em;
-      padding: 4px 10px; border-radius: 100px;
-      width: fit-content;
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: .58rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      padding: 3px 8px; border-radius: 100px;
+      width: fit-content; flex-shrink: 0;
     }
     .status::before {
-      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      content: ""; width: 5px; height: 5px; border-radius: 50%;
     }
     .status-live { background: var(--live-bg); color: var(--live); border: 1px solid rgba(52,211,153,.25); }
     .status-live::before { background: var(--live); box-shadow: 0 0 6px var(--live); }
@@ -371,7 +371,7 @@
     .app-card[data-accent="indigo"] { --card-accent: #818cf8; }
 
     .app-card-top {
-      padding: 22px 40px 0 22px;
+      padding: 22px 78px 0 22px;
       display: flex; align-items: flex-start; gap: 14px;
     }
     .app-icon {
@@ -397,12 +397,12 @@
 
     .app-meta { flex: 1; min-width: 0; }
     .app-meta-top {
-      display: grid;
-      grid-template-columns: 1fr auto;
+      display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 8px; margin-bottom: 6px;
+      gap: 6px 10px;
+      margin-bottom: 6px;
     }
-    .app-meta-top .status { justify-self: end; }
     .app-meta .type {
       font-size: .68rem; font-weight: 600;
       text-transform: uppercase; letter-spacing: .06em;
@@ -427,15 +427,23 @@
       gap: 8px; padding-top: 14px;
       border-top: 1px solid var(--border);
     }
-    .card-privacy {
+    .card-actions {
       position: absolute; top: 14px; right: 14px;
+      display: flex; flex-direction: row-reverse;
+      align-items: center; gap: 6px; z-index: 2;
+    }
+    .card-privacy,
+    .card-play {
       width: 32px; height: 32px; border-radius: 8px;
       display: inline-flex; align-items: center; justify-content: center;
       background: rgba(255,255,255,.06); color: var(--muted);
-      text-decoration: none; transition: background .2s, color .2s; z-index: 2;
+      text-decoration: none; transition: background .2s, color .2s;
     }
-    .card-privacy:hover { background: rgba(255,255,255,.12); color: var(--text); }
-    .card-privacy svg { width: 16px; height: 16px; }
+    .card-privacy:hover,
+    .card-play:hover { background: rgba(255,255,255,.12); color: var(--text); }
+    .card-privacy svg,
+    .card-play svg { width: 16px; height: 16px; }
+    .card-play:hover { color: var(--accent); }
 
     /* ── Buttons ── */
     .btn {
@@ -467,6 +475,12 @@
     }
     .btn-play:hover { color: #a5b8ff; }
     .btn-play svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .btn-play.btn-disabled {
+      color: var(--muted);
+      opacity: .42;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
     .btn-muted {
       background: transparent; color: var(--muted);
       padding: 6px 0; font-size: .82rem; font-weight: 500;
@@ -571,9 +585,11 @@
 
       <!-- Featured: TapDesk -->
       <article class="featured tapdesk">
+        <div class="card-actions">
         <a class="card-privacy" href="tapdesk/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="TapDesk privacy policy" title="Privacy policy">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </a>
+        </div>
         <div class="featured-visual">
           <div class="featured-icon" aria-hidden="true">TD</div>
         </div>
@@ -586,6 +602,10 @@
           <p>Control your Android phone from a browser. Same Wi-Fi is free. Secure Link includes one free session, then a short video or a one-time unlock. You start every session and can stop it.</p>
           <div class="featured-actions">
             <a class="btn btn-primary" href="tapdesk/">Open Connect</a>
+            <span class="btn btn-play btn-disabled" aria-disabled="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+              View on Play Store
+            </span>
           </div>
         </div>
       </article>
@@ -596,9 +616,11 @@
         <div class="grid">
 
           <article class="app-card" data-accent="pink">
+            <div class="card-actions">
             <a class="card-privacy" href="junk-journal/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Junk Journal privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -609,8 +631,8 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">Creative tool</span>
                   <span class="status status-live">Live</span>
+                  <span class="type">Creative tool</span>
                 </div>
                 <h3>Junk Journal: Scrapbook Art</h3>
               </div>
@@ -627,9 +649,11 @@
           </article>
 
           <article class="app-card" data-accent="orange">
+            <div class="card-actions">
             <a class="card-privacy" href="museprompt/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="AI Photo Prompts Generator privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -640,8 +664,8 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">AI tool</span>
                   <span class="status status-live">Live</span>
+                  <span class="type">AI tool</span>
                 </div>
                 <h3>AI Photo Prompts Generator</h3>
               </div>
@@ -658,9 +682,11 @@
           </article>
 
           <article class="app-card" data-accent="green">
+            <div class="card-actions">
             <a class="card-privacy" href="fourcut/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="4CUT privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -671,8 +697,8 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">Photo booth</span>
                   <span class="status status-live">Live</span>
+                  <span class="type">Photo booth</span>
                 </div>
                 <h3>4CUT: Photo Booth Strips</h3>
               </div>
@@ -689,15 +715,17 @@
           </article>
 
           <article class="app-card" data-accent="rose">
+            <div class="card-actions">
             <a class="card-privacy" href="unsent-journal/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Unsent Journal privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon sleep" aria-hidden="true">✉️</div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">Creative journal</span>
                   <span class="status status-beta">Closed testing</span>
+                  <span class="type">Creative journal</span>
                 </div>
                 <h3>Unsent Journal: Letters</h3>
               </div>
@@ -705,7 +733,10 @@
             <div class="app-card-body">
               <p>Write unsent letters privately—add photos, voice notes, and memories. Seal, release, or burn when you are ready. Encrypted on your device.</p>
               <div class="app-card-footer">
-                <span class="btn btn-muted">Closed testing</span>
+                <span class="btn btn-play btn-disabled" aria-disabled="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+                  View on Play Store
+                </span>
               </div>
             </div>
           </article>
@@ -719,9 +750,11 @@
         <div class="grid">
 
           <article class="app-card" data-accent="yellow">
+            <div class="card-actions">
             <a class="card-privacy" href="emoji-battery/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Emoji Battery privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -732,8 +765,8 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">Customization</span>
                   <span class="status status-live">Live</span>
+                  <span class="type">Customization</span>
                 </div>
                 <h3>Emoji Battery: Status Bar</h3>
               </div>
@@ -750,9 +783,11 @@
           </article>
 
           <article class="app-card" data-accent="blue">
+            <div class="card-actions">
             <a class="card-privacy" href="smart-tv-remote/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Android TV Remote privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -763,8 +798,8 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">TV remote</span>
                   <span class="status status-live">Live</span>
+                  <span class="type">TV remote</span>
                 </div>
                 <h3>Android TV Remote: Google TV</h3>
               </div>
@@ -789,15 +824,20 @@
         <div class="grid">
 
           <article class="app-card" data-accent="green">
+            <div class="card-actions">
+            <a class="card-play" href="orchard-pop/play.html" aria-label="Play Orchard Pop in browser" title="Play in browser">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
+            </a>
             <a class="card-privacy" href="orchard-pop/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Fruit Merge: Orchard Pop privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon sleep" aria-hidden="true">🍉</div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">Fruit merge</span>
                   <span class="status status-beta">Closed testing</span>
+                  <span class="type">Fruit merge</span>
                 </div>
                 <h3>Fruit Merge: Orchard Pop</h3>
               </div>
@@ -805,22 +845,29 @@
             <div class="app-card-body">
               <p>Drop fruits, roll them in the bowl, and merge matches into a watermelon. Five lives, optional rewarded videos, and Orchard Plus for no ads and unlimited lives. Offline play.</p>
               <div class="app-card-footer">
-                <a class="btn btn-ghost" href="orchard-pop/play.html">Play in the browser</a>
-                <a class="btn btn-ghost" href="orchard-pop/privacy.html">Privacy policy</a>
+                <span class="btn btn-play btn-disabled" aria-disabled="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+                  View on Play Store
+                </span>
               </div>
             </div>
           </article>
 
           <article class="app-card" data-accent="orange">
+            <div class="card-actions">
+            <a class="card-play" href="aimline/play.html" aria-label="Play Aimline in browser" title="Play in browser">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
+            </a>
             <a class="card-privacy" href="aimline/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Aimline privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon" aria-hidden="true">🎯</div>
               <div class="app-meta">
                 <div class="app-meta-top">
+                  <span class="status status-beta">Closed testing</span>
                   <span class="type">Aim trainer</span>
-                  <span class="status status-beta">In development</span>
                 </div>
                 <h3>Aimline: Crosshair Trainer</h3>
               </div>
@@ -828,16 +875,20 @@
             <div class="app-card-body">
               <p>Landscape aim drills with a crosshair lab, five training maps, lives, rewarded videos, and Aimline Plus for no ads. Offline gameplay.</p>
               <div class="app-card-footer">
-                <a class="btn btn-ghost" href="aimline/play.html">Play in the browser</a>
-                <a class="btn btn-ghost" href="aimline/privacy.html">Privacy policy</a>
+                <span class="btn btn-play btn-disabled" aria-disabled="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+                  View on Play Store
+                </span>
               </div>
             </div>
           </article>
 
           <article class="app-card" data-accent="purple">
+            <div class="card-actions">
             <a class="card-privacy" href="bead-12/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="12 Beads privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -848,8 +899,8 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">Board game</span>
                   <span class="status status-live">Live</span>
+                  <span class="type">Board game</span>
                 </div>
                 <h3>12 Beads - Offline Board Game</h3>
               </div>
@@ -866,9 +917,11 @@
           </article>
 
           <article class="app-card" data-accent="teal">
+            <div class="card-actions">
             <a class="card-privacy" href="drowsy/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Drowsy privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </a>
+            </div>
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
@@ -879,8 +932,8 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="type">Relaxation game</span>
                   <span class="status status-live">Live</span>
+                  <span class="type">Relaxation game</span>
                 </div>
                 <h3>Drowsy: Yawn Game &amp; Sleep</h3>
               </div>
