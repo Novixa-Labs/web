@@ -388,6 +388,7 @@
     }
     .app-icon.has-img { background: #1a1e2a; }
     .app-icon.muse { background: linear-gradient(145deg, #F56216, #c2410c); }
+    .featured-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
     .app-icon.photo { background: linear-gradient(145deg, #34d399, #059669); }
     .app-icon.battery { background: linear-gradient(145deg, #fbbf24, #d97706); }
     .app-icon.tv { background: linear-gradient(145deg, #60a5fa, #2563eb); }
@@ -567,14 +568,14 @@
   </header>
 
   <div class="stats-strip" aria-label="App status overview">
-    <div class="stat-item"><strong>14</strong><span>Apps in our portfolio</span></div>
-    <div class="stat-item"><strong class="live">9</strong><span>Live on Play Store</span></div>
-    <div class="stat-item"><strong class="beta">5</strong><span>In closed testing</span></div>
+    <div class="stat-item"><strong>15</strong><span>Apps in our portfolio</span></div>
+    <div class="stat-item"><strong class="live">10</strong><span>Live on Play Store</span></div>
+    <div class="stat-item"><strong class="beta">5</strong><span>In review</span></div>
   </div>
 
   <div class="status-legend" aria-hidden="true">
     <span class="legend-item"><span class="legend-dot live"></span> Live — available now</span>
-    <span class="legend-item"><span class="legend-dot beta"></span> Closed testing — not public yet</span>
+    <span class="legend-item"><span class="legend-dot beta"></span> In review — not public yet</span>
   </div>
 
   <main id="main">
@@ -592,21 +593,21 @@
         </a>
         </div>
         <div class="featured-visual">
-          <div class="featured-icon" aria-hidden="true">TD</div>
+          <div class="featured-icon"><img src="https://play-lh.googleusercontent.com/Rx_IqJFBxYpd_rrYpEnch7YP7BBdbT8QuAMc2Y-SiEaCjuBb7NrnGGpYB247blJLqwtykTfG8UmPjNjW7guMY00=s256-rw" alt="TapDesk: Phone Remote Control app icon" width="96" height="96" /></div>
         </div>
         <div class="featured-content">
           <div class="featured-badges">
-            <span class="status status-beta">Closed testing</span>
+            <span class="status status-live">Live</span>
             <span class="badge-type">Remote control</span>
           </div>
           <h3>TapDesk: Phone Remote Control</h3>
           <p>Control your Android phone from a browser. Same Wi-Fi is free. Secure Link includes one free session, then a short video or a one-time unlock. You start every session and can stop it.</p>
           <div class="featured-actions">
             <a class="btn btn-primary" href="tapdesk/">Open Connect</a>
-            <span class="btn btn-play btn-disabled" aria-disabled="true">
+            <a class="btn btn-play" target="_blank" rel="noopener noreferrer" href="https://play.google.com/store/apps/details?id=com.novixalabs.tapdesk">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
               View on Play Store
-            </span>
+            </a>
           </div>
         </div>
       </article>
@@ -626,7 +627,7 @@
               <div class="app-icon" aria-hidden="true">BD</div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="status status-beta">Closed testing</span>
+                  <span class="status status-beta">In review</span>
                   <span class="type">Video editor</span>
                 </div>
                 <h3>Backdrop: Video Background Remover</h3>
@@ -793,7 +794,7 @@
               <div class="app-icon" aria-hidden="true">📊</div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="status status-beta">Closed testing</span>
+                  <span class="status status-beta">In review</span>
                   <span class="type">Productivity</span>
                 </div>
                 <h3>Preslio: PPTX Editor &amp; Viewer</h3>
@@ -896,7 +897,7 @@
             <div class="app-card-top">
               <div class="app-icon has-img">
                 <img
-                  src="orchard-pop/icon.png"
+                  src="https://play-lh.googleusercontent.com/9nCCdVVlFidH0C8tv1ytrbFZiM9OUJqLMoWYHHMd2MlxLk0u9873Vf-IhaL8AsM8TUczN1H0iRHMWR6GJvxzLQ=s256-rw"
                   alt="Fruit Merge: Orchard Pop app icon"
                   width="56" height="56" loading="lazy" decoding="async"
                 />
@@ -920,6 +921,35 @@
             </div>
           </article>
 
+          <article class="app-card" data-accent="purple">
+            <div class="card-actions">
+            <a class="card-privacy" href="marble-workshop/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Marble Workshop privacy policy" title="Privacy policy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </a>
+            </div>
+            <div class="app-card-top">
+              <div class="app-icon has-img">
+                <img src="marble-workshop/icon.svg" alt="Marble Workshop app icon" width="56" height="56" loading="lazy" decoding="async" />
+              </div>
+              <div class="app-meta">
+                <div class="app-meta-top">
+                  <span class="status status-beta">In review</span>
+                  <span class="type">Sorting puzzle</span>
+                </div>
+                <h3>Marble Workshop</h3>
+              </div>
+            </div>
+            <div class="app-card-body">
+              <p>Release glossy marbles, manage the conveyor loop, and pack every color into matching boxes across 24 handcrafted puzzles. Includes optional rewarded rescues and an ad-free Pro upgrade.</p>
+              <div class="app-card-footer">
+                <span class="btn btn-play btn-disabled" aria-disabled="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L6.05 21.34L14.54 12.85L16.81 15.12ZM20.16 10.81C20.5 11.08 20.75 11.5 20.75 12C20.75 12.5 20.53 12.9 20.18 13.18L17.89 14.5L15.39 12L17.89 9.5L20.16 10.81ZM6.05 2.66L16.81 8.88L14.54 11.15L6.05 2.66Z"/></svg>
+                  Coming to Play Store
+                </span>
+              </div>
+            </div>
+          </article>
+
           <article class="app-card" data-accent="red">
             <div class="card-actions">
             <a class="card-privacy" href="magnet-yard/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Magnet Yard: Logic Puzzle privacy policy" title="Privacy policy">
@@ -936,7 +966,7 @@
               </div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="status status-beta">Closed testing</span>
+                  <span class="status status-beta">In review</span>
                   <span class="type">Logic puzzle</span>
                 </div>
                 <h3>Magnet Yard: Logic Puzzle</h3>
@@ -966,7 +996,7 @@
               <div class="app-icon" aria-hidden="true">🎯</div>
               <div class="app-meta">
                 <div class="app-meta-top">
-                  <span class="status status-beta">Closed testing</span>
+                  <span class="status status-beta">In review</span>
                   <span class="type">Aim trainer</span>
                 </div>
                 <h3>Aimline: Crosshair Trainer</h3>
