@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" role="img" aria-labelledby="title">
+  <title id="title">Magnet Yard icon</title>
+  <rect width="108" height="108" rx="24" fill="#101c31"/>
+  <circle cx="54" cy="54" r="31" fill="none" stroke="#d1a35e" stroke-width="3.5"/>
+  <path d="M42 40v16a12 12 0 0 0 12 12" fill="none" stroke="#fd5149" stroke-width="11" stroke-linecap="round"/>
+  <path d="M66 40v16a12 12 0 0 1-12 12" fill="none" stroke="#1bd8ef" stroke-width="11" stroke-linecap="round"/>
+  <path d="M36 34h12v7H36zM60 34h12v7H60z" fill="#cddde4"/>
+  <circle cx="54" cy="70" r="5" fill="#ffda43"/>
+</svg>
