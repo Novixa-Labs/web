@@ -91,8 +91,8 @@
   <li>Whether you purchased Remove Ads (premium entitlement flag)</li>
 </ul>
 <p>
-  This data is stored in the app&apos;s local storage. Depending on your Android backup and device-transfer settings,
-  Android may include locally stored app data in a backup or transfer to another device.
+  This data is stored in the app&apos;s local storage. The app disables Android backup and explicitly excludes its
+  preferences from cloud backup and device-to-device transfer, including saved TV details and pairing credentials.
 </p>
 
 <h3>B. Microphone (voice search only)</h3>
@@ -246,7 +246,7 @@
 
 <h2>9. Data Retention and Deletion</h2>
 <ul>
-  <li>Local preferences and paired TV data remain in app storage until you clear app data or uninstall; Android may also include them in backup or device transfer as described above.</li>
+  <li>Local preferences and paired TV data remain in app storage until you clear app data or uninstall; the app excludes them from Android cloud backup and device-to-device transfer.</li>
   <li>Support emails are kept only as long as needed to respond to your request.</li>
   <li>Ad partners retain data according to their own policies and your device settings.</li>
   <li>Analytics and crash data, including associated installation identifiers, is retained according to the applicable Firebase and Google settings and policies.</li>
