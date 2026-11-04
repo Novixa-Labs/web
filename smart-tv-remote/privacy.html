@@ -65,8 +65,8 @@
   <li>In the <strong>EEA, UK, and Switzerland</strong>, we use Google&apos;s <strong>User Messaging Platform (UMP)</strong>
     to ask for your consent before personalized advertising where required by law.</li>
   <li>Voice search uses your device&apos;s microphone <strong>only when you tap the voice button</strong>.</li>
-  <li>We use <strong>Google Firebase</strong> for anonymous usage analytics and crash reporting to improve the app.
-    This is separate from advertising and we do not sell this data.</li>
+  <li>We use <strong>Google Firebase</strong> for usage analytics and crash reporting. Firebase processes app and
+    installation identifiers as described below. This is separate from advertising and we do not sell this data.</li>
 </ul>
 
 <h2>2. What the App Does</h2>
@@ -77,7 +77,7 @@
   <li>App shortcuts and voice search on your TV</li>
   <li>Local saving of paired TVs and your settings</li>
   <li>Optional advertising and optional in-app purchase to remove ads</li>
-  <li>Anonymous usage analytics and crash reporting (Firebase) to improve stability and features</li>
+  <li>Usage analytics and crash reporting (Firebase) to improve stability and features</li>
 </ul>
 
 <h2>3. Information We Access</h2>
@@ -90,13 +90,18 @@
   <li>Layout, app shortcuts, and preferences you choose</li>
   <li>Whether you purchased Remove Ads (premium entitlement flag)</li>
 </ul>
-<p>This data stays on your device unless you uninstall the app or clear app data.</p>
+<p>
+  This data is stored in the app&apos;s local storage. Depending on your Android backup and device-transfer settings,
+  Android may include locally stored app data in a backup or transfer to another device.
+</p>
 
 <h3>B. Microphone (voice search only)</h3>
 <p>
   When you tap the voice button, the app uses your device&apos;s microphone to capture speech for search on your TV.
-  Speech is converted to text using your device&apos;s built-in speech recognition. We do not record, store, or share
-  audio. The recognized text is sent to your TV as keyboard input.
+  Speech is converted to text by the speech-recognition service configured on your Android device. Depending on
+  the device, recognition provider, language, and settings, that service may process audio on the device or transmit
+  it to the provider&apos;s servers. Novixa-Labs does not retain an audio recording or send raw microphone audio directly
+  to your TV. The recognized text is sent to your TV as keyboard input.
 </p>
 
 <h3>C. Network access</h3>
@@ -106,7 +111,7 @@
   <li>Send remote-control commands to your TV</li>
   <li>Load and display advertisements</li>
   <li>Process in-app purchases through Google Play</li>
-  <li>Send anonymous analytics events and crash reports to Firebase (Google)</li>
+  <li>Send usage events, installation identifiers, and crash reports to Firebase (Google)</li>
 </ul>
 
 <h3>D. Analytics and crash reporting (Firebase)</h3>
@@ -120,10 +125,12 @@
   <li>App version, device model, and Android OS version</li>
   <li>Screen views, session duration, and general usage events (for example: TV connected, Remove Ads unlocked)</li>
   <li>Crash logs, error messages, and stack traces when the app fails</li>
-  <li>An app instance identifier (we do not receive your name, email, or contacts from Firebase for this purpose)</li>
+  <li>Firebase and app-installation identifiers used to distinguish and operate individual app installations</li>
 </ul>
 <p>
-  We use this information only to measure performance, understand which features are used, and fix bugs.
+  These identifiers do not directly provide us with your name, email address, or contacts, but the data should not
+  be described as anonymous. We use this information to measure performance, understand which features are used,
+  and fix bugs.
   Firebase may process data on servers operated by Google. See
   <a href="https://firebase.google.com/support/privacy">Firebase Privacy</a> and
   <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.
@@ -131,7 +138,8 @@
 <p>
   If AdMob and Firebase are linked in Google&apos;s developer consoles, Google may combine certain analytics
   signals for ad measurement on the developer side. Ad personalization is still controlled by your Android ad
-  settings and by purchasing <strong>Remove Ads</strong>.
+  settings and the choices presented through the app&apos;s UMP privacy-options control. Purchasing
+  <strong>Remove Ads</strong> stops ad display but does not disable Firebase Analytics or Crashlytics.
 </p>
 
 <h2>4. Advertising &amp; Advertising ID</h2>
@@ -151,8 +159,10 @@
 </p>
 <p>
   If you do not consent to personalized ads, we may still show <strong>non-personalized or limited ads</strong>
-  where permitted, or fewer ads. You can change choices later in <strong>Android Settings → Google → Ads</strong>
-  (and any in-app privacy entry when shown). Purchasing <strong>Remove Ads</strong> disables ad display in the app.
+  where permitted, or fewer ads. When UMP indicates that a privacy-options entry point is required, the app provides
+  an <strong>Ad privacy choices</strong> control in About so you can reopen the UMP form. Android advertising settings
+  provide additional platform controls but do not replace this in-app UMP control. Purchasing
+  <strong>Remove Ads</strong> disables ad display in the app.
 </p>
 <p>These services may collect, receive, or share with their partners:</p>
 <ul>
@@ -174,8 +184,9 @@
   full-screen placements.
 </p>
 <p>
-  You can limit ad personalization in <strong>Android Settings → Google → Ads</strong>, or purchase
-  <strong>Remove Ads</strong> in the app to stop ad display entirely.
+  You can use the in-app <strong>Ad privacy choices</strong> control when UMP requires it, use Android advertising
+  settings for separate platform controls, or purchase <strong>Remove Ads</strong> to stop ad display entirely.
+  Remove Ads does not disable Firebase Analytics or Crashlytics.
 </p>
 <p>
   For more information, see Google&apos;s ad policy:
@@ -191,11 +202,14 @@
 <p>Google may share with us:</p>
 <ul>
   <li>Purchase confirmation and product ID (to unlock ad-free mode on your device)</li>
-  <li>Anonymous transaction tokens required to restore purchases</li>
+  <li>Purchase tokens required to verify and restore purchases</li>
 </ul>
 <p>
   Purchase history is managed by Google Play. Use <strong>Restore purchases</strong> in the app if you reinstall
   on the same Google account.
+</p>
+<p>
+  Remove Ads disables advertising in the app. It does not disable Firebase Analytics or Firebase Crashlytics.
 </p>
 
 <h2>6. Information We Do Not Collect</h2>
@@ -232,14 +246,16 @@
 
 <h2>9. Data Retention and Deletion</h2>
 <ul>
-  <li>Local preferences and paired TV data remain on your device until you clear app data or uninstall.</li>
+  <li>Local preferences and paired TV data remain in app storage until you clear app data or uninstall; Android may also include them in backup or device transfer as described above.</li>
   <li>Support emails are kept only as long as needed to respond to your request.</li>
   <li>Ad partners retain data according to their own policies and your device settings.</li>
-  <li>Analytics and crash data in Firebase is retained according to Google&apos;s default retention periods and is not linked to your identity by us.</li>
+  <li>Analytics and crash data, including associated installation identifiers, is retained according to the applicable Firebase and Google settings and policies.</li>
 </ul>
 <p>
-  <strong>To remove all app data:</strong> Android Settings → Apps → Novixa Remote → Storage → Clear data,
-  or uninstall the app.
+  <strong>To remove locally stored app data:</strong> Android Settings → Apps → Novixa Remote → Storage → Clear data,
+  or uninstall the app. This does not itself delete information already transmitted to Firebase, advertising providers,
+  Google Play, or support. If you open or reinstall the app afterward, future collection may resume as described in
+  this policy.
 </p>
 
 <h2>10. Security</h2>
@@ -252,8 +268,8 @@
 <p>You can:</p>
 <ul>
   <li>Purchase Remove Ads to disable advertising</li>
-  <li>Use the in-app consent message (UMP) or <strong>Android Settings → Google → Ads</strong> to limit or reset personalized advertising</li>
-  <li>Clear app data or uninstall at any time (this stops local data and future analytics/crash reports from your device)</li>
+  <li>Use the in-app <strong>Ad privacy choices</strong> control when UMP requires it; Android advertising settings provide separate platform controls</li>
+  <li>Clear locally stored app data or uninstall; this does not delete previously transmitted provider data, and collection can resume if you later open or reinstall the app</li>
   <li>Contact us to ask questions about this policy or to exercise privacy rights</li>
 </ul>
 <p>
