@@ -51,17 +51,17 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://novixa-labs.vercel.app/smart-tv-remote/privacy.html</loc>
+    <loc>https://novixa-labs.vercel.app/tv-control/privacy.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://novixa-labs.vercel.app/smart-tv-remote/terms.html</loc>
+    <loc>https://novixa-labs.vercel.app/tv-control/terms.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://novixa-labs.vercel.app/smart-tv-remote/support.html</loc>
+    <loc>https://novixa-labs.vercel.app/tv-control/support.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

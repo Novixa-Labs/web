@@ -13,7 +13,7 @@ Static publisher site for Novixa-Labs Android apps.
 | `legal.html` | Legal hub (Play Console policy URLs) |
 | `museprompt/` | MusePrompt privacy, terms, support |
 | `fourcut/` | 4CUT privacy, terms, support |
-| `emoji-battery/`, `smart-tv-remote/`, `bead-12/`, `junk-journal/`, `drowsy/`, `unsent-journal/` | App policies (8 apps on home page) |
+| `emoji-battery/`, `tv-control/`, `bead-12/`, `junk-journal/`, `drowsy/`, `unsent-journal/` | App policies (8 apps on home page) |
 | `app-ads.txt` | AdMob authorized sellers |
 | `robots.txt` / `sitemap.xml` | Crawling |
 | `favicon.svg` / `site.webmanifest` | Branding |
@@ -43,11 +43,11 @@ Static publisher site for Novixa-Labs Android apps.
 - Terms: `https://novixa-labs.vercel.app/fourcut/terms.html`
 - Support: `https://novixa-labs.vercel.app/fourcut/support.html`
 
-## Google Play Console URLs (Android TV Remote: Google TV)
+## TV Control legal URLs
 
-- Privacy: `https://novixa-labs.vercel.app/smart-tv-remote/privacy.html`
-- Terms: `https://novixa-labs.vercel.app/smart-tv-remote/terms.html`
-- Support: `https://novixa-labs.vercel.app/smart-tv-remote/support.html`
+- Privacy: `https://novixa-labs.vercel.app/tv-control/privacy.html`
+- Terms: `https://novixa-labs.vercel.app/tv-control/terms.html`
+- Support: `https://novixa-labs.vercel.app/tv-control/support.html`
 
 ## Local preview
 
