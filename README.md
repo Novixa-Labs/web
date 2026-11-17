@@ -43,7 +43,7 @@ Static publisher site for Novixa-Labs Android apps.
 - Terms: `https://novixa-labs.vercel.app/fourcut/terms.html`
 - Support: `https://novixa-labs.vercel.app/fourcut/support.html`
 
-## TV Control legal URLs
+## TV Remote: Wi-Fi Control legal URLs
 
 - Privacy: `https://novixa-labs.vercel.app/tv-control/privacy.html`
 - Terms: `https://novixa-labs.vercel.app/tv-control/terms.html`
