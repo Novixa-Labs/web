@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Reverse Audio icon">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff8f70"/><stop offset="1" stop-color="#7d4ee8"/></linearGradient></defs>
+  <rect width="256" height="256" rx="58" fill="url(#b)"/>
+  <path d="M42 136c15 0 15-34 30-34s15 55 30 55 15-89 30-89 15 110 30 110 15-42 30-42" fill="none" stroke="#fff7ed" stroke-width="15" stroke-linecap="round"/>
+  <path d="m175 53 30 15-30 15z" fill="#fff7ed"/><path d="m80 188-30-15 30-15z" fill="#fff7ed"/>
+</svg>
