@@ -4,15 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Novixa-Labs — Android Apps</title>
-  <meta name="description" content="Novixa-Labs builds Android apps. TapDesk is our remote desk for your own phone. Also journals, games, a TV remote, and creative tools." />
+  <meta name="description" content="Novixa-Labs builds Android apps. 13 apps are live on Google Play and 2 are in review. TapDesk is our remote desk for your own phone. Also journals, games, a TV remote, and creative tools." />
   <link rel="canonical" href="https://novixa-labs.vercel.app/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Novixa-Labs — Android Apps" />
-  <meta property="og:description" content="Thoughtfully designed Android apps — creative tools, utilities, and games on Google Play." />
+  <meta property="og:description" content="Thoughtfully designed Android apps — 13 live on Google Play and 2 in review." />
   <meta property="og:url" content="https://novixa-labs.vercel.app/" />
   <meta property="og:site_name" content="Novixa-Labs" />
   <meta name="theme-color" content="#08090d" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <script type="application/ld+json" id="studio-jsonld">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Novixa-Labs",
+    "url": "https://novixa-labs.vercel.app/",
+    "description": "Novixa-Labs builds Android apps. 13 apps are live on Google Play and 2 are in review.",
+    "sameAs": [
+      "https://www.instagram.com/novixalabs/",
+      "https://x.com/novixalabs",
+      "https://www.pinterest.com/novixalabs/",
+      "https://www.tiktok.com/@user4595679310008",
+      "https://www.youtube.com/@novixa-labs",
+      "https://play.google.com/store/apps/developer?id=Novixa-Labs"
+    ]
+  }
+  </script>
   <link rel="manifest" href="site.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -155,6 +172,29 @@
       display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
       margin-top: 32px;
     }
+    .hero-counts {
+      color: var(--text); margin-top: 14px;
+      font-size: .95rem; font-weight: 600;
+    }
+    .social-links {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 8px; margin-top: 22px;
+    }
+    .social-links a {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--muted); text-decoration: none;
+      font-size: .8125rem; font-weight: 600;
+      padding: 8px 12px; border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      transition: color .2s, background .2s, border-color .2s;
+    }
+    .social-links a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border-color: var(--border-hover);
+    }
+    .social-links svg { width: 16px; height: 16px; flex-shrink: 0; }
 
     /* ── Stats ── */
     .stats-strip {
@@ -509,6 +549,7 @@
     .footer-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: .875rem; }
     .footer-links a { color: var(--muted); text-decoration: none; transition: color .2s; }
     .footer-links a:hover { color: var(--text); }
+    .footer .social-links { width: 100%; margin-top: 4px; justify-content: center; }
     .footer-copy {
       width: 100%; padding-top: 22px; margin-top: 4px;
       border-top: 1px solid var(--border);
@@ -525,7 +566,7 @@
       .hero { padding: 48px 20px 40px; }
       .grid { grid-template-columns: 1fr; }
       .footer-inner { flex-direction: column; text-align: center; }
-      .footer-brand, .footer-links { justify-content: center; }
+      .footer-brand, .footer-links, .footer .social-links { justify-content: center; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -561,16 +602,40 @@
     <p class="hero-eyebrow">Novixa-Labs</p>
     <h1>Android apps for creativity &amp; everyday life</h1>
     <p class="tagline">We design and ship Android experiences across creative tools, utilities, and games — built with care, privacy in mind, and optimized for modern devices.</p>
+    <p class="hero-counts" data-count-copy>13 apps are live on Google Play and 2 are in review.</p>
     <div class="hero-cta">
       <a class="btn btn-primary" href="#apps">Browse our apps</a>
       <a class="btn btn-ghost" href="mailto:bibi85259@gmail.com?subject=Novixa-Labs%20—%20Contact">Contact us</a>
     </div>
+    <nav class="social-links" aria-label="Novixa-Labs on social media">
+      <a href="https://www.instagram.com/novixalabs/" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Instagram
+      </a>
+      <a href="https://x.com/novixalabs" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.7 10.3 22 2h-2.2l-6.3 7.2L8.2 2H2l7.7 11.2L2 22h2.2l6.8-7.8L15.6 22H22l-7.3-11.7Zm-2.4 2.8-.8-1.1L5 3.5h2.7l5 7.2.8 1.1 6.5 9.2h-2.7l-5-7.9Z"/></svg>
+        X
+      </a>
+      <a href="https://www.pinterest.com/novixalabs/" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.1 2.5 7.6 6 9.1-.1-.8-.2-2 0-2.8.2-.8 1.3-5.4 1.3-5.4s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.7 1.5 1.6 0 1-.6 2.4-.9 3.7-.3 1.1.5 2 1.6 2 1.9 0 3.2-2.4 3.2-5.3 0-2.2-1.5-3.8-4.2-3.8-3 0-4.9 2.3-4.9 4.8 0 .9.3 1.8.7 2.3.1.1.1.2.1.3l-.3 1.1c0 .2-.2.3-.4.2-1.4-.6-2-2.2-2-4 0-3 2.5-6.6 7.5-6.6 4 0 6.6 2.9 6.6 6 0 4.1-2.3 7.2-5.6 7.2-1.1 0-2.2-.6-2.6-1.3l-.7 2.7c-.2.9-.8 2-1.2 2.7.9.3 1.9.4 2.9.4 5.5 0 10-4.5 10-10S17.5 2 12 2Z"/></svg>
+        Pinterest
+      </a>
+      <a href="https://www.tiktok.com/@user4595679310008" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.5 3c.4 2.6 1.9 4.4 4.5 4.7v2.4c-1.5 0-2.9-.5-4.1-1.3v6.6c0 3.4-2.6 6.1-6.1 6.1S2.7 18.8 2.7 15.4c0-3.3 2.5-5.9 5.7-6.1v2.6c-1.6.2-2.8 1.5-2.8 3.2 0 1.8 1.4 3.2 3.2 3.2s3.1-1.4 3.1-3.3V3h2.6Z"/></svg>
+        TikTok
+      </a>
+      <a href="https://www.youtube.com/@novixa-labs" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 12.2s0-3.2-.4-4.6c-.2-.9-.9-1.6-1.8-1.8C19.2 5.4 12 5.4 12 5.4s-7.2 0-8.8.4c-.9.2-1.6.9-1.8 1.8C1 9 1 12.2 1 12.2s0 3.2.4 4.6c.2.9.9 1.6 1.8 1.8 1.6.4 8.8.4 8.8.4s7.2 0 8.8-.4c.9-.2 1.6-.9 1.8-1.8.4-1.4.4-4.6.4-4.6ZM9.8 15.5v-6.6l6.2 3.3-6.2 3.3Z"/></svg>
+        YouTube
+      </a>
+    </nav>
   </header>
 
+  <!-- Counts are filled from article[data-status]. Do not hardcode a different number here. -->
   <div class="stats-strip" aria-label="App status overview">
-    <div class="stat-item"><strong>15</strong><span>Apps in our portfolio</span></div>
-    <div class="stat-item"><strong class="live">12</strong><span>Live on Play Store</span></div>
-    <div class="stat-item"><strong class="beta">2</strong><span>In review</span></div>
+    <div class="stat-item"><strong data-stat="portfolio">16</strong><span>Apps in our portfolio</span></div>
+    <div class="stat-item"><strong class="live" data-stat="live">13</strong><span>Live on Play Store</span></div>
+    <div class="stat-item"><strong class="beta" data-stat="review">2</strong><span>In review</span></div>
   </div>
 
   <div class="status-legend" aria-hidden="true">
@@ -587,7 +652,7 @@
       </div>
 
       <!-- Featured: TapDesk -->
-      <article class="featured tapdesk">
+      <article class="featured tapdesk" data-status="live">
         <div class="card-actions">
         <a class="card-privacy" href="tapdesk/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="TapDesk privacy policy" title="Privacy policy">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -618,7 +683,7 @@
         <div class="category-label">Creative &amp; AI tools</div>
         <div class="grid">
 
-          <article class="app-card" data-accent="purple">
+          <article class="app-card" data-accent="purple" data-status="soon">
             <div class="card-actions">
             <a class="card-privacy" href="backdrop/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Backdrop privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -645,7 +710,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="pink">
+          <article class="app-card" data-accent="pink" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="junk-journal/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Junk Journal privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -678,7 +743,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="orange">
+          <article class="app-card" data-accent="orange" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="museprompt/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="AI Photo Prompts Generator privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -711,7 +776,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="green">
+          <article class="app-card" data-accent="green" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="fourcut/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="4CUT privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -744,7 +809,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="orange">
+          <article class="app-card" data-accent="orange" data-status="review">
             <div class="card-actions">
               <a class="card-privacy" href="reverse-audio/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Reverse Audio privacy policy" title="Privacy policy">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -760,7 +825,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="rose">
+          <article class="app-card" data-accent="rose" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="unsent-journal/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Unsent Journal privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -801,7 +866,7 @@
         <div class="category-label">Utilities &amp; tools</div>
         <div class="grid">
 
-          <article class="app-card" data-accent="lavender">
+          <article class="app-card" data-accent="lavender" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="preslio/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Preslio privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -834,7 +899,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="yellow">
+          <article class="app-card" data-accent="yellow" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="emoji-battery/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Emoji Battery privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -867,7 +932,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="blue">
+          <article class="app-card" data-accent="blue" data-status="review">
             <div class="card-actions">
             <a class="card-privacy" href="tv-control/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="TV Remote: Wi-Fi Control privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -905,7 +970,7 @@
         <div class="category-label">Games</div>
         <div class="grid">
 
-          <article class="app-card" data-accent="green">
+          <article class="app-card" data-accent="green" data-status="live">
             <div class="card-actions">
             <a class="card-play" href="orchard-pop/play.html" aria-label="Play Orchard Pop in browser" title="Play in browser">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
@@ -941,7 +1006,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="purple">
+          <article class="app-card" data-accent="purple" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="marble-workshop/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Marble Workshop privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -970,7 +1035,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="red">
+          <article class="app-card" data-accent="red" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="magnet-yard/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Magnet Yard: Logic Puzzle privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -1003,7 +1068,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="orange">
+          <article class="app-card" data-accent="orange" data-status="live">
             <div class="card-actions">
             <a class="card-play" target="_blank" rel="noopener noreferrer" href="https://play.google.com/store/apps/details?id=com.aimline.crosshairstudio" aria-label="View Aimline on Google Play" title="View on Google Play">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
@@ -1039,7 +1104,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="purple">
+          <article class="app-card" data-accent="purple" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="bead-12/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="12 Beads privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -1072,7 +1137,7 @@
             </div>
           </article>
 
-          <article class="app-card" data-accent="teal">
+          <article class="app-card" data-accent="teal" data-status="live">
             <div class="card-actions">
             <a class="card-privacy" href="drowsy/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Drowsy privacy policy" title="Privacy policy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -1128,8 +1193,69 @@
         <a href="legal.html">Legal &amp; privacy</a>
         <a target="_blank" rel="noopener noreferrer" href="https://play.google.com/store/apps/developer?id=Novixa-Labs">Google Play</a>
       </div>
+      <nav class="social-links" aria-label="Novixa-Labs on social media">
+        <a href="https://www.instagram.com/novixalabs/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Instagram
+        </a>
+        <a href="https://x.com/novixalabs" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.7 10.3 22 2h-2.2l-6.3 7.2L8.2 2H2l7.7 11.2L2 22h2.2l6.8-7.8L15.6 22H22l-7.3-11.7Zm-2.4 2.8-.8-1.1L5 3.5h2.7l5 7.2.8 1.1 6.5 9.2h-2.7l-5-7.9Z"/></svg>
+          X
+        </a>
+        <a href="https://www.pinterest.com/novixalabs/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.1 2.5 7.6 6 9.1-.1-.8-.2-2 0-2.8.2-.8 1.3-5.4 1.3-5.4s-.3-.7-.3-1.7c0-1.6.9-2.8 2.1-2.8 1 0 1.5.7 1.5 1.6 0 1-.6 2.4-.9 3.7-.3 1.1.5 2 1.6 2 1.9 0 3.2-2.4 3.2-5.3 0-2.2-1.5-3.8-4.2-3.8-3 0-4.9 2.3-4.9 4.8 0 .9.3 1.8.7 2.3.1.1.1.2.1.3l-.3 1.1c0 .2-.2.3-.4.2-1.4-.6-2-2.2-2-4 0-3 2.5-6.6 7.5-6.6 4 0 6.6 2.9 6.6 6 0 4.1-2.3 7.2-5.6 7.2-1.1 0-2.2-.6-2.6-1.3l-.7 2.7c-.2.9-.8 2-1.2 2.7.9.3 1.9.4 2.9.4 5.5 0 10-4.5 10-10S17.5 2 12 2Z"/></svg>
+          Pinterest
+        </a>
+        <a href="https://www.tiktok.com/@user4595679310008" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.5 3c.4 2.6 1.9 4.4 4.5 4.7v2.4c-1.5 0-2.9-.5-4.1-1.3v6.6c0 3.4-2.6 6.1-6.1 6.1S2.7 18.8 2.7 15.4c0-3.3 2.5-5.9 5.7-6.1v2.6c-1.6.2-2.8 1.5-2.8 3.2 0 1.8 1.4 3.2 3.2 3.2s3.1-1.4 3.1-3.3V3h2.6Z"/></svg>
+          TikTok
+        </a>
+        <a href="https://www.youtube.com/@novixa-labs" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 12.2s0-3.2-.4-4.6c-.2-.9-.9-1.6-1.8-1.8C19.2 5.4 12 5.4 12 5.4s-7.2 0-8.8.4c-.9.2-1.6.9-1.8 1.8C1 9 1 12.2 1 12.2s0 3.2.4 4.6c.2.9.9 1.6 1.8 1.8 1.6.4 8.8.4 8.8.4s7.2 0 8.8-.4c.9-.2 1.6-.9 1.8-1.8.4-1.4.4-4.6.4-4.6ZM9.8 15.5v-6.6l6.2 3.3-6.2 3.3Z"/></svg>
+          YouTube
+        </a>
+      </nav>
       <p class="footer-copy">© 2026 Novixa-Labs. Google Play and the Google Play logo are trademarks of Google LLC.</p>
     </div>
   </footer>
+  <script>
+    (function () {
+      // Source of truth: article[data-status] on this page (live | review | soon).
+      // Do not invent an app entry. The current catalog already yields 13 live and 2 in review.
+      var articles = document.querySelectorAll("article[data-status]");
+      var counts = { live: 0, review: 0, soon: 0 };
+      articles.forEach(function (article) {
+        var status = article.getAttribute("data-status");
+        if (Object.prototype.hasOwnProperty.call(counts, status)) counts[status] += 1;
+      });
+      var sentence = counts.live + " apps are live on Google Play and " + counts.review + " are in review.";
+      document.querySelectorAll("[data-stat='portfolio']").forEach(function (el) {
+        el.textContent = String(articles.length);
+      });
+      document.querySelectorAll("[data-stat='live']").forEach(function (el) {
+        el.textContent = String(counts.live);
+      });
+      document.querySelectorAll("[data-stat='review']").forEach(function (el) {
+        el.textContent = String(counts.review);
+      });
+      document.querySelectorAll("[data-count-copy]").forEach(function (el) {
+        el.textContent = sentence;
+      });
+      var description = "Novixa-Labs builds Android apps. " + sentence + " TapDesk is our remote desk for your own phone. Also journals, games, a TV remote, and creative tools.";
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute("content", description);
+      var og = document.querySelector('meta[property="og:description"]');
+      if (og) og.setAttribute("content", "Thoughtfully designed Android apps — " + counts.live + " live on Google Play and " + counts.review + " in review.");
+      var ld = document.getElementById("studio-jsonld");
+      if (ld) {
+        try {
+          var data = JSON.parse(ld.textContent);
+          data.name = "Novixa-Labs";
+          data.description = "Novixa-Labs builds Android apps. " + sentence;
+          ld.textContent = JSON.stringify(data);
+        } catch (err) {}
+      }
+    })();
+  </script>
 </body>
 </html>
