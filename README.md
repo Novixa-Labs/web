@@ -13,7 +13,7 @@ Static publisher site for Novixa-Labs Android apps.
 | `legal.html` | Legal hub (Play Console policy URLs) |
 | `museprompt/` | MusePrompt privacy, terms, support |
 | `fourcut/` | 4CUT privacy, terms, support |
-| `emoji-battery/`, `tv-control/`, `bead-12/`, `junk-journal/`, `drowsy/`, `unsent-journal/` | App policies (8 apps on home page) |
+| `emoji-battery/`, `tv-control/`, `bead-12/`, `junk-journal/`, `drowsy/`, `unsent-journal/` | App policy pages |
 | `app-ads.txt` | AdMob authorized sellers |
 | `robots.txt` / `sitemap.xml` | Crawling |
 | `favicon.svg` / `site.webmanifest` | Branding |
@@ -62,4 +62,4 @@ Or open `index.html` directly in a browser (relative links work for local file c
 ## Notes
 
 - Do not commit secrets. `app-ads.txt` only contains the public AdMob publisher authorization line.
-- Existing app policy pages are preserved; 4CUT is the seventh app on the homepage and legal hub.
+- Homepage app counts are derived from each card's `data-status` (`live`, `review`, `soon`). The catalog is 13 live on Google Play, 2 in review, and Backdrop still marked will-launch. Do not add an app entry without its real listing data.
