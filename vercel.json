@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/y2k-camera/privacy", "destination": "/y2k-camera/privacy.html" },
+    { "source": "/y2k-camera/privacy/", "destination": "/y2k-camera/privacy.html" }
+  ]
+}
