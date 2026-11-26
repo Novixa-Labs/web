@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Vent icon">
+  <defs><linearGradient id="v" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ef6d91"/><stop offset="1" stop-color="#7255d6"/></linearGradient></defs>
+  <rect width="256" height="256" rx="58" fill="url(#v)"/>
+  <path d="M128 48c-44 0-75 27-75 68 0 26 14 47 36 60v25h78v-25c22-13 36-34 36-60 0-41-31-68-75-68z" fill="#fff8f4"/>
+  <path d="M92 119c11 15 22 22 36 22s25-7 36-22M101 94h1m53 0h1" fill="none" stroke="#7255d6" stroke-width="11" stroke-linecap="round"/>
+  <path d="M91 211h74" stroke="#fff8f4" stroke-width="12" stroke-linecap="round"/>
+</svg>
