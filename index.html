@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Novixa-Labs — Android Apps</title>
-  <meta name="description" content="Novixa-Labs builds Android apps. 13 apps are live on Google Play and 2 are in review. TapDesk is our remote desk for your own phone. Also journals, games, a TV remote, and creative tools." />
+  <meta name="description" content="Novixa-Labs builds Android apps. 13 apps are live on Google Play and 4 are in review. TapDesk is our remote desk for your own phone. Also journals, games, a TV remote, and creative tools." />
   <link rel="canonical" href="https://novixa-labs.vercel.app/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Novixa-Labs — Android Apps" />
-  <meta property="og:description" content="Thoughtfully designed Android apps — 13 live on Google Play and 2 in review." />
+  <meta property="og:description" content="Thoughtfully designed Android apps — 13 live on Google Play and 4 in review." />
   <meta property="og:url" content="https://novixa-labs.vercel.app/" />
   <meta property="og:site_name" content="Novixa-Labs" />
   <meta name="theme-color" content="#08090d" />
@@ -19,7 +19,7 @@
     "@type": "Organization",
     "name": "Novixa-Labs",
     "url": "https://novixa-labs.vercel.app/",
-    "description": "Novixa-Labs builds Android apps. 13 apps are live on Google Play and 2 are in review.",
+    "description": "Novixa-Labs builds Android apps. 13 apps are live on Google Play and 4 are in review.",
     "sameAs": [
       "https://www.instagram.com/novixalabs/",
       "https://x.com/novixalabs",
@@ -602,7 +602,7 @@
     <p class="hero-eyebrow">Novixa-Labs</p>
     <h1>Android apps for creativity &amp; everyday life</h1>
     <p class="tagline">We design and ship Android experiences across creative tools, utilities, and games — built with care, privacy in mind, and optimized for modern devices.</p>
-    <p class="hero-counts" data-count-copy>13 apps are live on Google Play and 2 are in review.</p>
+    <p class="hero-counts" data-count-copy>13 apps are live on Google Play and 4 are in review.</p>
     <div class="hero-cta">
       <a class="btn btn-primary" href="#apps">Browse our apps</a>
       <a class="btn btn-ghost" href="mailto:bibi85259@gmail.com?subject=Novixa-Labs%20—%20Contact">Contact us</a>
@@ -633,9 +633,9 @@
 
   <!-- Counts are filled from article[data-status]. Do not hardcode a different number here. -->
   <div class="stats-strip" aria-label="App status overview">
-    <div class="stat-item"><strong data-stat="portfolio">17</strong><span>Apps in our portfolio</span></div>
+    <div class="stat-item"><strong data-stat="portfolio">18</strong><span>Apps in our portfolio</span></div>
     <div class="stat-item"><strong class="live" data-stat="live">13</strong><span>Live on Play Store</span></div>
-    <div class="stat-item"><strong class="beta" data-stat="review">3</strong><span>In review</span></div>
+    <div class="stat-item"><strong class="beta" data-stat="review">4</strong><span>In review</span></div>
   </div>
 
   <div class="status-legend" aria-hidden="true">
@@ -806,6 +806,22 @@
                   View on Play Store
                 </a>
               </div>
+            </div>
+          </article>
+
+          <article class="app-card" data-accent="yellow" data-status="review">
+            <div class="card-actions">
+              <a class="card-privacy" href="y2k-camera/privacy.html" target="_blank" rel="noopener noreferrer" aria-label="Y2K Camera privacy policy" title="Privacy policy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </a>
+            </div>
+            <div class="app-card-top">
+              <div class="app-icon photo" aria-hidden="true">Y2</div>
+              <div class="app-meta"><div class="app-meta-top"><span class="status status-beta">In review</span><span class="type">Retro camera</span></div><h3>Y2K Camera: Retro CCD Digicam</h3></div>
+            </div>
+            <div class="app-card-body">
+              <p>Retro digicam &amp; vintage camera: Y2K flash, CCD grain, date stamp and photo dumps.</p>
+              <div class="app-card-footer"><span class="btn btn-play btn-disabled" aria-label="Y2K Camera availability">In review</span></div>
             </div>
           </article>
 
@@ -1237,7 +1253,7 @@
   <script>
     (function () {
       // Source of truth: article[data-status] on this page (live | review | soon).
-      // Do not invent an app entry. The current catalog already yields 13 live and 2 in review.
+      // Do not invent an app entry. The current catalog yields 13 live, 4 in review, and 18 in the portfolio.
       var articles = document.querySelectorAll("article[data-status]");
       var counts = { live: 0, review: 0, soon: 0 };
       articles.forEach(function (article) {
