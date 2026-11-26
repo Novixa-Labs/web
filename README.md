@@ -62,4 +62,4 @@ Or open `index.html` directly in a browser (relative links work for local file c
 ## Notes
 
 - Do not commit secrets. `app-ads.txt` only contains the public AdMob publisher authorization line.
-- Homepage app counts are derived from each card's `data-status` (`live`, `review`, `soon`). The catalog is 13 live on Google Play, 2 in review, and Backdrop still marked will-launch. Do not add an app entry without its real listing data.
+- Homepage app counts are derived from each card's `data-status` (`live`, `review`, `soon`). The catalog is 18 apps: 13 live on Google Play, 4 in review, and Backdrop still marked will-launch. Do not add an app entry without its real listing data.
